@@ -4,6 +4,6 @@
              xmlns:local="clr-namespace:WirelessTransfer"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <SolidColorBrush x:Key="MainColorBrush" Color="#FF279174"/>
     </Application.Resources>
 </Application>

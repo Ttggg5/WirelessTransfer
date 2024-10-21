@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="WirelessTransfer.CustomButtons.MinimizeBtn"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WirelessTransfer.CustomButtons"
+             mc:Ignorable="d" 
+             Height="20" Width="20"
+             MouseLeftButtonDown="UserControl_MouseLeftButtonDown"
+             MouseLeftButtonUp="UserControl_MouseLeftButtonUp"
+             MouseEnter="UserControl_MouseEnter"
+             MouseLeave="UserControl_MouseLeave">
+    <Border x:Name="backgroundBorder"
+            CornerRadius="50"
+            Background="#FF279174">
+        <Grid>
+            <Line Stroke="White"
+                  X1="4" Y1="12"
+                  X2="16" Y2="12"
+                  StrokeThickness="2"/>
+        </Grid>
+    </Border>
+</UserControl>

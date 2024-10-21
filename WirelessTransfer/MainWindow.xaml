@@ -3,10 +3,67 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WirelessTransfer"
+        xmlns:local="clr-namespace:WirelessTransfer" xmlns:custombuttons="clr-namespace:WirelessTransfer.CustomButtons"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="MainWindow"
+        Height="620" Width="870"
+        ResizeMode="CanMinimize"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent">
+    <Border Background="#FF313131"
+            CornerRadius="10"
+            Margin="20">
+        <Border.Effect>
+            <DropShadowEffect Opacity="0.5"
+                              BlurRadius="20"
+                              ShadowDepth="3"/>
+        </Border.Effect>
+        
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
 
-    </Grid>
+            <Border Grid.Row="0"
+                    x:Name="titlebar"
+                    Background="#FF4E4E4E"
+                    CornerRadius="10, 10, 0, 0"
+                    MouseLeftButtonDown="titlebar_MouseLeftButtonDown"
+                    MouseLeftButtonUp="titlebar_MouseLeftButtonUp"
+                    MouseMove="titlebar_MouseMove">
+                <Border.Effect>
+                    <DropShadowEffect Opacity="0.5"
+                                      BlurRadius="20"
+                                      ShadowDepth="3"/>
+                </Border.Effect>
+                
+                <Grid>
+                    <TextBlock x:Name="curPageLb"
+                               Text="Home"
+                               Foreground="White"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               VerticalAlignment="Center"
+                               Margin="15, 0, 0, 0"/>
+
+                    <custombuttons:CloseBtn x:Name="closeBtn"
+                                            HorizontalAlignment="Right"
+                                            Margin="0, 0, 15, 0"
+                                            Click="closeBtn_Click"/>
+
+                    <custombuttons:MinimizeBtn x:Name="minimizeBtn"
+                                               HorizontalAlignment="Right"
+                                               Margin="0, 0, 50, 0"
+                                               Click="minimizeBtn_Click"/>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1">
+
+            </Grid>
+        </Grid>
+    </Border>
 </Window>
