@@ -1,8 +1,4 @@
-﻿using System.Configuration;
-using System.Data;
-using System.Windows;
-
-namespace WirelessTransfer
+﻿namespace WirelessTransfer
 {
     /// <summary>
     /// Interaction logic for App.xaml

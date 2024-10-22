@@ -1,47 +1,48 @@
 ﻿using System.Windows.Input;
-using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace WirelessTransfer.CustomButtons
 {
     /// <summary>
-    /// MinimizeBtn.xaml 的互動邏輯
+    /// BackBtn.xaml 的互動邏輯
     /// </summary>
-    public partial class MinimizeBtn : System.Windows.Controls.UserControl
+    public partial class BackBtn : System.Windows.Controls.UserControl
     {
         public event EventHandler<MouseButtonEventArgs> Click;
 
-        SolidColorBrush normalScb = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 39, 145, 116));
-        SolidColorBrush hoverScb = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 79, 171, 146));
-        SolidColorBrush downScb = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 44, 103, 87));
+        BitmapImage normal = new BitmapImage(new Uri("../Assets/back_arrow.png", UriKind.Relative));
+        BitmapImage hover = new BitmapImage(new Uri("../Assets/back_arrow_hover.png", UriKind.Relative));
+        BitmapImage pressed = new BitmapImage(new Uri("../Assets/back_arrow_pressed.png", UriKind.Relative));
         bool isDown = false;
 
-        public MinimizeBtn()
+        public BackBtn()
         {
             InitializeComponent();
-            backgroundBorder.Background = normalScb;
+
+            img.Source = normal;
         }
 
         private void UserControl_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             isDown = true;
-            backgroundBorder.Background = downScb;
+            img.Source = pressed;
         }
 
         private void UserControl_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             if (isDown) Click?.Invoke(this, e);
             isDown = false;
-            backgroundBorder.Background = hoverScb;
+            img.Source = hover;
         }
 
         private void UserControl_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            backgroundBorder.Background = hoverScb;
+            img.Source = hover;
         }
 
         private void UserControl_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            backgroundBorder.Background = normalScb;
+            img.Source = normal;
         }
     }
 }

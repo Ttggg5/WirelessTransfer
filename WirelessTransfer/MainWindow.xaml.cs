@@ -1,13 +1,5 @@
-﻿using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using WirelessTransfer.Pages;
 
 namespace WirelessTransfer
@@ -24,7 +16,19 @@ namespace WirelessTransfer
             InitializeComponent();
 
             homePage = new HomePage();
+            homePage.BackSignal += homePage_BackSignal;
+            homePage.NavigateSignal += homePage_NavigateSignal;
             mainFrame.Navigate(homePage);
+        }
+
+        private void homePage_NavigateSignal(object? sender, System.Windows.Controls.Page e)
+        {
+            mainFrame.Navigate(e);
+        }
+
+        private void homePage_BackSignal(object? sender, EventArgs e)
+        {
+            mainFrame.GoBack();
         }
 
         private void titlebar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

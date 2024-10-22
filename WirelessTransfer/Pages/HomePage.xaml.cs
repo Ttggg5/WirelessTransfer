@@ -1,17 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+﻿using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace WirelessTransfer.Pages
 {
@@ -20,6 +8,9 @@ namespace WirelessTransfer.Pages
     /// </summary>
     public partial class HomePage : Page
     {
+        public event EventHandler BackSignal;
+        public event EventHandler<Page> NavigateSignal;
+
         public HomePage()
         {
             InitializeComponent();
@@ -27,7 +18,14 @@ namespace WirelessTransfer.Pages
 
         private void mirrorBtn_Click(object sender, MouseButtonEventArgs e)
         {
+            MirrorPage mirrorPage = new MirrorPage();
+            mirrorPage.Back += MirrorPage_Back;
+            NavigateSignal?.Invoke(this, mirrorPage);
+        }
 
+        private void MirrorPage_Back(object? sender, EventArgs e)
+        {
+            BackSignal?.Invoke(sender, e);
         }
 
         private void extendBtn_Click(object sender, MouseButtonEventArgs e)

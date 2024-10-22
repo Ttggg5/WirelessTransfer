@@ -11,6 +11,8 @@
 
   <ItemGroup>
     <None Remove="Assets\back_arrow.png" />
+    <None Remove="Assets\back_arrow_hover.png" />
+    <None Remove="Assets\back_arrow_pressed.png" />
     <None Remove="Assets\down_arrow.png" />
     <None Remove="Assets\extend_screen_icon.png" />
     <None Remove="Assets\file-arrow-down-solid.png" />
@@ -22,7 +24,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Assets\back_arrow_hover.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Assets\back_arrow.png" />
+    <Resource Include="Assets\back_arrow_pressed.png" />
     <Resource Include="Assets\down_arrow.png" />
     <Resource Include="Assets\extend_screen_icon.png" />
     <Resource Include="Assets\file-arrow-down-solid.png" />

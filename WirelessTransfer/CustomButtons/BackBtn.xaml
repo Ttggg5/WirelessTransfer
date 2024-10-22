@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="WirelessTransfer.CustomButtons.BackBtn"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WirelessTransfer.CustomButtons"
+             mc:Ignorable="d" 
+             Height="50" Width="50"
+             MouseLeftButtonDown="UserControl_MouseLeftButtonDown"
+             MouseLeftButtonUp="UserControl_MouseLeftButtonUp"
+             MouseEnter="UserControl_MouseEnter"
+             MouseLeave="UserControl_MouseLeave">
+    <Grid>
+        <Image x:Name="img"
+               Source="/Assets/back_arrow.png"/>
+    </Grid>
+</UserControl>
