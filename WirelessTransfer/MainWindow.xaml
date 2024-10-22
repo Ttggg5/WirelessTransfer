@@ -26,9 +26,10 @@
                 <RowDefinition Height="35"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-
+            
+            <!--Titlebar-->
             <Border Grid.Row="0"
-                    Background="#FF4E4E4E"
+                    Background="{StaticResource MainColor2Brush}"
                     CornerRadius="10, 10, 0, 0">
                 <Border.Effect>
                     <DropShadowEffect Opacity="0.5"
@@ -63,7 +64,7 @@
             </Border>
 
             <Grid Grid.Row="1">
-
+                <Frame x:Name="mainFrame"/>
             </Grid>
         </Grid>
     </Border>

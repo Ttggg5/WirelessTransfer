@@ -9,4 +9,28 @@
     <UseWindowsForms>True</UseWindowsForms>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Assets\back_arrow.png" />
+    <None Remove="Assets\down_arrow.png" />
+    <None Remove="Assets\extend_screen_icon.png" />
+    <None Remove="Assets\file-arrow-down-solid.png" />
+    <None Remove="Assets\file-arrow-up-solid.png" />
+    <None Remove="Assets\file_sharing_icon.png" />
+    <None Remove="Assets\mirror_icon.png" />
+    <None Remove="Assets\setting_icon.png" />
+    <None Remove="Assets\wifi_icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\back_arrow.png" />
+    <Resource Include="Assets\down_arrow.png" />
+    <Resource Include="Assets\extend_screen_icon.png" />
+    <Resource Include="Assets\file-arrow-down-solid.png" />
+    <Resource Include="Assets\file-arrow-up-solid.png" />
+    <Resource Include="Assets\file_sharing_icon.png" />
+    <Resource Include="Assets\mirror_icon.png" />
+    <Resource Include="Assets\setting_icon.png" />
+    <Resource Include="Assets\wifi_icon.png" />
+  </ItemGroup>
+
 </Project>

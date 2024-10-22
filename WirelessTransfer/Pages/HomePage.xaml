@@ -4,10 +4,109 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:WirelessTransfer.Pages"
+      xmlns:custombuttons="clr-namespace:WirelessTransfer.CustomButtons"
       mc:Ignorable="d" 
       d:DesignHeight="600" d:DesignWidth="850"
       Title="HomePage">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            
+            <custombuttons:FunctionBtn Grid.Column="0"
+                                       x:Name="mirrorBtn"
+                                       Icon="/Assets/mirror_icon.png"
+                                       IconDescription="鏡像"
+                                       Margin="0, 0, 0, 0"
+                                       Click="mirrorBtn_Click"/>
+
+            <custombuttons:FunctionBtn Grid.Column="1"
+                                       x:Name="extendBtn"
+                                       Icon="/Assets/extend_screen_icon.png"
+                                       IconDescription="延伸"
+                                       Margin="0, 0, 0, 0"
+                                       Click="extendBtn_Click"/>
+
+            <custombuttons:FunctionBtn Grid.Column="2"
+                                       x:Name="fileShareBtn"
+                                       Icon="/Assets/file_sharing_icon.png"
+                                       IconDescription="檔案傳輸"
+                                       Margin="0, 0, 0, 0"
+                                       Click="fileShareBtn_Click"/>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+
+            <custombuttons:FunctionBtn Grid.Column="0"
+                                       x:Name="settingBtn"
+                                       Icon="/Assets/setting_icon.png"
+                                       IconDescription="設定"
+                                       Margin="0, 0, 0, 0"
+                                       Click="settingBtn_Click"/>
+
+            <Border Grid.Column="1"
+                    Background="{StaticResource MainColor2Brush}"
+                    CornerRadius="10"
+                    Width="463" Height="180"
+                    Margin="20">
+                <Border.Effect>
+                    <DropShadowEffect Opacity="0.5"
+                                      BlurRadius="20"
+                                      ShadowDepth="3"/>
+                </Border.Effect>
+
+                <Grid>
+                    <Image Source="/Assets/wifi_icon.png"
+                           HorizontalAlignment="Right"
+                           Width="200" Height="200"
+                           Margin="0, 0, 0, 0"
+                           Opacity="0.6"
+                           Stretch="UniformToFill"/>
+
+                    <Label FontSize="20"
+                           FontWeight="Bold"
+                           Foreground="White"
+                           Margin="15, 20, 0, 0">
+                        <WrapPanel>
+                            <TextBlock Text="裝置名稱: "/>
+                            <TextBlock x:Name="deviceNameTB"/>
+                        </WrapPanel>
+                    </Label>
+
+
+                    <Label FontSize="20"
+                           FontWeight="Bold"
+                           Foreground="White"
+                           Margin="15, 60, 0, 0">
+                        <WrapPanel>
+                            <TextBlock Text="裝置IP: "/>
+                            <TextBlock x:Name="deviceIpTB"/>
+                        </WrapPanel>
+                    </Label>
+
+                    <Label FontSize="20"
+                           FontWeight="Bold"
+                           Foreground="White"
+                           Margin="15, 100, 0, 0">
+                        <WrapPanel>
+                            <TextBlock Text="Wifi名稱: "/>
+                            <TextBlock x:Name="wifiNameTB"/>
+                        </WrapPanel>
+                    </Label>
+                </Grid>
+            </Border>
+        </Grid>
     </Grid>
 </Page>

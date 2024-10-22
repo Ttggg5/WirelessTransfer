@@ -24,5 +24,25 @@ namespace WirelessTransfer.Pages
         {
             InitializeComponent();
         }
+
+        private void mirrorBtn_Click(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void extendBtn_Click(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void fileShareBtn_Click(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void settingBtn_Click(object sender, MouseButtonEventArgs e)
+        {
+
+        }
     }
 }

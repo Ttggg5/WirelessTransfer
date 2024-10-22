@@ -43,7 +43,7 @@ namespace WirelessTransfer.CustomButtons
         {
             if (isDown) Click?.Invoke(this, e);
             isDown = false;
-            backgroundBorder.Background = normalScb;
+            backgroundBorder.Background = hoverScb;
         }
 
         private void UserControl_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)

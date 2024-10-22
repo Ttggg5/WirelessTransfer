@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WirelessTransfer.Pages;
 
 namespace WirelessTransfer
 {
@@ -16,9 +17,14 @@ namespace WirelessTransfer
     /// </summary>
     public partial class MainWindow : Window
     {
+        HomePage homePage;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            homePage = new HomePage();
+            mainFrame.Navigate(homePage);
         }
 
         private void titlebar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
