@@ -28,12 +28,8 @@
             </Grid.RowDefinitions>
 
             <Border Grid.Row="0"
-                    x:Name="titlebar"
                     Background="#FF4E4E4E"
-                    CornerRadius="10, 10, 0, 0"
-                    MouseLeftButtonDown="titlebar_MouseLeftButtonDown"
-                    MouseLeftButtonUp="titlebar_MouseLeftButtonUp"
-                    MouseMove="titlebar_MouseMove">
+                    CornerRadius="10, 10, 0, 0">
                 <Border.Effect>
                     <DropShadowEffect Opacity="0.5"
                                       BlurRadius="20"
@@ -41,12 +37,17 @@
                 </Border.Effect>
                 
                 <Grid>
+                    <Grid x:Name="titlebar"
+                          Background="Transparent"
+                          MouseLeftButtonDown="titlebar_MouseLeftButtonDown"/>
+
                     <TextBlock x:Name="curPageLb"
                                Text="Home"
                                Foreground="White"
                                FontSize="16"
                                FontWeight="Bold"
                                VerticalAlignment="Center"
+                               HorizontalAlignment="Left"
                                Margin="15, 0, 0, 0"/>
 
                     <custombuttons:CloseBtn x:Name="closeBtn"
