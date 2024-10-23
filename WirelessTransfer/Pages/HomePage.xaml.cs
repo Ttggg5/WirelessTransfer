@@ -99,7 +99,7 @@ namespace WirelessTransfer.Pages
                 Cmd cmd = CmdDecoder.DecodeCmd(receiveBytes, 0, receiveBytes.Length);
                 if (cmd?.CmdType == CmdType.RequestClientInfo)
                 {
-                    ClientInfoCmd clientInfoCmd = new ClientInfoCmd(deviceNameTB.Text, IPAddress.Parse(deviceIpTB.Text));
+                    ClientInfoCmd clientInfoCmd = new ClientInfoCmd(Environment.MachineName, IPAddress.Parse(GetLocalIPAddress()));
                     byte[] bytes = clientInfoCmd.Encode();
                     udpListen.Send(bytes, bytes.Length, remoteEP);
                 }

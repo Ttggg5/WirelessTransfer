@@ -68,7 +68,7 @@ namespace WirelessTransfer.CustomControls
                 if (cmd?.CmdType == CmdType.ClientInfo)
                 {
                     ((ClientInfoCmd)cmd).Decode();
-                    MyUdpClientInfo clientInfo = new MyUdpClientInfo(new UdpClient(remoteEP), ((ClientInfoCmd)cmd).ClientName, ((ClientInfoCmd)cmd).IP);
+                    MyUdpClientInfo clientInfo = new MyUdpClientInfo(new UdpClient(), ((ClientInfoCmd)cmd).ClientName, ((ClientInfoCmd)cmd).IP);
                     bool found = false;
                     foreach (MyUdpClientInfo muci in myUdpClientInfos)
                     {
@@ -80,11 +80,14 @@ namespace WirelessTransfer.CustomControls
                     }
                     if (!found)
                     {
-                        myUdpClientInfos.Add(clientInfo);
-                        DeviceTag deviceTag = new DeviceTag(clientInfo.Name, clientInfo.Address);
-                        deviceTag.Width = 230;
-                        deviceTag.Height = 60;
-                        foundDevicesListBox.Items.Add(deviceTag);
+                        Dispatcher.Invoke(() =>
+                        {
+                            myUdpClientInfos.Add(clientInfo);
+                            DeviceTag deviceTag = new DeviceTag(clientInfo.Name, clientInfo.Address);
+                            deviceTag.Width = 230;
+                            deviceTag.Height = 60;
+                            foundDevicesListBox.Items.Add(deviceTag);
+                        });
                     }
                 }
 
