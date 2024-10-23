@@ -7,6 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>True</UseWindowsForms>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,6 +25,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="SharpDX" Version="4.2.0" />
+    <PackageReference Include="SharpDX.Direct3D11" Version="4.2.0" />
+    <PackageReference Include="SharpDX.DXGI" Version="4.2.0" />
+    <PackageReference Include="System.Management" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Assets\back_arrow_hover.png" />
   </ItemGroup>
 
@@ -31,13 +39,45 @@
     <Resource Include="Assets\back_arrow.png" />
     <Resource Include="Assets\back_arrow_pressed.png" />
     <Resource Include="Assets\down_arrow.png" />
-    <Resource Include="Assets\extend_screen_icon.png" />
+    <Resource Include="Assets\extend_screen_icon.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Assets\file-arrow-down-solid.png" />
     <Resource Include="Assets\file-arrow-up-solid.png" />
-    <Resource Include="Assets\file_sharing_icon.png" />
-    <Resource Include="Assets\mirror_icon.png" />
-    <Resource Include="Assets\setting_icon.png" />
+    <Resource Include="Assets\file_sharing_icon.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\mirror_icon.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\setting_icon.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Assets\wifi_icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Pages\PageIconResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>PageIconResources.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Pages\PageTitleResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>PageTitleResources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Pages\PageIconResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>PageIconResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Pages\PageTitleResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>PageTitleResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

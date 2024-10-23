@@ -1,4 +1,6 @@
 ﻿using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace WirelessTransfer.Pages
 {
@@ -7,16 +9,15 @@ namespace WirelessTransfer.Pages
     /// </summary>
     public partial class MirrorPage : Page
     {
-        public event EventHandler Back;
-
         public MirrorPage()
         {
             InitializeComponent();
+            Tag = PageFunction.Mirror;
         }
 
-        private void backBtn_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        public void StopSearching()
         {
-            Back?.Invoke(this, e);
+            deviceFinder.StopSearching();
         }
     }
 }

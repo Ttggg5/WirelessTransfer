@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using WirelessTransfer.Pages;
 
@@ -21,7 +22,7 @@ namespace WirelessTransfer
             mainFrame.Navigate(homePage);
         }
 
-        private void homePage_NavigateSignal(object? sender, System.Windows.Controls.Page e)
+        private void homePage_NavigateSignal(object? sender, Page e)
         {
             mainFrame.Navigate(e);
         }
@@ -44,6 +45,36 @@ namespace WirelessTransfer
         private void minimizeBtn_Click(object sender, MouseButtonEventArgs e)
         {
             this.WindowState = WindowState.Minimized;
+        }
+
+        // Disable the keyboard shotcut of frame navigation
+        private void mainFrame_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Left:
+                    e.Handled = true;
+                    break;
+                case Key.Right:
+                    e.Handled = true;
+                    break;
+            }
+        }
+
+        // Disable the mouse shotcut of frame navigation
+        MouseButtonState xBtn1 = MouseButtonState.Released;
+        MouseButtonState xBtn2 = MouseButtonState.Released;
+
+        private void mainFrame_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (xBtn1 == MouseButtonState.Pressed && e.XButton1 == MouseButtonState.Released) e.Handled = true;
+            else if (xBtn2 == MouseButtonState.Pressed && e.XButton2 == MouseButtonState.Released) e.Handled = true;
+        }
+
+        private void mainFrame_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            xBtn1 = e.XButton1;
+            xBtn2 = e.XButton2;
         }
     }
 }

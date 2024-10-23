@@ -65,7 +65,10 @@
 
             <Grid Grid.Row="1">
                 <Frame x:Name="mainFrame"
-                       NavigationUIVisibility="Hidden"/>
+                       NavigationUIVisibility="Hidden"
+                       PreviewKeyDown="mainFrame_PreviewKeyDown"
+                       PreviewMouseUp="mainFrame_PreviewMouseUp"
+                       PreviewMouseDown="mainFrame_PreviewMouseDown"/>
             </Grid>
         </Grid>
     </Border>

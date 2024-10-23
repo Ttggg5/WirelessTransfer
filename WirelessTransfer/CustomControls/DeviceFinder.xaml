@@ -1,0 +1,25 @@
+﻿<UserControl x:Class="WirelessTransfer.CustomControls.DeviceFinder"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WirelessTransfer.CustomControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="380" d:DesignWidth="300">
+    <Border Background="White"
+            CornerRadius="10"
+            Margin="20">
+        <Border.Effect>
+            <DropShadowEffect Opacity="0.5"
+                              BlurRadius="20"
+                              ShadowDepth="3"/>
+        </Border.Effect>
+        
+        <ListBox x:Name="foundDevicesListBox"
+                 Background="Transparent"
+                 BorderThickness="0"
+                 Margin="5">
+            
+        </ListBox>
+    </Border>
+</UserControl>
