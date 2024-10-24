@@ -1,14 +1,9 @@
 ﻿using System.Net;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Management;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
 using System.Net.Sockets;
-using System.Windows.Forms;
-using WirelessTransfer.CustomControls;
 using WirelessTransfer.Tools.InternetSocket.Cmd;
-using WirelessTransfer.Tools.InternetSocket.MyUdp;
 
 namespace WirelessTransfer.Pages
 {
@@ -86,8 +81,11 @@ namespace WirelessTransfer.Pages
 
         private void ListenForConnections()
         {
-            udpListen = new UdpClient(new IPEndPoint(IPAddress.Any, PORT));
-            udpListen.BeginReceive(new AsyncCallback(ReceiveCallBack), null);
+            if (udpListen == null)
+            {
+                udpListen = new UdpClient(new IPEndPoint(IPAddress.Any, PORT));
+                udpListen.BeginReceive(new AsyncCallback(ReceiveCallBack), null);
+            }
         }
 
         private void ReceiveCallBack(IAsyncResult ar)
@@ -106,12 +104,20 @@ namespace WirelessTransfer.Pages
 
                 udpListen.BeginReceive(new AsyncCallback(ReceiveCallBack), null);
             }
-            catch (ObjectDisposedException) { }
+            catch (ObjectDisposedException)
+            {
+                udpListen = null;
+            }
+        }
+
+        private void StopListening()
+        {
+            udpListen?.Close();
         }
 
         private void NavigateToNewPage(PageFunction function)
         {
-            udpListen?.Close();
+            StopListening();
 
             basePage?.StopAllProcess();
             basePage = new BasePage(function);
@@ -142,6 +148,7 @@ namespace WirelessTransfer.Pages
         private void basePage_Back(object? sender, EventArgs e)
         {
             BackSignal?.Invoke(sender, e);
+            basePage?.StopAllProcess();
             ListenForConnections();
         }
     }

@@ -45,17 +45,32 @@ namespace WirelessTransfer.CustomControls
 
         public void StartSearching()
         {
-            searchClient = new UdpClient();
-            searchClient.EnableBroadcast = true;
-            RequestClientInfoCmd requestClientInfoCmd = new RequestClientInfoCmd();
-            byte[] sendBytes = requestClientInfoCmd.Encode();
-            searchClient.BeginSend(sendBytes, sendBytes.Length, new IPEndPoint(IPAddress.Broadcast, PORT), new AsyncCallback(SendCallBack), null);
-        }
-
-        private void SendCallBack(IAsyncResult ar)
-        {
-            searchClient.EndSend(ar);
-            searchClient.BeginReceive(new AsyncCallback(ReceiveCallBack), null);
+            if (searchClient == null)
+            {
+                searchClient = new UdpClient();
+                searchClient.EnableBroadcast = true;
+                Task.Run(() =>
+                {
+                    try
+                    {
+                        while (true)
+                        {
+                            RequestClientInfoCmd requestClientInfoCmd = new RequestClientInfoCmd();
+                            byte[] sendBytes = requestClientInfoCmd.Encode();
+                            searchClient.Send(sendBytes, sendBytes.Length, new IPEndPoint(IPAddress.Broadcast, PORT));
+                            for (int i = 0; i < 20; i++)
+                            {
+                                Task.Delay(100).Wait();
+                                if (searchClient == null)
+                                    throw new ObjectDisposedException("");
+                            }
+                        }
+                    }
+                    catch (ObjectDisposedException) { }
+                });
+                searchClient.Client.Bind(new IPEndPoint(IPAddress.Any, PORT));
+                searchClient.BeginReceive(new AsyncCallback(ReceiveCallBack), null);
+            }
         }
 
         private void ReceiveCallBack(IAsyncResult ar)
@@ -68,7 +83,7 @@ namespace WirelessTransfer.CustomControls
                 if (cmd?.CmdType == CmdType.ClientInfo)
                 {
                     ((ClientInfoCmd)cmd).Decode();
-                    MyUdpClientInfo clientInfo = new MyUdpClientInfo(new UdpClient(), ((ClientInfoCmd)cmd).ClientName, ((ClientInfoCmd)cmd).IP);
+                    MyUdpClientInfo clientInfo = new MyUdpClientInfo(new UdpClient(remoteEP), ((ClientInfoCmd)cmd).ClientName, ((ClientInfoCmd)cmd).IP);
                     bool found = false;
                     foreach (MyUdpClientInfo muci in myUdpClientInfos)
                     {
@@ -93,16 +108,15 @@ namespace WirelessTransfer.CustomControls
 
                 searchClient.BeginReceive(new AsyncCallback(ReceiveCallBack), null);
             }
-            catch (ObjectDisposedException) { }
+            catch (ObjectDisposedException)
+            {
+                searchClient = null;
+            }
         }
 
         public void StopSearching()
         {
-            try
-            {
-                searchClient?.Close();
-            }
-            catch { }
+            searchClient?.Close();
         }
     }
 }
