@@ -9,8 +9,50 @@
       d:DesignHeight="410" d:DesignWidth="540"
       Title="MirrorPage">
     <Grid>
-        <customcontrols:DeviceFinder x:Name="deviceFinder"
-                                     Width="300"
-                                     HorizontalAlignment="Left"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0">
+            <customcontrols:DeviceFinder x:Name="deviceFinder"/>
+        </Grid>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            
+            <Label Grid.Row="0"
+                   FontSize="30"
+                   FontWeight="Bold"
+                   Foreground="White"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Bottom">
+                <Grid>
+                    <TextBlock Text="掃描QR Code"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="以直接連接"
+                               HorizontalAlignment="Center"
+                               Margin="0, 35, 0, 0"/>
+                </Grid>
+            </Label>
+
+            <Image Grid.Row="1"
+                   Source="/Assets/down_arrow.png"/>
+
+            <Image x:Name="qrCodeImg"/>
+        </Grid>
+
+        <Grid Grid.ColumnSpan="2"
+              x:Name="maskGrid"
+              Background="#CC000000">
+            <Button x:Name="disconnectBtn"
+                    Width="100" Height="30"
+                    Content="Disconnect"
+                    Click="disconnectBtn_Click"/>
+        </Grid>
     </Grid>
 </Page>

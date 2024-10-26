@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using System.Windows;
 
-namespace WirelessTransfer.Tools
+namespace WirelessTransfer.Tools.Screen
 {
     public static class BitmapConverter
     {

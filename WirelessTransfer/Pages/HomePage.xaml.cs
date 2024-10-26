@@ -4,6 +4,9 @@ using System.Windows.Input;
 using System.Diagnostics;
 using System.Net.Sockets;
 using WirelessTransfer.Tools.InternetSocket.Cmd;
+using Ini;
+using WirelessTransfer.Tools.InternetSocket.MyTcp;
+using WirelessTransfer.Windows;
 
 namespace WirelessTransfer.Pages
 {
@@ -15,14 +18,16 @@ namespace WirelessTransfer.Pages
         public event EventHandler BackSignal;
         public event EventHandler<Page> NavigateSignal;
 
-        const int PORT = 8888;
+        int port;
 
         BasePage basePage;
-        UdpClient udpListen; // Listening for connections and send back info
+        UdpClient udpListen; // Listening for request and send back info
 
         public HomePage()
         {
             InitializeComponent();
+
+            port = int.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.Port, string.Empty, IniFile.DEFAULT_PATH));
 
             deviceNameTB.Text = Environment.MachineName;
             deviceIpTB.Text = GetLocalIPAddress();
@@ -83,7 +88,7 @@ namespace WirelessTransfer.Pages
         {
             if (udpListen == null)
             {
-                udpListen = new UdpClient(new IPEndPoint(IPAddress.Any, PORT));
+                udpListen = new UdpClient(new IPEndPoint(IPAddress.Any, port));
                 udpListen.BeginReceive(new AsyncCallback(ReceiveCallBack), null);
             }
         }
@@ -95,11 +100,28 @@ namespace WirelessTransfer.Pages
                 IPEndPoint? remoteEP = null;
                 byte[] receiveBytes = udpListen.EndReceive(ar, ref remoteEP);
                 Cmd cmd = CmdDecoder.DecodeCmd(receiveBytes, 0, receiveBytes.Length);
-                if (cmd?.CmdType == CmdType.RequestClientInfo)
+                if (cmd != null && cmd.CmdType == CmdType.Request)
                 {
-                    ClientInfoCmd clientInfoCmd = new ClientInfoCmd(Environment.MachineName, IPAddress.Parse(GetLocalIPAddress()));
-                    byte[] bytes = clientInfoCmd.Encode();
-                    udpListen.Send(bytes, bytes.Length, remoteEP);
+                    switch (((RequestCmd)cmd).RequestType)
+                    {
+                        case RequestType.ClientInfo:
+                            ClientInfoCmd clientInfoCmd = new ClientInfoCmd(Environment.MachineName, IPAddress.Parse(GetLocalIPAddress()));
+                            byte[] bytes = clientInfoCmd.Encode();
+                            udpListen.Send(bytes, bytes.Length, remoteEP);
+                            break;
+                        case RequestType.Mirror:
+                            MyTcpClient myTcpClient = new MyTcpClient(remoteEP.Address, port, Environment.MachineName);
+                            StopListening();
+                            MirrorWindow mirrorWindow = new MirrorWindow(myTcpClient);
+                            mirrorWindow.ShowDialog();
+                            myTcpClient.Disconnect();
+                            ListenForConnections();
+                            break;
+                        case RequestType.Extend:
+                            break;
+                        case RequestType.FileShare:
+                            break;
+                    }
                 }
 
                 udpListen.BeginReceive(new AsyncCallback(ReceiveCallBack), null);

@@ -15,10 +15,13 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
     {
         public event EventHandler<MyTcpClientInfo> ClientConnected;
         public event EventHandler<MyTcpClientInfo> ClientDisconnected;
+        public event EventHandler<Cmd.Cmd> ReceivedCmd;
 
         public TcpListener? Server { get; }
         public List<MyTcpClientInfo> ConnectedClients { get; set; }
         public IPEndPoint LocalIPEP { get; }
+
+        byte[] buffer = new byte[5242880]; // 5MB
 
         public MyTcpServer(int port)
         {
@@ -54,6 +57,8 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                         cmd.Decode();
                         ConnectedClients.Add(new MyTcpClientInfo(tcpClient, ((ClientInfoCmd)cmd).ClientName, ((ClientInfoCmd)cmd).IP));
                         ClientConnected?.Invoke(this, ConnectedClients.Last());
+
+                        tcpClient.GetStream().BeginRead(buffer, 0, buffer.Length, new AsyncCallback(ReceiveCallBack), ConnectedClients.Last());
                     }
                     else tcpClient.Close();
                 }
@@ -65,6 +70,41 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
 
             // Start accepting the next client asynchronously
             Server.BeginAcceptTcpClient(new AsyncCallback(OnClientConnect), null);
+        }
+
+        private void ReceiveCallBack(IAsyncResult ar)
+        {
+            MyTcpClientInfo mtci = (MyTcpClientInfo)ar.AsyncState;
+            TcpClient client = mtci.Client;
+            try
+            {
+                int actualLength = client.GetStream().EndRead(ar);
+                if (actualLength > 0)
+                {
+                    Cmd.Cmd? cmd = CmdDecoder.DecodeCmd(buffer, 0, actualLength);
+                    if (cmd != null) ReceivedCmd?.Invoke(this, cmd);
+                }
+
+                client.GetStream().BeginRead(buffer, 0, buffer.Length, new AsyncCallback(ReceiveCallBack), null);
+            }
+            catch (IOException)
+            {
+                ConnectedClients.Remove(mtci);
+                ClientDisconnected?.Invoke(this, mtci);
+            }
+        }
+
+        public void SendCmd(Cmd.Cmd cmd, MyTcpClientInfo clientInfo)
+        {
+            try
+            {
+                byte[] bytes = cmd.Encode();
+                clientInfo.Client.GetStream().Write(bytes, 0, bytes.Length);
+            }
+            catch (IOException)
+            {
+                ClientDisconnected?.Invoke(this, clientInfo);
+            }
         }
 
         public void Stop()

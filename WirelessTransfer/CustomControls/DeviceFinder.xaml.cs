@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ini;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -24,8 +25,11 @@ namespace WirelessTransfer.CustomControls
     /// </summary>
     public partial class DeviceFinder : System.Windows.Controls.UserControl
     {
-        const int PORT = 8888;
+        public event EventHandler<DeviceTag> DeviceChoosed;
+
         const int SEARCH_CYCLE = 2; // unit is "second"
+
+        int port;
 
         List<DeviceTag> deviceTags;
         UdpClient searchClient;
@@ -33,6 +37,8 @@ namespace WirelessTransfer.CustomControls
         public DeviceFinder()
         {
             InitializeComponent();
+
+            port = int.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.Port, string.Empty, IniFile.DEFAULT_PATH));
             deviceTags = new List<DeviceTag>();
 
             /*
@@ -41,7 +47,6 @@ namespace WirelessTransfer.CustomControls
             deviceTag.Height = 60;
             foundDevicesListBox.Items.Add(deviceTag);
             */
-            StartSearching();
         }
 
         public void StartSearching()
@@ -70,9 +75,9 @@ namespace WirelessTransfer.CustomControls
                                 }
                             }
 
-                            RequestClientInfoCmd requestClientInfoCmd = new RequestClientInfoCmd();
+                            RequestCmd requestClientInfoCmd = new RequestCmd(RequestType.ClientInfo);
                             byte[] sendBytes = requestClientInfoCmd.Encode();
-                            searchClient.Send(sendBytes, sendBytes.Length, new IPEndPoint(IPAddress.Broadcast, PORT));
+                            searchClient.Send(sendBytes, sendBytes.Length, new IPEndPoint(IPAddress.Broadcast, port));
 
                             // Waiting
                             for (int i = 0; i < SEARCH_CYCLE * 10; i++)
@@ -85,7 +90,7 @@ namespace WirelessTransfer.CustomControls
                     }
                     catch (ObjectDisposedException) { }
                 });
-                searchClient.Client.Bind(new IPEndPoint(IPAddress.Any, PORT));
+                searchClient.Client.Bind(new IPEndPoint(IPAddress.Any, port));
                 searchClient.BeginReceive(new AsyncCallback(ReceiveCallBack), null);
             }
         }
@@ -135,6 +140,12 @@ namespace WirelessTransfer.CustomControls
         public void StopSearching()
         {
             searchClient?.Close();
+        }
+
+        private void foundDevicesListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (foundDevicesListBox.SelectedIndex > -1)
+                DeviceChoosed?.Invoke(this, (DeviceTag)foundDevicesListBox.SelectedItem);
         }
     }
 }

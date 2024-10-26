@@ -24,6 +24,7 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
         /// </summary>
         public static Cmd? DecodeCmd(byte[] buffer, int startIndex, int length)
         {
+            Cmd? cmd = null;
             CmdType cmdType;
             if (buffer[startIndex] == frontSymbol)
             {
@@ -41,8 +42,8 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
                     {
                         if (tmpBuffer[curIndex] == backSymbol)
                         {
-                            string cmd = Encoding.UTF8.GetString(tmpBuffer, previousIndex, curIndex - previousIndex);
-                            if(!Enum.TryParse<CmdType>(cmd, out cmdType))
+                            string cmdStr = Encoding.UTF8.GetString(tmpBuffer, previousIndex, curIndex - previousIndex);
+                            if(!Enum.TryParse<CmdType>(cmdStr, out cmdType))
                                 return null;
                             break;
                         }
@@ -70,7 +71,8 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
                         case CmdType.Alive:
                             break;
                         case CmdType.ClientInfo:
-                            return new ClientInfoCmd(data);
+                            cmd = new ClientInfoCmd(data);
+                            break;
                         case CmdType.FileData:
                             break;
                         case CmdType.FileInfo:
@@ -85,12 +87,14 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
                             break;
                         case CmdType.Webcam:
                             break;
-                        case CmdType.RequestClientInfo:
-                            return new RequestClientInfoCmd();
+                        case CmdType.Request:
+                            cmd = new RequestCmd(data);
+                            break;
                     }
+                    cmd?.Decode();
                 }
             }
-            return null;
+            return cmd;
         }
     }
 }

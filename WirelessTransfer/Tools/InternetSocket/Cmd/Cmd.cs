@@ -18,7 +18,7 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
         Keyboard,
         Mouse,
         Webcam,
-        RequestClientInfo,
+        Request,
     }
 
     public abstract class Cmd

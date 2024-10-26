@@ -29,7 +29,7 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
         }
 
         /// <summary>
-        /// For receiver
+        /// For receiver.
         /// </summary>
         public ClientInfoCmd(byte[] buffer)
         {

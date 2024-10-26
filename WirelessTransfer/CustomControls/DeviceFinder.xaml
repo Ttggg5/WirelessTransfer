@@ -18,7 +18,8 @@
         <ListBox x:Name="foundDevicesListBox"
                  Background="Transparent"
                  BorderThickness="0"
-                 Margin="5">
+                 Margin="5"
+                 SelectionChanged="foundDevicesListBox_SelectionChanged">
             
         </ListBox>
     </Border>
