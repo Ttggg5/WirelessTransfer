@@ -39,7 +39,10 @@ namespace WirelessTransfer.Windows
 
         private void myTcpClient_Disconnected(object? sender, EventArgs e)
         {
-            Close();
+            Dispatcher.Invoke(() =>
+            {
+                Close();
+            });
         }
 
         private void myTcpClient_Connected(object? sender, EventArgs e)
