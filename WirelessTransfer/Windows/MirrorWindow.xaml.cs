@@ -57,8 +57,11 @@ namespace WirelessTransfer.Windows
                 ScreenCmd screenCmd = (ScreenCmd)e;
                 if (screenWB == null)
                 {
-                    screenWB = new WriteableBitmap(screenCmd.ScreenBmp.Width, screenCmd.ScreenBmp.Height, 96, 96, PixelFormats.Bgra32, null);
-                    screenImg.Source = screenWB;
+                    Dispatcher.Invoke(() =>
+                    {
+                        screenWB = new WriteableBitmap(screenCmd.ScreenBmp.Width, screenCmd.ScreenBmp.Height, 96, 96, PixelFormats.Bgra32, null);
+                        screenImg.Source = screenWB;
+                    });
                 }
                 BitmapConverter.DrawBitmapToWriteableBitmap(screenCmd.ScreenBmp, screenWB, 0, 0);
             }

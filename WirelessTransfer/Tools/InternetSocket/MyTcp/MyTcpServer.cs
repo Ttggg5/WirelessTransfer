@@ -107,9 +107,12 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
         public void Stop()
         {
             Server?.Stop();
-            foreach (var client in ConnectedClients)
+            if (ConnectedClients.Count > 0)
             {
-                ClientDisconnected?.Invoke(this, client);
+                foreach (var client in ConnectedClients)
+                {
+                    ClientDisconnected?.Invoke(this, client);
+                }
             }
             ConnectedClients.Clear();
         }
