@@ -21,7 +21,7 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
         public List<MyTcpClientInfo> ConnectedClients { get; set; }
         public IPEndPoint LocalIPEP { get; }
 
-        byte[] buffer = new byte[5242880]; // 5MB
+        byte[] buffer = new byte[6291456]; // 6MB
 
         public MyTcpServer(int port)
         {

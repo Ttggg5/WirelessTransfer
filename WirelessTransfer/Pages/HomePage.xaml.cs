@@ -98,6 +98,7 @@ namespace WirelessTransfer.Pages
             try
             {
                 IPEndPoint? remoteEP = null;
+                if (udpListen == null) throw new ObjectDisposedException(nameof(udpListen));
                 byte[] receiveBytes = udpListen.EndReceive(ar, ref remoteEP);
                 Cmd cmd = CmdDecoder.DecodeCmd(receiveBytes, 0, receiveBytes.Length);
                 if (cmd != null && cmd.CmdType == CmdType.Request)
@@ -133,6 +134,7 @@ namespace WirelessTransfer.Pages
             {
                 udpListen = null;
             }
+            catch (NullReferenceException) { }
         }
 
         private void StopListening()

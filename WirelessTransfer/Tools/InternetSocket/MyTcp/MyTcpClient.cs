@@ -22,7 +22,7 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
         string clientName;
 
         int timeoutCounter = 0;
-        byte[] buffer = new byte[5242880]; // 5MB
+        byte[] buffer = new byte[6291456]; // 6MB
 
         public MyTcpClient(IPAddress serverIp, int serverPort, string clientName)
         {
