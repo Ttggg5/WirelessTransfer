@@ -112,10 +112,13 @@ namespace WirelessTransfer.Pages
                         case RequestType.Mirror:
                             MyTcpClient myTcpClient = new MyTcpClient(remoteEP.Address, port, Environment.MachineName);
                             StopListening();
-                            MirrorWindow mirrorWindow = new MirrorWindow(myTcpClient);
-                            mirrorWindow.ShowDialog();
-                            myTcpClient.Disconnect();
-                            ListenForConnections();
+                            Dispatcher.Invoke(() =>
+                            {
+                                MirrorWindow mirrorWindow = new MirrorWindow(myTcpClient);
+                                mirrorWindow.ShowDialog();
+                                myTcpClient.Disconnect();
+                                ListenForConnections();
+                            });
                             break;
                         case RequestType.Extend:
                             break;

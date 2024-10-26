@@ -45,9 +45,9 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
             byte[] tmpBuf = new byte[1024]; // this is only for ClientInfoCmd
 
             // Accept the client
-            TcpClient tcpClient = Server.EndAcceptTcpClient(ar);
             try
             {
+                TcpClient tcpClient = Server.EndAcceptTcpClient(ar);
                 int actualLength = tcpClient.GetStream().Read(tmpBuf, 0, tmpBuf.Length);
                 if (actualLength > 0)
                 {
@@ -63,10 +63,8 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                     else tcpClient.Close();
                 }
             }
-            catch (IOException)
-            {
-
-            }
+            catch (IOException) { }
+            catch (ObjectDisposedException) { }
 
             // Start accepting the next client asynchronously
             Server.BeginAcceptTcpClient(new AsyncCallback(OnClientConnect), null);
