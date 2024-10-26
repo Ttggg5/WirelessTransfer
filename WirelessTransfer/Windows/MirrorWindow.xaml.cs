@@ -24,7 +24,7 @@ namespace WirelessTransfer.Windows
     public partial class MirrorWindow : Window
     {
         MyTcpClient myTcpClient;
-        WriteableBitmap screenWB = null;
+        WriteableBitmap screenWB;
 
         public MirrorWindow(MyTcpClient myTcpClient)
         {
@@ -57,9 +57,9 @@ namespace WirelessTransfer.Windows
                 ScreenCmd screenCmd = (ScreenCmd)e;
                 if (screenWB == null)
                 {
+                    screenWB = new WriteableBitmap(screenCmd.ScreenBmp.Width, screenCmd.ScreenBmp.Height, 96, 96, PixelFormats.Bgra32, null);
                     Dispatcher.Invoke(() =>
                     {
-                        screenWB = new WriteableBitmap(screenCmd.ScreenBmp.Width, screenCmd.ScreenBmp.Height, 96, 96, PixelFormats.Bgra32, null);
                         screenImg.Source = screenWB;
                     });
                 }
