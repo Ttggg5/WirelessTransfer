@@ -40,7 +40,7 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
         public RequestCmd(byte[] buffer)
         {
             Data = buffer;
-            CmdType = CmdType.ClientInfo;
+            CmdType = CmdType.Request;
         }
 
         public override byte[] Encode()
