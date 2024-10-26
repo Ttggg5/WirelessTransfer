@@ -25,14 +25,15 @@ namespace WirelessTransfer.CustomControls
     public partial class DeviceFinder : System.Windows.Controls.UserControl
     {
         const int PORT = 8888;
+        const int SEARCH_CYCLE = 2; // unit is "second"
 
-        List<MyUdpClientInfo> myUdpClientInfos;
+        List<DeviceTag> deviceTags;
         UdpClient searchClient;
 
         public DeviceFinder()
         {
             InitializeComponent();
-            myUdpClientInfos = new List<MyUdpClientInfo>();
+            deviceTags = new List<DeviceTag>();
 
             /*
             DeviceTag deviceTag = new DeviceTag("test", IPAddress.Any);
@@ -53,20 +54,28 @@ namespace WirelessTransfer.CustomControls
                 {
                     try
                     {
-                        // Send broadcast message ever 3 sec
+                        // Send broadcast message
                         while (true)
                         {
-                            Dispatcher.Invoke(() =>
+                            // delete found device when no respond
+                            for (int i = 0; i < deviceTags.Count; i++)
                             {
-                                myUdpClientInfos.Clear();
-                                foundDevicesListBox.Items.Clear();
-                            });
+                                if (Math.Abs(deviceTags[i].FoundTime.Second - DateTime.Now.Second) > SEARCH_CYCLE * 2)
+                                {
+                                    Dispatcher.Invoke(() =>
+                                    {
+                                        foundDevicesListBox.Items.Remove(deviceTags[i]);
+                                        deviceTags.RemoveAt(i--);
+                                    });
+                                }
+                            }
+
                             RequestClientInfoCmd requestClientInfoCmd = new RequestClientInfoCmd();
                             byte[] sendBytes = requestClientInfoCmd.Encode();
                             searchClient.Send(sendBytes, sendBytes.Length, new IPEndPoint(IPAddress.Broadcast, PORT));
 
-                            // Waiting 3 sec
-                            for (int i = 0; i < 30; i++)
+                            // Waiting
+                            for (int i = 0; i < SEARCH_CYCLE * 10; i++)
                             {
                                 Task.Delay(100).Wait();
                                 if (searchClient == null)
@@ -88,17 +97,17 @@ namespace WirelessTransfer.CustomControls
                 IPEndPoint? remoteEP = null;
                 byte[] receiveBytes = searchClient.EndReceive(ar, ref remoteEP);
                 Cmd cmd = CmdDecoder.DecodeCmd(receiveBytes, 0, receiveBytes.Length);
-                if (cmd?.CmdType == CmdType.ClientInfo)
+                if (cmd != null && cmd.CmdType == CmdType.ClientInfo)
                 {
                     ClientInfoCmd cif = ((ClientInfoCmd)cmd);
                     cif.Decode();
-                    MyUdpClientInfo clientInfo = new MyUdpClientInfo(new UdpClient(new IPEndPoint(cif.IP, PORT)), cif.ClientName, cif.IP);
                     bool found = false;
-                    foreach (MyUdpClientInfo muci in myUdpClientInfos)
+                    foreach (DeviceTag dt in deviceTags)
                     {
-                        if (muci.Address.ToString().Equals(clientInfo.Address.ToString()))
+                        if (dt.Address.ToString().Equals(cif.IP.ToString()))
                         {
                             found = true;
+                            dt.FoundTime = DateTime.Now;
                             break;
                         }
                     }
@@ -106,11 +115,11 @@ namespace WirelessTransfer.CustomControls
                     {
                         Dispatcher.Invoke(() =>
                         {
-                            myUdpClientInfos.Add(clientInfo);
-                            DeviceTag deviceTag = new DeviceTag(clientInfo.Name, clientInfo.Address);
+                            DeviceTag deviceTag = new DeviceTag(cif.ClientName, cif.IP, DateTime.Now);
                             deviceTag.Width = 230;
                             deviceTag.Height = 60;
                             foundDevicesListBox.Items.Add(deviceTag);
+                            deviceTags.Add(deviceTag);
                         });
                     }
                 }

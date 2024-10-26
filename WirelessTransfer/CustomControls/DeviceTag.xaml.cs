@@ -23,8 +23,9 @@ namespace WirelessTransfer.CustomControls
     {
         public string DeviceName { get; }
         public IPAddress Address { get; }
+        public DateTime FoundTime { get; set; }
 
-        public DeviceTag(string deviceName, IPAddress address)
+        public DeviceTag(string deviceName, IPAddress address, DateTime foundTime)
         {
             InitializeComponent();
 
@@ -33,6 +34,7 @@ namespace WirelessTransfer.CustomControls
 
             nameTB.Text = deviceName;
             addressTB.Text = address.ToString();
+            FoundTime = foundTime;
         }
     }
 }
