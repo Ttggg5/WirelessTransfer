@@ -98,7 +98,7 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                 byte[] bytes = cmd.Encode();
                 clientInfo.Client.GetStream().Write(bytes, 0, bytes.Length);
             }
-            catch (IOException)
+            catch (Exception)
             {
                 ClientDisconnected?.Invoke(this, clientInfo);
             }

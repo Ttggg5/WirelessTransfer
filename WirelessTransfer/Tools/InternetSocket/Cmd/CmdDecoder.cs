@@ -80,6 +80,7 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
                         case CmdType.Reply:
                             break;
                         case CmdType.Screen:
+                            cmd = new ScreenCmd(data);
                             break;
                         case CmdType.Keyboard:
                             break;

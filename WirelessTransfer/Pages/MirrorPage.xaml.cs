@@ -59,7 +59,10 @@ namespace WirelessTransfer.Pages
 
         private void myTcpServer_ClientDisconnected(object? sender, MyTcpClientInfo e)
         {
-            disconnectBtn_Click(sender, null);
+            Dispatcher.Invoke(() =>
+            {
+                disconnectBtn_Click(sender, null);
+            });
         }
 
         private void myTcpServer_ClientConnected(object? sender, MyTcpClientInfo e)
