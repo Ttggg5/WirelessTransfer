@@ -90,8 +90,9 @@ namespace WirelessTransfer.CustomControls
                 Cmd cmd = CmdDecoder.DecodeCmd(receiveBytes, 0, receiveBytes.Length);
                 if (cmd?.CmdType == CmdType.ClientInfo)
                 {
-                    ((ClientInfoCmd)cmd).Decode();
-                    MyUdpClientInfo clientInfo = new MyUdpClientInfo(new UdpClient(remoteEP), ((ClientInfoCmd)cmd).ClientName, ((ClientInfoCmd)cmd).IP);
+                    ClientInfoCmd cif = ((ClientInfoCmd)cmd);
+                    cif.Decode();
+                    MyUdpClientInfo clientInfo = new MyUdpClientInfo(new UdpClient(new IPEndPoint(cif.IP, PORT)), cif.ClientName, cif.IP);
                     bool found = false;
                     foreach (MyUdpClientInfo muci in myUdpClientInfos)
                     {
