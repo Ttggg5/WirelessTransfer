@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WirelessTransfer.Windows"
         mc:Ignorable="d"
-        Title="MirrorWindow" Height="450" Width="800">
+        Title="MirrorWindow" Height="450" Width="800"
+        Closing="Window_Closing">
     <Grid>
         <Image x:Name="screenImg"/>
     </Grid>

@@ -5,6 +5,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using WirelessTransfer.Tools.InternetSocket.Cmd;
 using WirelessTransfer.Tools.InternetSocket.MyTcp;
+using WirelessTransfer.Tools.Screen;
 
 namespace WirelessTransfer.Pages
 {
@@ -17,6 +18,7 @@ namespace WirelessTransfer.Pages
 
         int port;
         MyTcpServer myTcpServer;
+        ScreenCaptureDX screenCaptureDX;
 
         public MirrorPage()
         {
@@ -62,7 +64,14 @@ namespace WirelessTransfer.Pages
 
         private void myTcpServer_ClientConnected(object? sender, MyTcpClientInfo e)
         {
-            
+            screenCaptureDX = new ScreenCaptureDX(0, 0);
+            screenCaptureDX.ScreenRefreshed += screenCaptureDX_ScreenRefreshed;
+            screenCaptureDX.Start();
+        }
+
+        private void screenCaptureDX_ScreenRefreshed(object? sender, Bitmap[] e)
+        {
+            myTcpServer.SendCmd(new ScreenCmd(e.First()), myTcpServer.ConnectedClients.First());
         }
 
         public void StopSearching()
@@ -72,6 +81,7 @@ namespace WirelessTransfer.Pages
 
         private void disconnectBtn_Click(object sender, System.Windows.RoutedEventArgs e)
         {
+            screenCaptureDX.Stop();
             myTcpServer.Stop();
             maskGrid.Visibility = System.Windows.Visibility.Collapsed;
             deviceFinder.StartSearching();

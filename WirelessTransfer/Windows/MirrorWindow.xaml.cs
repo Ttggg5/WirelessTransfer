@@ -34,6 +34,7 @@ namespace WirelessTransfer.Windows
             myTcpClient.ReceivedCmd += myTcpClient_ReceivedCmd;
             myTcpClient.Connected += myTcpClient_Connected;
             myTcpClient.Disconnected += myTcpClient_Disconnected;
+            myTcpClient.Connect();
         }
 
         private void myTcpClient_Disconnected(object? sender, EventArgs e)
@@ -58,6 +59,11 @@ namespace WirelessTransfer.Windows
                 }
                 BitmapConverter.DrawBitmapToWriteableBitmap(screenCmd.ScreenBmp, screenWB, 0, 0);
             }
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            myTcpClient.Disconnect();
         }
     }
 }

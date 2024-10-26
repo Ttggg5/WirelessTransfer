@@ -62,12 +62,11 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                     }
                     else tcpClient.Close();
                 }
+                // Start accepting the next client asynchronously
+                Server.BeginAcceptTcpClient(new AsyncCallback(OnClientConnect), null);
             }
             catch (IOException) { }
             catch (ObjectDisposedException) { }
-
-            // Start accepting the next client asynchronously
-            Server.BeginAcceptTcpClient(new AsyncCallback(OnClientConnect), null);
         }
 
         private void ReceiveCallBack(IAsyncResult ar)
