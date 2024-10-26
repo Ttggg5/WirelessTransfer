@@ -44,7 +44,11 @@ namespace WirelessTransfer.Windows
         {
             Dispatcher.Invoke(() =>
             {
-                Close();
+                try
+                {
+                    Close();
+                }
+                catch { }
             });
         }
 
@@ -57,10 +61,9 @@ namespace WirelessTransfer.Windows
         {
             if (e.CmdType == CmdType.Screen)
             {
-                ScreenCmd screenCmd = (ScreenCmd)e;
-                Dispatcher.Invoke(() =>
+                Dispatcher.BeginInvoke(() =>
                 {
-                    BitmapConverter.DrawBitmapToWriteableBitmap(screenCmd.ScreenBmp, screenWB, 0, 0);
+                    BitmapConverter.DrawBitmapToWriteableBitmap(((ScreenCmd)e).ScreenBmp, screenWB, 0, 0);
                 });
             }
         }

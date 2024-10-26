@@ -138,6 +138,7 @@ namespace WirelessTransfer.Pages
         private void StopListening()
         {
             udpListen?.Close();
+            udpListen = null;
         }
 
         private void NavigateToNewPage(PageFunction function)
