@@ -84,7 +84,7 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
 
                 client.GetStream().BeginRead(buffer, 0, buffer.Length, new AsyncCallback(ReceiveCallBack), null);
             }
-            catch (IOException)
+            catch (Exception)
             {
                 ConnectedClients.Remove(mtci);
                 ClientDisconnected?.Invoke(this, mtci);

@@ -46,7 +46,7 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
             try
             {
                 client.EndConnect(ar);
-                ClientInfoCmd clientInfoCmd = new ClientInfoCmd(clientName, IPAddress.Any);
+                ClientInfoCmd clientInfoCmd = new ClientInfoCmd(clientName, GetLocalIPAddress());
                 byte[] bytes = clientInfoCmd.Encode();
                 client.GetStream().Write(bytes);
                 Connected?.Invoke(this, new EventArgs());
@@ -105,6 +105,19 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
             {
                 Disconnected?.Invoke(this, new EventArgs());
             }
+        }
+
+        private IPAddress GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip;
+                }
+            }
+            return IPAddress.None;
         }
 
         public bool IsConnected()
