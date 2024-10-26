@@ -53,12 +53,20 @@ namespace WirelessTransfer.CustomControls
                 {
                     try
                     {
+                        // Send broadcast message ever 3 sec
                         while (true)
                         {
+                            Dispatcher.Invoke(() =>
+                            {
+                                myUdpClientInfos.Clear();
+                                foundDevicesListBox.Items.Clear();
+                            });
                             RequestClientInfoCmd requestClientInfoCmd = new RequestClientInfoCmd();
                             byte[] sendBytes = requestClientInfoCmd.Encode();
                             searchClient.Send(sendBytes, sendBytes.Length, new IPEndPoint(IPAddress.Broadcast, PORT));
-                            for (int i = 0; i < 20; i++)
+
+                            // Waiting 3 sec
+                            for (int i = 0; i < 30; i++)
                             {
                                 Task.Delay(100).Wait();
                                 if (searchClient == null)
