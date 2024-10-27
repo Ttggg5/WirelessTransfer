@@ -27,7 +27,7 @@ namespace WirelessTransfer.CustomControls
     {
         public event EventHandler<DeviceTag> DeviceChoosed;
 
-        const int SEARCH_CYCLE = 2; // unit is "second"
+        const int SEARCH_CYCLE = 1; // unit is "second"
 
         int port;
 
@@ -38,7 +38,7 @@ namespace WirelessTransfer.CustomControls
         {
             InitializeComponent();
 
-            port = int.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.Port, string.Empty, IniFile.DEFAULT_PATH));
+            port = int.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.UdpPort, IniFile.DEFAULT_PATH));
             deviceTags = new List<DeviceTag>();
 
             /*
@@ -131,8 +131,9 @@ namespace WirelessTransfer.CustomControls
 
                 searchClient.BeginReceive(new AsyncCallback(ReceiveCallBack), null);
             }
-            catch (ObjectDisposedException)
+            catch
             {
+                searchClient?.Close();
                 searchClient = null;
             }
         }

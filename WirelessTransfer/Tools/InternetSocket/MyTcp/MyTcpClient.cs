@@ -27,6 +27,7 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
         public MyTcpClient(IPAddress serverIp, int serverPort, string clientName)
         {
             client = new TcpClient();
+            client.ReceiveBufferSize = 6291456; // 6MB
             this.serverIp = serverIp;
             this.serverPort = serverPort;
             this.clientName = clientName;

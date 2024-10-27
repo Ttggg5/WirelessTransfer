@@ -14,9 +14,28 @@ namespace Ini
         public static void CreateDefaultIniFile(string path)
         {
             // [Option]
-            IniFile.WriteValueFromIniFile(IniFileSections.Option, IniFileKeys.Port, "8888", path);
+            IniFile.WriteValueFromIniFile(IniFileSections.Option, IniFileKeys.TcpPort, GetDefaultValue(IniFileSections.Option, IniFileKeys.TcpPort), path);
+            IniFile.WriteValueFromIniFile(IniFileSections.Option, IniFileKeys.UdpPort, GetDefaultValue(IniFileSections.Option, IniFileKeys.UdpPort), path);
+            IniFile.WriteValueFromIniFile(IniFileSections.Option, IniFileKeys.ReceivePath, GetDefaultValue(IniFileSections.Option, IniFileKeys.ReceivePath), path);
+        }
 
-            IniFile.WriteValueFromIniFile(IniFileSections.Option, IniFileKeys.ReceivePath, GetDownloadFolderPath(), path);
+        public static string GetDefaultValue(IniFileSections section, IniFileKeys key)
+        {
+            switch (section)
+            {
+                case IniFileSections.Option:
+                    switch (key)
+                    {
+                        case IniFileKeys.TcpPort:
+                            return "8889";
+                        case IniFileKeys.UdpPort:
+                            return "8888";
+                        case IniFileKeys.ReceivePath:
+                            return GetDownloadFolderPath();
+                    }
+                    break;
+            }
+            return "";
         }
 
         private static string GetDownloadFolderPath()

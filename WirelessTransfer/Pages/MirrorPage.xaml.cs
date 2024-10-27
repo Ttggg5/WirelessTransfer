@@ -24,7 +24,7 @@ namespace WirelessTransfer.Pages
         {
             InitializeComponent();
 
-            port = int.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.Port, string.Empty, IniFile.DEFAULT_PATH));
+            port = int.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.UdpPort, IniFile.DEFAULT_PATH));
 
             maskGrid.Visibility = System.Windows.Visibility.Collapsed;
 
@@ -38,7 +38,7 @@ namespace WirelessTransfer.Pages
             deviceFinder.StopSearching();
             maskGrid.Visibility = System.Windows.Visibility.Visible;
 
-            myTcpServer = new MyTcpServer(int.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.Port, string.Empty, IniFile.DEFAULT_PATH)));
+            myTcpServer = new MyTcpServer(int.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.TcpPort, IniFile.DEFAULT_PATH)));
             myTcpServer.ClientConnected += myTcpServer_ClientConnected;
             myTcpServer.ClientDisconnected += myTcpServer_ClientDisconnected;
             myTcpServer.ReceivedCmd += myTcpServer_ReceivedCmd;

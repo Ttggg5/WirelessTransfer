@@ -27,7 +27,7 @@ namespace WirelessTransfer.Pages
         {
             InitializeComponent();
 
-            port = int.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.Port, string.Empty, IniFile.DEFAULT_PATH));
+            port = int.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.UdpPort, IniFile.DEFAULT_PATH));
 
             deviceNameTB.Text = Environment.MachineName;
             deviceIpTB.Text = GetLocalIPAddress();
@@ -111,10 +111,10 @@ namespace WirelessTransfer.Pages
                             udpListen.Send(bytes, bytes.Length, remoteEP);
                             break;
                         case RequestType.Mirror:
-                            MyTcpClient myTcpClient = new MyTcpClient(remoteEP.Address, port, Environment.MachineName);
-                            StopListening();
                             Dispatcher.Invoke(() =>
                             {
+                                MyTcpClient myTcpClient = new MyTcpClient(remoteEP.Address, int.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.TcpPort, IniFile.DEFAULT_PATH)), Environment.MachineName);
+                                StopListening();
                                 MirrorWindow mirrorWindow = new MirrorWindow(myTcpClient);
                                 mirrorWindow.ShowDialog();
                                 myTcpClient.Disconnect();

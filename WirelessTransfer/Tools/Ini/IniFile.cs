@@ -31,6 +31,13 @@ namespace Ini
             SettingChanged?.Invoke(new object(), new EventArgs());
         }
 
+        public static string ReadValueFromIniFile(IniFileSections section, IniFileKeys key, string filePath)
+        {
+            return ReadValueFromIniFile(Enum.GetName(typeof(IniFileSections), section),
+                                        Enum.GetName(typeof(IniFileKeys), key), 
+                                        DefaultSetting.GetDefaultValue(section, key), filePath);
+        }
+
         public static string ReadValueFromIniFile(IniFileSections section, IniFileKeys key, string def, string filePath)
         {
             return ReadValueFromIniFile(Enum.GetName(typeof(IniFileSections), section),

@@ -8,7 +8,8 @@ namespace Ini
 {
     public enum IniFileKeys
     {
-        Port,
+        TcpPort,
+        UdpPort,
         ReceivePath,
     }
 }

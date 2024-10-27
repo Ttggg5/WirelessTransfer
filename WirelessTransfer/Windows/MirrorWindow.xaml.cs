@@ -30,7 +30,7 @@ namespace WirelessTransfer.Windows
         {
             InitializeComponent();
 
-            screenWB = new WriteableBitmap(1920, 1080, 96, 96, PixelFormats.Bgr32, null);
+            screenWB = new WriteableBitmap(1920, 1080, 96, 96, PixelFormats.Bgr32, null); // jpg format
             screenImg.Source = screenWB;
 
             this.myTcpClient = myTcpClient;
