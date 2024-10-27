@@ -75,10 +75,11 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
 
         private void ReceiveCallBack(IAsyncResult ar)
         {
+            /*
             MyTcpClientInfo mtci = (MyTcpClientInfo)ar.AsyncState;
-            TcpClient client = mtci.Client;
             try
             {
+                TcpClient client = mtci.Client;
                 int actualLength = client.GetStream().EndRead(ar);
                 if (actualLength > 0)
                 {
@@ -88,11 +89,12 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
 
                 client.GetStream().BeginRead(buffer, 0, buffer.Length, new AsyncCallback(ReceiveCallBack), null);
             }
-            catch (Exception)
+            catch
             {
                 ConnectedClients.Remove(mtci);
                 ClientDisconnected?.Invoke(this, mtci);
             }
+            */
         }
 
         public void SendCmd(Cmd.Cmd cmd, MyTcpClientInfo clientInfo)

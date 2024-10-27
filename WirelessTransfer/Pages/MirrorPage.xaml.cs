@@ -79,6 +79,7 @@ namespace WirelessTransfer.Pages
                 if (myTcpServer.ConnectedClients.Count > 0)
                     myTcpServer.SendCmd(new ScreenCmd(e.First()), myTcpServer.ConnectedClients.First());
             }
+            Task.Delay(20).Wait();
         }
 
         public void StopSearching()
