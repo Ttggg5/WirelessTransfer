@@ -55,6 +55,8 @@ namespace WirelessTransfer.CustomControls
             {
                 searchClient = new UdpClient();
                 searchClient.EnableBroadcast = true;
+                searchClient.Client.Bind(new IPEndPoint(IPAddress.Any, port));
+                searchClient.BeginReceive(new AsyncCallback(ReceiveCallBack), null);
                 Task.Run(() =>
                 {
                     try
@@ -90,8 +92,6 @@ namespace WirelessTransfer.CustomControls
                     }
                     catch (ObjectDisposedException) { }
                 });
-                searchClient.Client.Bind(new IPEndPoint(IPAddress.Any, port));
-                searchClient.BeginReceive(new AsyncCallback(ReceiveCallBack), null);
             }
         }
 

@@ -20,8 +20,10 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
         public TcpListener? Server { get; }
         public List<MyTcpClientInfo> ConnectedClients { get; set; }
         public IPEndPoint LocalIPEP { get; }
+        public int MaxClient { get; private set; }
 
         byte[] buffer = new byte[6291456]; // 6MB
+        
 
         public MyTcpServer(int port)
         {
@@ -36,7 +38,8 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
         /// <param name="maxClient">0 means no limit</param>
         public void Start(int maxClient)
         {
-            Server?.Start(maxClient);
+            MaxClient = maxClient;
+            Server?.Start();
             Server?.BeginAcceptTcpClient(new AsyncCallback(OnClientConnect), null);
         }
 
@@ -54,7 +57,6 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                     Cmd.Cmd? cmd = CmdDecoder.DecodeCmd(tmpBuf, 0, actualLength);
                     if (cmd != null && cmd.CmdType == CmdType.ClientInfo)
                     {
-                        cmd.Decode();
                         ConnectedClients.Add(new MyTcpClientInfo(tcpClient, ((ClientInfoCmd)cmd).ClientName, ((ClientInfoCmd)cmd).IP));
                         ClientConnected?.Invoke(this, ConnectedClients.Last());
 
@@ -62,8 +64,10 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                     }
                     else tcpClient.Close();
                 }
-                // Start accepting the next client asynchronously
-                Server.BeginAcceptTcpClient(new AsyncCallback(OnClientConnect), null);
+
+                // Start accepting the next client asynchronously when client is not full
+                if (ConnectedClients.Count < MaxClient)
+                    Server.BeginAcceptTcpClient(new AsyncCallback(OnClientConnect), null);
             }
             catch (IOException) { }
             catch (ObjectDisposedException) { }

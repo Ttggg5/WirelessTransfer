@@ -74,8 +74,11 @@ namespace WirelessTransfer.Pages
 
         private void screenCaptureDX_ScreenRefreshed(object? sender, Bitmap[] e)
         {
-            if (myTcpServer.ConnectedClients.Count > 0)
-                myTcpServer.SendCmd(new ScreenCmd(e.First()), myTcpServer.ConnectedClients.First());
+            lock (myTcpServer.ConnectedClients)
+            {
+                if (myTcpServer.ConnectedClients.Count > 0)
+                    myTcpServer.SendCmd(new ScreenCmd(e.First()), myTcpServer.ConnectedClients.First());
+            }
         }
 
         public void StopSearching()

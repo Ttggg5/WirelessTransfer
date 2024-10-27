@@ -49,10 +49,14 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
 
         public override void Decode()
         {
-            using (MemoryStream memoryStream = new MemoryStream(Data))
+            try
             {
-                ScreenBmp = (Bitmap)Bitmap.FromStream(memoryStream);
+                using (MemoryStream memoryStream = new MemoryStream(Data))
+                {
+                    ScreenBmp = (Bitmap)Bitmap.FromStream(memoryStream);
+                }
             }
+            catch { ScreenBmp = null; }
         }
     }
 }

@@ -27,7 +27,6 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
         public MyTcpClient(IPAddress serverIp, int serverPort, string clientName)
         {
             client = new TcpClient();
-            client.ReceiveBufferSize = 6291456; // 6MB
             this.serverIp = serverIp;
             this.serverPort = serverPort;
             this.clientName = clientName;
@@ -52,7 +51,26 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                 client.GetStream().Write(bytes);
                 Connected?.Invoke(this, new EventArgs());
 
-                client.GetStream().BeginRead(buffer, 0, buffer.Length, new AsyncCallback(ReceiveCallBack), null);
+                //client.GetStream().BeginRead(buffer, 0, buffer.Length, new AsyncCallback(ReceiveCallBack), null);
+                Task.Run(() =>
+                {
+                    try
+                    {
+                        while (true)
+                        {
+                            int actualLength = client.GetStream().Read(buffer, 0, buffer.Length);
+                            if (actualLength > 0)
+                            {
+                                Cmd.Cmd? cmd = CmdDecoder.DecodeCmd(buffer, 0, actualLength);
+                                if (cmd != null) ReceivedCmd?.Invoke(this, cmd);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Disconnected?.Invoke(this, new EventArgs());
+                    }
+                });
             }
             catch (IOException)
             {
@@ -89,7 +107,7 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
 
                 client.GetStream().BeginRead(buffer, 0, buffer.Length, new AsyncCallback(ReceiveCallBack), null);
             }
-            catch
+            catch (Exception ex)
             {
                 Disconnected?.Invoke(this, new EventArgs());
             }
@@ -123,22 +141,23 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
 
         public bool IsConnected()
         {
+            if (client.Client == null) return false;
             try
             {
                 byte[] buffer = new byte[1];
                 client.Client.Receive(buffer, SocketFlags.Peek);
                 return true; // If no exception, client is still connected
             }
-            catch (SocketException)
-            {
-                return false; // If an exception occurs, client is disconnected
-            }
+            catch { return false; }
         }
 
         public void Disconnect()
         {
-            client.Close();
-            Disconnected?.Invoke(this, new EventArgs());
+            if (IsConnected())
+            {
+                client.Close();
+                Disconnected?.Invoke(this, new EventArgs());
+            }
         }
     }
 }

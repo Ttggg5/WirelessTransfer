@@ -9,9 +9,9 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
 {
     public static class CmdDecoder
     {
-        static byte frontSymbol = Encoding.UTF8.GetBytes("<")[0];
-        static byte backSymbol = Encoding.UTF8.GetBytes(">")[0];
-        static byte endSymbol = Encoding.UTF8.GetBytes("!")[0];
+        static byte frontSymbol = Encoding.ASCII.GetBytes("<")[0];
+        static byte backSymbol = Encoding.ASCII.GetBytes(">")[0];
+        static byte endSymbol = Encoding.ASCII.GetBytes("!")[0];
 
         /// <summary>
         /// Correct message format:
@@ -28,10 +28,8 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
             CmdType cmdType;
             if (buffer[startIndex] == frontSymbol)
             {
-                int fl = startIndex + length >= buffer.Length ? buffer.Length - length : length;
                 byte[] tmpBuffer = new byte[length];
-                Array.Copy(buffer, startIndex, tmpBuffer, 0, fl);
-                Array.Copy(buffer, 0, tmpBuffer, fl, length - fl);
+                Array.Copy(buffer, startIndex, tmpBuffer, 0, length);
 
                 // find cmd type
                 int previousIndex = 1;
@@ -42,7 +40,7 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
                     {
                         if (tmpBuffer[curIndex] == backSymbol)
                         {
-                            string cmdStr = Encoding.UTF8.GetString(tmpBuffer, previousIndex, curIndex - previousIndex);
+                            string cmdStr = Encoding.ASCII.GetString(tmpBuffer, previousIndex, curIndex - previousIndex);
                             if(!Enum.TryParse<CmdType>(cmdStr, out cmdType))
                                 return null;
                             break;
@@ -58,6 +56,9 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
                 // find data length
                 previousIndex = curIndex + 1;
                 if(!int.TryParse(tmpBuffer.Skip(previousIndex).Take(7).ToArray(), out int dataLength))
+                    return null;
+
+                if (dataLength > length)
                     return null;
 
                 // find end symbol

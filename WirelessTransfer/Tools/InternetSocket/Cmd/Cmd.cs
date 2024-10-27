@@ -42,9 +42,9 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
         {
             string cmd = Enum.GetName(typeof(CmdType), CmdType);
 
-            byte[] headBytes = Encoding.UTF8.GetBytes("<" + cmd + ">");
-            byte[] tailBytes = Encoding.UTF8.GetBytes("<!" + cmd + ">");
-            byte[] dataLengthBytes = Encoding.UTF8.GetBytes(data.Length.ToString("0000000"));
+            byte[] headBytes = Encoding.ASCII.GetBytes("<" + cmd + ">");
+            byte[] tailBytes = Encoding.ASCII.GetBytes("<!" + cmd + ">");
+            byte[] dataLengthBytes = Encoding.ASCII.GetBytes(data.Length.ToString("0000000"));
             byte[] fullBytes = new byte[headBytes.Length + dataLengthBytes.Length + data.Length + tailBytes.Length];
 
             int index = 0;

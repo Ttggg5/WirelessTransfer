@@ -61,10 +61,14 @@ namespace WirelessTransfer.Windows
         {
             if (e.CmdType == CmdType.Screen)
             {
-                Dispatcher.BeginInvoke(() =>
+                ScreenCmd sc = (ScreenCmd)e;
+                if (sc.ScreenBmp != null)
                 {
-                    BitmapConverter.DrawBitmapToWriteableBitmap(((ScreenCmd)e).ScreenBmp, screenWB, 0, 0);
-                });
+                    Dispatcher.Invoke(() =>
+                    {
+                        BitmapConverter.DrawBitmapToWriteableBitmap(sc.ScreenBmp, screenWB, 0, 0);
+                    });
+                }
             }
         }
 
