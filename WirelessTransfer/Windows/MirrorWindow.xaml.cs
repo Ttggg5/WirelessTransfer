@@ -63,35 +63,40 @@ namespace WirelessTransfer.Windows
 
         private void myTcpClient_ReceivedCmd(object? sender, Cmd e)
         {
-            if (e.CmdType == CmdType.Screen)
+            switch (e.CmdType)
             {
-                ScreenCmd sc = (ScreenCmd)e;
-                if (sc.ScreenBmp != null && screenWB != null)
-                {
+                case CmdType.Screen:
+                    ScreenCmd sc = (ScreenCmd)e;
+                    if (sc.ScreenBmp != null && screenWB != null)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            BitmapConverter.DrawBitmapToWriteableBitmap(sc.ScreenBmp, screenWB, 0, 0);
+                        });
+                    }
+
+                    frameCount++;
+                    // Every second, calculate the FPS (frames per second)
+                    if (frameSw.ElapsedMilliseconds >= 1000)
+                    {
+                        fps = frameCount / (frameSw.ElapsedMilliseconds / 1000.0);
+                        frameCount = 0;
+                        frameSw.Restart();
+                        Dispatcher.BeginInvoke(() => { this.Title = $"FPS: {fps:F2}"; });
+                    }
+                    break;
+                case CmdType.ScreenInfo:
+                    ScreenInfoCmd sic = (ScreenInfoCmd)e;
                     Dispatcher.Invoke(() =>
                     {
-                        BitmapConverter.DrawBitmapToWriteableBitmap(sc.ScreenBmp, screenWB, 0, 0);
+                        screenWB = new WriteableBitmap(sic.Width, sic.Height, 96, 96, PixelFormats.Bgr32, null); // jpg format
+                        screenImg.Source = screenWB;
                     });
-                }
-
-                frameCount++;
-                // Every second, calculate the FPS (frames per second)
-                if (frameSw.ElapsedMilliseconds >= 1000)
-                {
-                    fps = frameCount / (frameSw.ElapsedMilliseconds / 1000.0);
-                    frameCount = 0;
-                    frameSw.Restart();
-                    Dispatcher.BeginInvoke(() => { this.Title = $"FPS: {fps:F2}"; });
-                }
-            }
-            else if (e.CmdType == CmdType.ScreenInfo)
-            {
-                ScreenInfoCmd sic = (ScreenInfoCmd)e;
-                Dispatcher.Invoke(() =>
-                {
-                    screenWB = new WriteableBitmap(sic.Width, sic.Height, 96, 96, PixelFormats.Bgr32, null); // jpg format
-                    screenImg.Source = screenWB;
-                });
+                    break;
+                case CmdType.Request:
+                    RequestCmd rc = (RequestCmd)e;
+                    if (rc.RequestType == RequestType.Disconnect) Close();
+                    break;
             }
         }
 

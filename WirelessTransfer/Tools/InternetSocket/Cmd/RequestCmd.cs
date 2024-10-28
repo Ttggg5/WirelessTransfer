@@ -9,6 +9,7 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
 {
     public enum RequestType
     {
+        Disconnect,
         ClientInfo,
         Mirror,
         Extend,

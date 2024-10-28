@@ -140,10 +140,17 @@ namespace WirelessTransfer.Pages
         private void disconnectBtn_Click(object sender, RoutedEventArgs e)
         {
             screenCaptureDX?.Stop();
+            lock (myTcpServer.ConnectedClients)
+            {
+                if (myTcpServer.ConnectedClients.Count > 0)
+                    myTcpServer.SendCmd(new RequestCmd(RequestType.Disconnect, Environment.MachineName), myTcpServer.ConnectedClients.First());
+            }
             myTcpServer?.Stop();
+
             maskGrid.Visibility = Visibility.Collapsed;
             waitRespondSp.Visibility = Visibility.Collapsed;
             disconnectSp.Visibility = Visibility.Collapsed;
+
             deviceFinder.StartSearching();
         }
     }
