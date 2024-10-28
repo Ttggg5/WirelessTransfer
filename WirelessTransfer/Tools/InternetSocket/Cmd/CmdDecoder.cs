@@ -107,6 +107,9 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
                         case CmdType.Request:
                             cmd = new RequestCmd(data);
                             break;
+                        case CmdType.ScreenInfo:
+                            cmd = new ScreenInfoCmd(data);
+                            break;
                     }
                     cmd?.Decode();
 
