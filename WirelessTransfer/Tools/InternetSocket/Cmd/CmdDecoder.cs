@@ -82,37 +82,7 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
                 {
                     // create cmd class
                     byte[] data = tmpBuffer.Skip(previousIndex + 7).Take(dataLength).ToArray();
-                    switch (cmdType)
-                    {
-                        case CmdType.Alive:
-                            break;
-                        case CmdType.ClientInfo:
-                            cmd = new ClientInfoCmd(data);
-                            break;
-                        case CmdType.FileData:
-                            break;
-                        case CmdType.FileInfo:
-                            break;
-                        case CmdType.Reply:
-                            cmd = new ReplyCmd(data);
-                            break;
-                        case CmdType.Screen:
-                            cmd = new ScreenCmd(data);
-                            break;
-                        case CmdType.Keyboard:
-                            break;
-                        case CmdType.Mouse:
-                            break;
-                        case CmdType.Webcam:
-                            break;
-                        case CmdType.Request:
-                            cmd = new RequestCmd(data);
-                            break;
-                        case CmdType.ScreenInfo:
-                            cmd = new ScreenInfoCmd(data);
-                            break;
-                    }
-                    cmd?.Decode();
+                    cmd = CreateDecodeCmd(cmdType, data);
 
                     startIndex += curIndex + cmdStr.Length + 2;
                     if (startIndex >= buffer.Length) startIndex -= buffer.Length;
@@ -180,35 +150,46 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
                 {
                     // create cmd class
                     byte[] data = tmpBuffer.Skip(previousIndex + 7).Take(dataLength).ToArray();
-                    switch (cmdType)
-                    {
-                        case CmdType.Alive:
-                            break;
-                        case CmdType.ClientInfo:
-                            cmd = new ClientInfoCmd(data);
-                            break;
-                        case CmdType.FileData:
-                            break;
-                        case CmdType.FileInfo:
-                            break;
-                        case CmdType.Reply:
-                            break;
-                        case CmdType.Screen:
-                            cmd = new ScreenCmd(data);
-                            break;
-                        case CmdType.Keyboard:
-                            break;
-                        case CmdType.Mouse:
-                            break;
-                        case CmdType.Webcam:
-                            break;
-                        case CmdType.Request:
-                            cmd = new RequestCmd(data);
-                            break;
-                    }
-                    cmd?.Decode();
+                    cmd = CreateDecodeCmd(cmdType, data);
                 }
             }
+            return cmd;
+        }
+
+        public static Cmd CreateDecodeCmd(CmdType cmdType, byte[] data)
+        {
+            Cmd cmd = null;
+            switch (cmdType)
+            {
+                case CmdType.Alive:
+                    break;
+                case CmdType.ClientInfo:
+                    cmd = new ClientInfoCmd(data);
+                    break;
+                case CmdType.FileData:
+                    break;
+                case CmdType.FileInfo:
+                    break;
+                case CmdType.Reply:
+                    cmd = new ReplyCmd(data);
+                    break;
+                case CmdType.Screen:
+                    cmd = new ScreenCmd(data);
+                    break;
+                case CmdType.Keyboard:
+                    break;
+                case CmdType.Mouse:
+                    break;
+                case CmdType.Webcam:
+                    break;
+                case CmdType.Request:
+                    cmd = new RequestCmd(data);
+                    break;
+                case CmdType.ScreenInfo:
+                    cmd = new ScreenInfoCmd(data);
+                    break;
+            }
+            cmd?.Decode();
             return cmd;
         }
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -102,6 +103,7 @@ namespace WirelessTransfer.Windows
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            myTcpClient.SendCmd(new RequestCmd(RequestType.Disconnect, Environment.MachineName));
             myTcpClient.Disconnect();
         }
     }

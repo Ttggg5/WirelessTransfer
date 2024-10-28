@@ -91,7 +91,17 @@ namespace WirelessTransfer.Pages
 
         private void myTcpServer_ReceivedCmd(object? sender, Cmd e)
         {
-            
+            if (e.CmdType == CmdType.Request)
+            {
+                RequestCmd rc = (RequestCmd)e;
+                if (rc.RequestType == RequestType.Disconnect)
+                {
+                    Dispatcher.BeginInvoke(() =>
+                    {
+                        disconnectBtn_Click(sender, null);
+                    });
+                }
+            }
         }
 
         private void myTcpServer_ClientDisconnected(object? sender, MyTcpClientInfo e)
