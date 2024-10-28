@@ -107,6 +107,14 @@ namespace WirelessTransfer.Pages
             waitRespondSp.Visibility = Visibility.Collapsed;
             disconnectSp.Visibility = Visibility.Visible;
 
+            lock (myTcpServer.ConnectedClients)
+            {
+                if (myTcpServer.ConnectedClients.Count > 0)
+                    myTcpServer.SendCmd(
+                        new ScreenInfoCmd(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height), 
+                        myTcpServer.ConnectedClients.First());
+            }
+
             screenCaptureDX = new ScreenCaptureDX(0, 0);
             screenCaptureDX.ScreenRefreshed += screenCaptureDX_ScreenRefreshed;
             screenCaptureDX.Start();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,6 +26,10 @@ namespace WirelessTransfer.Windows
     {
         MyTcpClient myTcpClient;
         WriteableBitmap screenWB;
+        Stopwatch frameSw;
+
+        int frameCount = 0;
+        double fps = 0;
 
         public MirrorWindow(MyTcpClient myTcpClient)
         {
@@ -35,6 +40,8 @@ namespace WirelessTransfer.Windows
             myTcpClient.Connected += myTcpClient_Connected;
             myTcpClient.Disconnected += myTcpClient_Disconnected;
             myTcpClient.Connect();
+
+            frameSw = Stopwatch.StartNew();
         }
 
         private void myTcpClient_Disconnected(object? sender, EventArgs e)
@@ -65,6 +72,16 @@ namespace WirelessTransfer.Windows
                     {
                         BitmapConverter.DrawBitmapToWriteableBitmap(sc.ScreenBmp, screenWB, 0, 0);
                     });
+                }
+
+                frameCount++;
+                // Every second, calculate the FPS (frames per second)
+                if (frameSw.ElapsedMilliseconds >= 1000)
+                {
+                    fps = frameCount / (frameSw.ElapsedMilliseconds / 1000.0);
+                    frameCount = 0;
+                    frameSw.Restart();
+                    Dispatcher.BeginInvoke(() => { this.Title = $"FPS: {fps:F2}"; });
                 }
             }
             else if (e.CmdType == CmdType.ScreenInfo)
