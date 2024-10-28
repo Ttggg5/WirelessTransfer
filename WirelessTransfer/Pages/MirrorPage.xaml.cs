@@ -58,7 +58,7 @@ namespace WirelessTransfer.Pages
             Task<UdpReceiveResult> receiveTask = udpClient.ReceiveAsync();
             Task.Run(() =>
             {
-                if (receiveTask.Wait(10000))
+                if (receiveTask.Wait(30000))
                 {
                     byte[] bytes = receiveTask.Result.Buffer;
                     Cmd cmd = CmdDecoder.DecodeCmd(bytes, 0, bytes.Length);
@@ -104,8 +104,11 @@ namespace WirelessTransfer.Pages
 
         private void myTcpServer_ClientConnected(object? sender, MyTcpClientInfo e)
         {
-            waitRespondSp.Visibility = Visibility.Collapsed;
-            disconnectSp.Visibility = Visibility.Visible;
+            Dispatcher.Invoke(() =>
+            {
+                waitRespondSp.Visibility = Visibility.Collapsed;
+                disconnectSp.Visibility = Visibility.Visible;
+            });
 
             lock (myTcpServer.ConnectedClients)
             {

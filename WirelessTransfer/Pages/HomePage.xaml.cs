@@ -113,29 +113,31 @@ namespace WirelessTransfer.Pages
                             udpListen.Send(tmpBytes, tmpBytes.Length, remoteEP);
                             break;
                         case RequestType.Mirror:
-                            MessageWindow messageWindow = new MessageWindow(
-                                "\"" + requestCmd.DeviceName + "\" 正在嘗試與你分享螢幕，是否要接受連接?", true);
-                            if (!(bool)messageWindow.ShowDialog())
-                            {
-                                // refuse
-                                tmpBytes = new ReplyCmd(ReplyType.Refuse).Encode();
-                                udpListen.Send(tmpBytes, tmpBytes.Length, remoteEP);
-                                break;
-                            }
-
-                            // accept
-                            tmpBytes = new ReplyCmd(ReplyType.Accept).Encode();
-                            udpListen.Send(tmpBytes, tmpBytes.Length, remoteEP);
                             Dispatcher.Invoke(() =>
                             {
-                                MyTcpClient myTcpClient = new MyTcpClient(remoteEP.Address, tcpPort, Environment.MachineName);
-                                StopListening();
+                                MessageWindow messageWindow = new MessageWindow(
+                                "\"" + requestCmd.DeviceName + "\" 正在嘗試與你分享螢幕，是否要接受連接?", true);
+                                if (!(bool)messageWindow.ShowDialog())
+                                {
+                                    // refuse
+                                    tmpBytes = new ReplyCmd(ReplyType.Refuse).Encode();
+                                    udpListen.Send(tmpBytes, tmpBytes.Length, remoteEP);
+                                }
+                                else
+                                {
+                                    // accept
+                                    tmpBytes = new ReplyCmd(ReplyType.Accept).Encode();
+                                    udpListen.Send(tmpBytes, tmpBytes.Length, remoteEP);
 
-                                MirrorWindow mirrorWindow = new MirrorWindow(myTcpClient);
-                                mirrorWindow.ShowDialog();
+                                    MyTcpClient myTcpClient = new MyTcpClient(remoteEP.Address, tcpPort, Environment.MachineName);
+                                    StopListening();
 
-                                myTcpClient.Disconnect();
-                                ListenForConnections();
+                                    MirrorWindow mirrorWindow = new MirrorWindow(myTcpClient);
+                                    mirrorWindow.ShowDialog();
+
+                                    myTcpClient.Disconnect();
+                                    ListenForConnections();
+                                }
                             });
                             break;
                         case RequestType.Extend:
