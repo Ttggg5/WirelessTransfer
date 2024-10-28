@@ -74,9 +74,11 @@ namespace WirelessTransfer.Windows
                         {
                             BitmapConverter.DrawBitmapToWriteableBitmap(sc.ScreenBmp, screenWB, 0, 0);
                         });
+                        frameCount++;
                     }
+                    e = null;
+                    GC.Collect();
 
-                    frameCount++;
                     // Every second, calculate the FPS (frames per second)
                     if (frameSw.ElapsedMilliseconds >= 1000)
                     {
