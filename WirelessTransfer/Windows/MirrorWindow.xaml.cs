@@ -87,8 +87,11 @@ namespace WirelessTransfer.Windows
             else if (e.CmdType == CmdType.ScreenInfo)
             {
                 ScreenInfoCmd sic = (ScreenInfoCmd)e;
-                screenWB = new WriteableBitmap(sic.Width, sic.Height, 96, 96, PixelFormats.Bgr32, null); // jpg format
-                screenImg.Source = screenWB;
+                Dispatcher.Invoke(() =>
+                {
+                    screenWB = new WriteableBitmap(sic.Width, sic.Height, 96, 96, PixelFormats.Bgr32, null); // jpg format
+                    screenImg.Source = screenWB;
+                });
             }
         }
 
