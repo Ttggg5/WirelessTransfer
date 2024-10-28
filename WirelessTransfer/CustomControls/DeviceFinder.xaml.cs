@@ -77,7 +77,7 @@ namespace WirelessTransfer.CustomControls
                                 }
                             }
 
-                            RequestCmd requestClientInfoCmd = new RequestCmd(RequestType.ClientInfo);
+                            RequestCmd requestClientInfoCmd = new RequestCmd(RequestType.ClientInfo, Environment.MachineName);
                             byte[] sendBytes = requestClientInfoCmd.Encode();
                             searchClient.Send(sendBytes, sendBytes.Length, new IPEndPoint(IPAddress.Broadcast, port));
 

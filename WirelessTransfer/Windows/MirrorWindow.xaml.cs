@@ -30,9 +30,6 @@ namespace WirelessTransfer.Windows
         {
             InitializeComponent();
 
-            screenWB = new WriteableBitmap(1920, 1080, 96, 96, PixelFormats.Bgr32, null); // jpg format
-            screenImg.Source = screenWB;
-
             this.myTcpClient = myTcpClient;
             myTcpClient.ReceivedCmd += myTcpClient_ReceivedCmd;
             myTcpClient.Connected += myTcpClient_Connected;
@@ -62,13 +59,19 @@ namespace WirelessTransfer.Windows
             if (e.CmdType == CmdType.Screen)
             {
                 ScreenCmd sc = (ScreenCmd)e;
-                if (sc.ScreenBmp != null)
+                if (sc.ScreenBmp != null && screenWB != null)
                 {
                     Dispatcher.Invoke(() =>
                     {
                         BitmapConverter.DrawBitmapToWriteableBitmap(sc.ScreenBmp, screenWB, 0, 0);
                     });
                 }
+            }
+            else if (e.CmdType == CmdType.ScreenInfo)
+            {
+                ScreenInfoCmd sic = (ScreenInfoCmd)e;
+                screenWB = new WriteableBitmap(sic.Width, sic.Height, 96, 96, PixelFormats.Bgr32, null); // jpg format
+                screenImg.Source = screenWB;
             }
         }
 

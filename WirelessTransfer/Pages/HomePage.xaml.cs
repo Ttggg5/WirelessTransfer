@@ -18,7 +18,7 @@ namespace WirelessTransfer.Pages
         public event EventHandler BackSignal;
         public event EventHandler<Page> NavigateSignal;
 
-        int port;
+        int udpPort, tcpPort;
 
         BasePage basePage;
         UdpClient udpListen; // Listening for request and send back info
@@ -27,7 +27,8 @@ namespace WirelessTransfer.Pages
         {
             InitializeComponent();
 
-            port = int.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.UdpPort, IniFile.DEFAULT_PATH));
+            udpPort = int.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.UdpPort, IniFile.DEFAULT_PATH));
+            tcpPort = int.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.TcpPort, IniFile.DEFAULT_PATH));
 
             deviceNameTB.Text = Environment.MachineName;
             deviceIpTB.Text = GetLocalIPAddress();
@@ -88,7 +89,7 @@ namespace WirelessTransfer.Pages
         {
             if (udpListen == null)
             {
-                udpListen = new UdpClient(new IPEndPoint(IPAddress.Any, port));
+                udpListen = new UdpClient(new IPEndPoint(IPAddress.Any, udpPort));
                 udpListen.BeginReceive(new AsyncCallback(ReceiveCallBack), null);
             }
         }
@@ -103,20 +104,36 @@ namespace WirelessTransfer.Pages
                 Cmd cmd = CmdDecoder.DecodeCmd(receiveBytes, 0, receiveBytes.Length);
                 if (cmd != null && cmd.CmdType == CmdType.Request)
                 {
-                    switch (((RequestCmd)cmd).RequestType)
+                    byte[] tmpBytes;
+                    RequestCmd requestCmd = (RequestCmd)cmd;
+                    switch (requestCmd.RequestType)
                     {
                         case RequestType.ClientInfo:
-                            ClientInfoCmd clientInfoCmd = new ClientInfoCmd(Environment.MachineName, IPAddress.Parse(GetLocalIPAddress()));
-                            byte[] bytes = clientInfoCmd.Encode();
-                            udpListen.Send(bytes, bytes.Length, remoteEP);
+                            tmpBytes = new ClientInfoCmd(Environment.MachineName, IPAddress.Parse(GetLocalIPAddress())).Encode();
+                            udpListen.Send(tmpBytes, tmpBytes.Length, remoteEP);
                             break;
                         case RequestType.Mirror:
+                            MessageWindow messageWindow = new MessageWindow(
+                                "\"" + requestCmd.DeviceName + "\" 正在嘗試與你分享螢幕，是否要接受連接?", true);
+                            if (!(bool)messageWindow.ShowDialog())
+                            {
+                                // refuse
+                                tmpBytes = new ReplyCmd(ReplyType.Refuse).Encode();
+                                udpListen.Send(tmpBytes, tmpBytes.Length, remoteEP);
+                                break;
+                            }
+
+                            // accept
+                            tmpBytes = new ReplyCmd(ReplyType.Accept).Encode();
+                            udpListen.Send(tmpBytes, tmpBytes.Length, remoteEP);
                             Dispatcher.Invoke(() =>
                             {
-                                MyTcpClient myTcpClient = new MyTcpClient(remoteEP.Address, int.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.TcpPort, IniFile.DEFAULT_PATH)), Environment.MachineName);
+                                MyTcpClient myTcpClient = new MyTcpClient(remoteEP.Address, tcpPort, Environment.MachineName);
                                 StopListening();
+
                                 MirrorWindow mirrorWindow = new MirrorWindow(myTcpClient);
                                 mirrorWindow.ShowDialog();
+
                                 myTcpClient.Disconnect();
                                 ListenForConnections();
                             });
