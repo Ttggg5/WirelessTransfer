@@ -22,8 +22,9 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
         public IPEndPoint LocalIPEP { get; }
         public int MaxClient { get; private set; }
 
-        byte[] buffer = new byte[6291456]; // 6MB
-        
+        int startIndex = 0, EndIndex = 0;
+        byte[] buffer = new byte[12582912]; // 12MB
+        byte[] tmpBuffer = new byte[6291456]; // 6MB
 
         public MyTcpServer(int port)
         {
@@ -60,7 +61,7 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                         ConnectedClients.Add(new MyTcpClientInfo(tcpClient, ((ClientInfoCmd)cmd).ClientName, ((ClientInfoCmd)cmd).IP));
                         ClientConnected?.Invoke(this, ConnectedClients.Last());
 
-                        tcpClient.GetStream().BeginRead(buffer, 0, buffer.Length, new AsyncCallback(ReceiveCallBack), ConnectedClients.Last());
+                        tcpClient.GetStream().BeginRead(tmpBuffer, 0, tmpBuffer.Length, new AsyncCallback(ReceiveCallBack), ConnectedClients.Last());
                     }
                     else tcpClient.Close();
                 }
@@ -75,7 +76,8 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
 
         private void ReceiveCallBack(IAsyncResult ar)
         {
-            /*
+            if (ar.AsyncState == null) return;
+
             MyTcpClientInfo mtci = (MyTcpClientInfo)ar.AsyncState;
             try
             {
@@ -83,18 +85,43 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                 int actualLength = client.GetStream().EndRead(ar);
                 if (actualLength > 0)
                 {
-                    Cmd.Cmd? cmd = CmdDecoder.DecodeCmd(buffer, 0, actualLength);
+                    int tmpLength = buffer.Length - EndIndex;
+                    if (actualLength <= tmpLength)
+                    {
+                        Array.Copy(tmpBuffer, 0, buffer, EndIndex, actualLength);
+                        EndIndex += actualLength;
+                    }
+                    else
+                    {
+                        Array.Copy(tmpBuffer, 0, buffer, EndIndex, tmpLength);
+                        Array.Copy(tmpBuffer, tmpLength, buffer, 0, actualLength - tmpLength);
+                        EndIndex = actualLength - tmpLength;
+                    }
+                    /*
+                    for (int i = 0; i < actualLength; i++)
+                    {
+                        buffer[EndIndex++] = tmpBuffer[i];
+                        if (EndIndex == buffer.Length) EndIndex = 0;
+                        if (startIndex == EndIndex) startIndex++;
+                        if (startIndex == buffer.Length) startIndex = 0;
+                    }
+                    */
+                    Cmd.Cmd? cmd = CmdDecoder.DecodeCmd(buffer, ref startIndex, ref EndIndex);
                     if (cmd != null) ReceivedCmd?.Invoke(this, cmd);
                 }
-
-                client.GetStream().BeginRead(buffer, 0, buffer.Length, new AsyncCallback(ReceiveCallBack), null);
+                client.GetStream().BeginRead(tmpBuffer, 0, tmpBuffer.Length, new AsyncCallback(ReceiveCallBack), null);
             }
             catch
             {
-                ConnectedClients.Remove(mtci);
-                ClientDisconnected?.Invoke(this, mtci);
+                if (ConnectedClients.Remove(mtci))
+                {
+                    ClientDisconnected?.Invoke(this, mtci);
+
+                    // Start accepting the next client asynchronously when client is not full
+                    if (ConnectedClients.Count < MaxClient)
+                        Server.BeginAcceptTcpClient(new AsyncCallback(OnClientConnect), null);
+                }
             }
-            */
         }
 
         public void SendCmd(Cmd.Cmd cmd, MyTcpClientInfo clientInfo)
@@ -104,9 +131,10 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                 byte[] bytes = cmd.Encode();
                 clientInfo.Client.GetStream().Write(bytes, 0, bytes.Length);
             }
-            catch (Exception)
+            catch
             {
-                ClientDisconnected?.Invoke(this, clientInfo);
+                if (ConnectedClients.Remove(clientInfo))
+                    ClientDisconnected?.Invoke(this, clientInfo);
             }
         }
 

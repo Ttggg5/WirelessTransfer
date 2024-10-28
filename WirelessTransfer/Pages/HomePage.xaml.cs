@@ -166,7 +166,7 @@ namespace WirelessTransfer.Pages
         {
             StopListening();
 
-            basePage?.StopAllProcess();
+            //basePage?.StopAllProcess();
             basePage = new BasePage(function);
             basePage.Back += basePage_Back;
             NavigateSignal?.Invoke(this, basePage);

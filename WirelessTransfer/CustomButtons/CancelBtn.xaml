@@ -12,11 +12,11 @@
              MouseLeave="UserControl_MouseLeave">
     <Border x:Name="backgroundBorder"
             Background="IndianRed"
-            CornerRadius="15"
-            Margin="5">
+            CornerRadius="10"
+            Margin="10">
         <Border.Effect>
             <DropShadowEffect Opacity="0.5"
-                              BlurRadius="20"
+                              BlurRadius="10"
                               ShadowDepth="3"/>
         </Border.Effect>
 

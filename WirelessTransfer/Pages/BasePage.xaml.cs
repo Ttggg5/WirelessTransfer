@@ -68,7 +68,7 @@ namespace WirelessTransfer.Pages
             switch ((PageFunction)page.Tag)
             {
                 case PageFunction.Mirror:
-                    ((MirrorPage)page).StopSearching();
+                    ((MirrorPage)page).StopAll();
                     break;
                 case PageFunction.Extend:
                     
@@ -79,6 +79,8 @@ namespace WirelessTransfer.Pages
                 case PageFunction.Setting:
                     break;
             }
+            page = null;
+            GC.Collect();
         }
 
         private void backBtn_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)

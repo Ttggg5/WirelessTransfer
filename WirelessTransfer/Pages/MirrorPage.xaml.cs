@@ -120,12 +120,15 @@ namespace WirelessTransfer.Pages
                 disconnectSp.Visibility = Visibility.Visible;
             });
 
-            lock (myTcpServer.ConnectedClients)
+            if (myTcpServer != null)
             {
-                if (myTcpServer.ConnectedClients.Count > 0)
-                    myTcpServer.SendCmd(
-                        new ScreenInfoCmd(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height), 
-                        myTcpServer.ConnectedClients.First());
+                lock (myTcpServer.ConnectedClients)
+                {
+                    if (myTcpServer.ConnectedClients.Count > 0)
+                        myTcpServer.SendCmd(
+                            new ScreenInfoCmd(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height),
+                            myTcpServer.ConnectedClients.First());
+                }
             }
 
             screenCaptureDX = new ScreenCaptureDX(0, 0);
@@ -135,33 +138,46 @@ namespace WirelessTransfer.Pages
 
         private void screenCaptureDX_ScreenRefreshed(object? sender, Bitmap[] e)
         {
-            lock (myTcpServer.ConnectedClients)
+            if (myTcpServer != null)
             {
-                if (myTcpServer.ConnectedClients.Count > 0)
-                    myTcpServer.SendCmd(new ScreenCmd(e.First()), myTcpServer.ConnectedClients.First());
+                lock (myTcpServer.ConnectedClients)
+                {
+                    if (myTcpServer.ConnectedClients.Count > 0)
+                        myTcpServer.SendCmd(new ScreenCmd(e.First()), myTcpServer.ConnectedClients.First());
+                }
             }
         }
 
-        public void StopSearching()
+        public void StopAll()
         {
             deviceFinder.StopSearching();
+            Disconnect();
         }
 
         private void disconnectBtn_Click(object sender, RoutedEventArgs e)
         {
-            screenCaptureDX?.Stop();
-            lock (myTcpServer.ConnectedClients)
-            {
-                if (myTcpServer.ConnectedClients.Count > 0)
-                    myTcpServer.SendCmd(new RequestCmd(RequestType.Disconnect, Environment.MachineName), myTcpServer.ConnectedClients.First());
-            }
-            myTcpServer?.Stop();
+            Disconnect();
 
             maskGrid.Visibility = Visibility.Collapsed;
             waitRespondSp.Visibility = Visibility.Collapsed;
             disconnectSp.Visibility = Visibility.Collapsed;
 
             deviceFinder.StartSearching();
+        }
+
+        private void Disconnect()
+        {
+            screenCaptureDX?.Stop();
+            if (myTcpServer != null)
+            {
+                lock (myTcpServer.ConnectedClients)
+                {
+                    if (myTcpServer.ConnectedClients.Count > 0)
+                        myTcpServer.SendCmd(new RequestCmd(RequestType.Disconnect, Environment.MachineName), myTcpServer.ConnectedClients.First());
+                }
+                myTcpServer?.Stop();
+                myTcpServer = null;
+            }
         }
     }
 }

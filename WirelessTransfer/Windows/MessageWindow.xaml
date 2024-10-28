@@ -13,6 +13,8 @@
         AllowsTransparency="True"
         Background="Transparent">
     <Border Background="{StaticResource MainColor2Brush}"
+            BorderBrush="{StaticResource MainColorBrush}"
+            BorderThickness="2"
             CornerRadius="10"
             Margin="20">
         <Border.Effect>
@@ -40,10 +42,10 @@
                        VerticalAlignment="Bottom"
                        HorizontalAlignment="Center">
                 <custombuttons:AcceptBtn x:Name="acceptBtn"
-                                         Margin="10, 0, 10, 0"
+                                         Margin="8, 0, 8, 0"
                                          Click="acceptBtn_Click"/>
                 <custombuttons:CancelBtn x:Name="cancelBtn"
-                                         Margin="10, 0, 10, 0"
+                                         Margin="8, 0, 8, 0"
                                          Click="cancelBtn_Click"/>
             </WrapPanel>
         </Grid>
