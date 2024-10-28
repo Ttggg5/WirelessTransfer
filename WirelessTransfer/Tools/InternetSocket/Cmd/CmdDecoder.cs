@@ -94,6 +94,7 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
                         case CmdType.FileInfo:
                             break;
                         case CmdType.Reply:
+                            cmd = new ReplyCmd(data);
                             break;
                         case CmdType.Screen:
                             cmd = new ScreenCmd(data);
