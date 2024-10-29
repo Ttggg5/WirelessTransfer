@@ -24,6 +24,7 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
         int timeoutCounter = 0;
         int startIndex = 0, EndIndex = 0;
         byte[] buffer = new byte[12582912]; // 12MB
+        byte[] tmpBuffer = new byte[6291456]; // 6MB
 
         public MyTcpClient(IPAddress serverIp, int serverPort, string clientName)
         {
@@ -52,12 +53,11 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                 client.GetStream().Write(bytes);
                 Connected?.Invoke(this, new EventArgs());
 
-                //client.GetStream().BeginRead(buffer, 0, buffer.Length, new AsyncCallback(ReceiveCallBack), null);
+                //client.GetStream().BeginRead(tmpBuffer, 0, tmpBuffer.Length, new AsyncCallback(ReceiveCallBack), null);
                 Task.Run(() =>
                 {
                     try
                     {
-                        byte[] tmpBuffer = new byte[6291456]; // 6MB
                         while (true)
                         {
                             int actualLength = client.GetStream().Read(tmpBuffer, 0, tmpBuffer.Length);
@@ -117,24 +117,45 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
             }
         }
 
-        /*private void ReceiveCallBack(IAsyncResult ar)
+        private void ReceiveCallBack(IAsyncResult ar)
         {
             try
             {
                 int actualLength = client.GetStream().EndRead(ar);
                 if (actualLength > 0)
                 {
-                    Cmd.Cmd? cmd = CmdDecoder.DecodeCmd(buffer, 0, actualLength);
+                    int tmpLength = buffer.Length - EndIndex;
+                    if (actualLength <= tmpLength)
+                    {
+                        Array.Copy(tmpBuffer, 0, buffer, EndIndex, actualLength);
+                        EndIndex += actualLength;
+                    }
+                    else
+                    {
+                        Array.Copy(tmpBuffer, 0, buffer, EndIndex, tmpLength);
+                        Array.Copy(tmpBuffer, tmpLength, buffer, 0, actualLength - tmpLength);
+                        EndIndex = actualLength - tmpLength;
+                    }
+                    /*
+                    for (int i = 0; i < actualLength; i++)
+                    {
+                        buffer[EndIndex++] = tmpBuffer[i];
+                        if (EndIndex == buffer.Length) EndIndex = 0;
+                        if (startIndex == EndIndex) startIndex++;
+                        if (startIndex == buffer.Length) startIndex = 0;
+                    }
+                    */
+                    Cmd.Cmd? cmd = CmdDecoder.DecodeCmd(buffer, ref startIndex, ref EndIndex);
                     if (cmd != null) ReceivedCmd?.Invoke(this, cmd);
                 }
 
-                client.GetStream().BeginRead(buffer, 0, buffer.Length, new AsyncCallback(ReceiveCallBack), null);
+                client.GetStream().BeginRead(tmpBuffer, 0, tmpBuffer.Length, new AsyncCallback(ReceiveCallBack), null);
             }
             catch (Exception ex)
             {
                 Disconnected?.Invoke(this, new EventArgs());
             }
-        }*/
+        }
 
         public void SendCmd(Cmd.Cmd cmd)
         {
@@ -143,7 +164,7 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                 byte[] bytes = cmd.Encode();
                 client.GetStream().Write(bytes, 0, bytes.Length);
             }
-            catch
+            catch (Exception ex)
             {
                 Disconnected?.Invoke(this, new EventArgs());
             }
