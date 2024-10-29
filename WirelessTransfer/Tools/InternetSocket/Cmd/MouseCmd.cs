@@ -52,7 +52,7 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
         public override void Decode()
         {
             string[] tmp = Encoding.ASCII.GetString(Data).Split(",");
-            MousePos = new Point(int.Parse(tmp[0]), int.Parse(tmp[1]));
+            MousePos = new Point(double.Parse(tmp[0]), double.Parse(tmp[1]));
             MouseAction = Enum.Parse<MouseAction>(tmp[2]);
         }
     }

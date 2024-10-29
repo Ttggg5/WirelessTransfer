@@ -41,7 +41,7 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
         {
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                ScreenBmp.Save(memoryStream, ImageFormat.Png);
+                ScreenBmp.Save(memoryStream, ImageFormat.Jpeg);
                 Data = memoryStream.GetBuffer();
             }
             return AddHeadTail(Data);

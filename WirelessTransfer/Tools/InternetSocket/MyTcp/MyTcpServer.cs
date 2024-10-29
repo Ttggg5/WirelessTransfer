@@ -109,9 +109,9 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                     Cmd.Cmd? cmd = CmdDecoder.DecodeCmd(buffer, ref startIndex, ref EndIndex);
                     if (cmd != null) ReceivedCmd?.Invoke(this, cmd);
                 }
-                client.GetStream().BeginRead(tmpBuffer, 0, tmpBuffer.Length, new AsyncCallback(ReceiveCallBack), null);
+                client.GetStream().BeginRead(tmpBuffer, 0, tmpBuffer.Length, new AsyncCallback(ReceiveCallBack), mtci);
             }
-            catch
+            catch (Exception ex)
             {
                 if (ConnectedClients.Remove(mtci))
                 {

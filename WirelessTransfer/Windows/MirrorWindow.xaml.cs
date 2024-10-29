@@ -102,7 +102,7 @@ namespace WirelessTransfer.Windows
                         screenWidth = sic.Width;
                         screenHeight = sic.Height;
 
-                        screenWB = new WriteableBitmap(sic.Width, sic.Height, 96, 96, PixelFormats.Bgra32, null); // png format
+                        screenWB = new WriteableBitmap(sic.Width, sic.Height, 96, 96, PixelFormats.Bgra32, null); // jpg format
                         screenImg.Source = screenWB;
                     });
                     break;
@@ -124,7 +124,7 @@ namespace WirelessTransfer.Windows
             System.Windows.Point point = e.GetPosition(screenImg);
             point.X *= widthScale;
             point.Y *= heightScale;
-            //myTcpClient.SendCmd(new MouseCmd(point, MouseAction.None));
+            myTcpClient.SendCmd(new MouseCmd(point, MouseAction.None));
         }
 
         private void screenImg_SizeChanged(object sender, SizeChangedEventArgs e)
