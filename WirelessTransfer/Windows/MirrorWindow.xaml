@@ -5,9 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WirelessTransfer.Windows"
         mc:Ignorable="d"
-        Title="MirrorWindow" Height="450" Width="800"
+        Title="MirrorWindow"
+        Height="450" Width="800"
+        MinHeight="450" MinWidth="800"
         Closing="Window_Closing">
-    <Grid>
-        <Image x:Name="screenImg"/>
+    <Grid Background="{StaticResource MainColor2Brush}">
+        <Image x:Name="screenImg"
+               MouseMove="screenImg_MouseMove"
+               SizeChanged="screenImg_SizeChanged"/>
     </Grid>
 </Window>

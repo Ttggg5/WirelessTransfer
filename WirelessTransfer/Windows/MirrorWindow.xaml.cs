@@ -29,12 +29,18 @@ namespace WirelessTransfer.Windows
         WriteableBitmap screenWB;
         Stopwatch frameSw;
 
+        int screenWidth = 0;
+        int screenHeight = 0;
+        double widthScale = 1.0;
+        double heightScale = 1.0;
         int frameCount = 0;
         double fps = 0;
 
         public MirrorWindow(MyTcpClient myTcpClient)
         {
             InitializeComponent();
+
+            WindowState = WindowState.Maximized;
 
             this.myTcpClient = myTcpClient;
             myTcpClient.ReceivedCmd += myTcpClient_ReceivedCmd;
@@ -92,6 +98,9 @@ namespace WirelessTransfer.Windows
                     ScreenInfoCmd sic = (ScreenInfoCmd)e;
                     Dispatcher.Invoke(() =>
                     {
+                        screenWidth = sic.Width;
+                        screenHeight = sic.Height;
+
                         screenWB = new WriteableBitmap(sic.Width, sic.Height, 96, 96, PixelFormats.Bgr32, null); // jpg format
                         screenImg.Source = screenWB;
                     });
@@ -107,6 +116,20 @@ namespace WirelessTransfer.Windows
         {
             myTcpClient.SendCmd(new RequestCmd(RequestType.Disconnect, Environment.MachineName));
             myTcpClient.Disconnect();
+        }
+
+        private void screenImg_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            System.Windows.Point point = e.GetPosition(screenImg);
+            point.X *= widthScale;
+            point.Y *= heightScale;
+            myTcpClient.SendCmd(new MouseCmd(point, MouseAction.None));
+        }
+
+        private void screenImg_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            widthScale = screenWidth / screenImg.ActualWidth;
+            heightScale = screenHeight / screenImg.ActualHeight;
         }
     }
 }

@@ -177,8 +177,10 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
                     cmd = new ScreenCmd(data);
                     break;
                 case CmdType.Keyboard:
+                    cmd = new KeyboardCmd(data);
                     break;
                 case CmdType.Mouse:
+                    cmd = new MouseCmd(data);
                     break;
                 case CmdType.Webcam:
                     break;

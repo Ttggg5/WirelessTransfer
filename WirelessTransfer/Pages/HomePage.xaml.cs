@@ -117,6 +117,7 @@ namespace WirelessTransfer.Pages
                             {
                                 MessageWindow messageWindow = new MessageWindow(
                                 "\"" + requestCmd.DeviceName + "\" 正在嘗試與你分享螢幕，是否要接受連接?", true);
+                                messageWindow.Topmost = true;
                                 if (!(bool)messageWindow.ShowDialog())
                                 {
                                     // refuse

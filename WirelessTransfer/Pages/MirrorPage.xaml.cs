@@ -91,16 +91,26 @@ namespace WirelessTransfer.Pages
 
         private void myTcpServer_ReceivedCmd(object? sender, Cmd e)
         {
-            if (e.CmdType == CmdType.Request)
+            switch (e.CmdType)
             {
-                RequestCmd rc = (RequestCmd)e;
-                if (rc.RequestType == RequestType.Disconnect)
-                {
-                    Dispatcher.BeginInvoke(() =>
+                case CmdType.Request:
+                    RequestCmd rc = (RequestCmd)e;
+                    if (rc.RequestType == RequestType.Disconnect)
                     {
-                        disconnectBtn_Click(sender, null);
-                    });
-                }
+                        Dispatcher.BeginInvoke(() =>
+                        {
+                            disconnectBtn_Click(sender, null);
+                        });
+                    }
+                    break;
+                case CmdType.Mouse:
+                    // move mouse
+                    MouseCmd mouseCmd = (MouseCmd)e;
+                    System.Windows.Forms.Cursor.Position = 
+                        new System.Drawing.Point((int)mouseCmd.MousePos.X, (int)mouseCmd.MousePos.Y);
+
+                    // do mouse action
+                    break;
             }
         }
 
