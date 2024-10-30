@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
+using System.Runtime.InteropServices;
 
 namespace WirelessTransfer.Tools.Screen
 {
@@ -82,9 +83,13 @@ namespace WirelessTransfer.Tools.Screen
                             if (screenResource == null)
                                 continue;
 
+                            CURSORINFO ci = new CURSORINFO();
+                            ci.cbSize = Marshal.SizeOf(ci);
+                            if (!GetCursorInfo(out ci)) ci.cbSize = 0;
+
                             // copy resource into memory that can be accessed by the CPU
                             using (var screenTexture2D = screenResource.QueryInterface<Texture2D>())
-                                device.ImmediateContext.CopyResource(screenTexture2D, screenTexture);
+                            device.ImmediateContext.CopyResource(screenTexture2D, screenTexture);
 
                             // Get the desktop capture texture
                             var mapSource = device.ImmediateContext.MapSubresource(screenTexture, 0, MapMode.Read, SharpDX.Direct3D11.MapFlags.None);
@@ -109,8 +114,12 @@ namespace WirelessTransfer.Tools.Screen
 
                             // Release source and dest locks
                             bitmap.UnlockBits(mapDest);
-
                             device.ImmediateContext.UnmapSubresource(screenTexture, 0);
+
+                            // Draw cursor
+                            if (ci.cbSize != 0)
+                                DrawCursorOnBitmap(bitmap, 
+                                    output.Description.DesktopBounds.Left, output.Description.DesktopBounds.Top, ci);
 
                             ScreenRefreshed?.Invoke(this, bitmap);
 
@@ -129,6 +138,55 @@ namespace WirelessTransfer.Tools.Screen
                     }
                 }
             });
+        }
+
+        [DllImport("user32.dll")]
+        static extern bool GetCursorInfo(out CURSORINFO pci);
+
+        [DllImport("user32.dll")]
+        static extern bool DrawIcon(IntPtr hdc, int x, int y, IntPtr hIcon);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct CURSORINFO
+        {
+            public int cbSize;
+            public int flags;
+            public IntPtr hCursor;
+            public Point ptScreenPos;
+        }
+
+        public static void DrawCursorOnBitmap(Bitmap bitmap, int offsetX, int offsetY)
+        {
+            CURSORINFO ci = new CURSORINFO();
+            ci.cbSize = Marshal.SizeOf(ci);
+
+            if (GetCursorInfo(out ci))
+            {
+                // Adjust cursor position to be relative to the captured bitmap
+                int cursorX = ci.ptScreenPos.X - offsetX;
+                int cursorY = ci.ptScreenPos.Y - offsetY;
+
+                using (Graphics g = Graphics.FromImage(bitmap))
+                {
+                    // Draw the cursor on the bitmap at the adjusted position
+                    DrawIcon(g.GetHdc(), cursorX, cursorY, ci.hCursor);
+                    g.ReleaseHdc();
+                }
+            }
+        }
+
+        public static void DrawCursorOnBitmap(Bitmap bitmap, int offsetX, int offsetY, CURSORINFO ci)
+        {
+            // Adjust cursor position to be relative to the captured bitmap
+            int cursorX = ci.ptScreenPos.X - offsetX;
+            int cursorY = ci.ptScreenPos.Y - offsetY;
+
+            using (Graphics g = Graphics.FromImage(bitmap))
+            {
+                // Draw the cursor on the bitmap at the adjusted position
+                DrawIcon(g.GetHdc(), cursorX, cursorY, ci.hCursor);
+                g.ReleaseHdc();
+            }
         }
 
         public static unsafe bool CompareBitmapsFast(Bitmap bmp1, Bitmap bmp2)

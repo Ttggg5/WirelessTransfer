@@ -255,7 +255,7 @@ namespace WirelessTransfer.Tools.Screen
             return null;
         }
 
-        private static void DrawCursor(Bitmap bitmap, int screenIndex, int x, int y)
+        public static void DrawCursor(Bitmap bitmap, int screenIndex, int x, int y)
         {
             System.Drawing.Point position = Cursor.Position;
             if (position.X > x && position.X < x + System.Windows.Forms.Screen.AllScreens[screenIndex].Bounds.Width)
