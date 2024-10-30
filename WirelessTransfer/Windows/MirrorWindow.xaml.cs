@@ -128,7 +128,7 @@ namespace WirelessTransfer.Windows
 
         private void screenImg_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.None));
+            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.None, 0));
         }
 
         private void screenImg_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -139,27 +139,27 @@ namespace WirelessTransfer.Windows
 
         private void screenImg_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.RightButtonDown));
+            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.RightButtonDown, 0));
         }
 
         private void screenImg_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.RightButtonUp));
+            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.RightButtonUp, 0));
         }
 
         private void screenImg_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.LeftButtonDown));
+            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.LeftButtonDown, 0));
         }
 
         private void screenImg_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.LeftButtonUp));
+            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.LeftButtonUp, 0));
         }
 
         private void screenImg_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            
+            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.LeftButtonUp, e.Delta));
         }
     }
 }

@@ -27,19 +27,21 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
     {
         // Correct message format:
         //---------------------------------------------------------------------------------
-        // data = mousePos.X + "," + mousePos.Y + "," + mouseAct
+        // data = mousePos.X + "," + mousePos.Y + "," + mouseAct + "," + middleButtonMomentum
         //---------------------------------------------------------------------------------
 
         public Point MousePos { get; private set; }
         public MouseAct MouseAct { get; private set; }
+        public int MiddleButtonMomentum { get; private set; }
 
         /// <summary>
         /// For sender.
         /// </summary>
-        public MouseCmd(Point mousePos, MouseAct mouseAct)
+        public MouseCmd(Point mousePos, MouseAct mouseAct, int middleButtonMomentum)
         {
             MousePos = mousePos;
             MouseAct = mouseAct;
+            MiddleButtonMomentum = middleButtonMomentum;
             CmdType = CmdType.Mouse;
         }
 
@@ -57,7 +59,8 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
             Data = Encoding.ASCII.GetBytes(
                 MousePos.X.ToString() + "," + 
                 MousePos.Y.ToString() + "," +
-                MouseAct.ToString());
+                MouseAct.ToString() + "," +
+                MiddleButtonMomentum.ToString());
             return AddHeadTail(Data);
         }
 
@@ -66,6 +69,7 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
             string[] tmp = Encoding.ASCII.GetString(Data).Split(",");
             MousePos = new Point(double.Parse(tmp[0]), double.Parse(tmp[1]));
             MouseAct = Enum.Parse<MouseAct>(tmp[2]);
+            MiddleButtonMomentum = int.Parse(tmp[3]);
         }
     }
 }

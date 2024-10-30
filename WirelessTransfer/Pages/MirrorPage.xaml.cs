@@ -117,7 +117,10 @@ namespace WirelessTransfer.Pages
 
                     // do mouse action
                     if (mouseCmd.MouseAct != MouseAct.None)
-                        mouse_event((int)mouseCmd.MouseAct, (int)mouseCmd.MousePos.X, (int)mouseCmd.MousePos.Y, 0, 0);
+                        mouse_event(
+                            (int)mouseCmd.MouseAct, 
+                            (int)mouseCmd.MousePos.X, (int)mouseCmd.MousePos.Y, 
+                            mouseCmd.MiddleButtonMomentum, 0);
                     break;
             }
         }
