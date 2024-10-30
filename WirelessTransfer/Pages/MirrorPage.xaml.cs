@@ -89,6 +89,12 @@ namespace WirelessTransfer.Pages
             });
         }
 
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        static extern bool SetCursorPos(int x, int y);
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        public static extern void mouse_event(int dwFlags, int dx, int dy, int dwData, int dwExtraInfo);
+
         private void myTcpServer_ReceivedCmd(object? sender, Cmd e)
         {
             switch (e.CmdType)
@@ -106,10 +112,10 @@ namespace WirelessTransfer.Pages
                 case CmdType.Mouse:
                     // move mouse
                     MouseCmd mouseCmd = (MouseCmd)e;
-                    System.Windows.Forms.Cursor.Position = 
-                        new System.Drawing.Point((int)mouseCmd.MousePos.X, (int)mouseCmd.MousePos.Y);
+                    SetCursorPos((int)mouseCmd.MousePos.X, (int)mouseCmd.MousePos.Y);
 
                     // do mouse action
+                    mouse_event((int)mouseCmd.MouseAct, (int)mouseCmd.MousePos.X, (int)mouseCmd.MousePos.Y, 0, 0);
                     break;
             }
         }

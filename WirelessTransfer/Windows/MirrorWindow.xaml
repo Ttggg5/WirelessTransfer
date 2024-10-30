@@ -12,6 +12,11 @@
     <Grid Background="{StaticResource MainColor2Brush}">
         <Image x:Name="screenImg"
                MouseMove="screenImg_MouseMove"
-               SizeChanged="screenImg_SizeChanged"/>
+               SizeChanged="screenImg_SizeChanged"
+               MouseRightButtonDown="screenImg_MouseRightButtonDown"
+               MouseRightButtonUp="screenImg_MouseRightButtonUp"
+               MouseLeftButtonDown="screenImg_MouseLeftButtonDown"
+               MouseLeftButtonUp="screenImg_MouseLeftButtonUp"
+               MouseWheel="screenImg_MouseWheel"/>
     </Grid>
 </Window>

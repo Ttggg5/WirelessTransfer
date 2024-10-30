@@ -119,18 +119,47 @@ namespace WirelessTransfer.Windows
             myTcpClient.Disconnect();
         }
 
-        private void screenImg_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        private System.Windows.Point GetRealPoint(System.Windows.Point point)
         {
-            System.Windows.Point point = e.GetPosition(screenImg);
             point.X *= widthScale;
             point.Y *= heightScale;
-            myTcpClient.SendCmd(new MouseCmd(point, MouseAction.None));
+            return point;
+        }
+
+        private void screenImg_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.None));
         }
 
         private void screenImg_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             widthScale = screenWidth / screenImg.ActualWidth;
             heightScale = screenHeight / screenImg.ActualHeight;
+        }
+
+        private void screenImg_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.RightButtonDown));
+        }
+
+        private void screenImg_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.RightButtonUp));
+        }
+
+        private void screenImg_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.LeftButtonDown));
+        }
+
+        private void screenImg_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.LeftButtonUp));
+        }
+
+        private void screenImg_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            
         }
     }
 }
