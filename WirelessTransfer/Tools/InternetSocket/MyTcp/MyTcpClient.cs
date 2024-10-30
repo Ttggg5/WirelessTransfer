@@ -84,8 +84,17 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                                     if (startIndex == buffer.Length) startIndex = 0;
                                 }
                                 */
-                                Cmd.Cmd? cmd = CmdDecoder.DecodeCmd(buffer, ref startIndex, ref EndIndex);
-                                if (cmd != null) ReceivedCmd?.Invoke(this, cmd);
+                                // prevent it doesn't only read one cmd
+                                while (true)
+                                {
+                                    Cmd.Cmd? cmd = CmdDecoder.DecodeCmd(buffer, ref startIndex, ref EndIndex);
+                                    if (cmd != null)
+                                    {
+                                        ReceivedCmd?.Invoke(this, cmd);
+                                        continue;
+                                    }
+                                    break;
+                                }
                             }
                         }
                     }

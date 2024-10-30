@@ -61,7 +61,63 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                         ConnectedClients.Add(new MyTcpClientInfo(tcpClient, ((ClientInfoCmd)cmd).ClientName, ((ClientInfoCmd)cmd).IP));
                         ClientConnected?.Invoke(this, ConnectedClients.Last());
 
-                        tcpClient.GetStream().BeginRead(tmpBuffer, 0, tmpBuffer.Length, new AsyncCallback(ReceiveCallBack), ConnectedClients.Last());
+                        //tcpClient.GetStream().BeginRead(tmpBuffer, 0, tmpBuffer.Length, new AsyncCallback(ReceiveCallBack), ConnectedClients.Last());
+                        Task.Factory.StartNew(() =>
+                        {
+                            MyTcpClientInfo clientInfo = ConnectedClients.Last();
+                            try
+                            {
+                                while (true)
+                                {
+                                    int actualLength = clientInfo.Client.GetStream().Read(tmpBuffer, 0, tmpBuffer.Length);
+                                    if (actualLength > 0)
+                                    {
+                                        int tmpLength = buffer.Length - EndIndex;
+                                        if (actualLength <= tmpLength)
+                                        {
+                                            Array.Copy(tmpBuffer, 0, buffer, EndIndex, actualLength);
+                                            EndIndex += actualLength;
+                                        }
+                                        else
+                                        {
+                                            Array.Copy(tmpBuffer, 0, buffer, EndIndex, tmpLength);
+                                            Array.Copy(tmpBuffer, tmpLength, buffer, 0, actualLength - tmpLength);
+                                            EndIndex = actualLength - tmpLength;
+                                        }
+                                        /*
+                                        for (int i = 0; i < actualLength; i++)
+                                        {
+                                            buffer[EndIndex++] = tmpBuffer[i];
+                                            if (EndIndex == buffer.Length) EndIndex = 0;
+                                            if (startIndex == EndIndex) startIndex++;
+                                            if (startIndex == buffer.Length) startIndex = 0;
+                                        }
+                                        */
+                                        while (true)
+                                        {
+                                            Cmd.Cmd? cmd = CmdDecoder.DecodeCmd(buffer, ref startIndex, ref EndIndex);
+                                            if (cmd != null)
+                                            {
+                                                ReceivedCmd?.Invoke(this, cmd);
+                                                continue;
+                                            }
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            catch
+                            {
+                                if (ConnectedClients.Remove(clientInfo))
+                                {
+                                    ClientDisconnected?.Invoke(this, clientInfo);
+
+                                    // Start accepting the next client asynchronously when client is not full
+                                    if (ConnectedClients.Count < MaxClient)
+                                        Server.BeginAcceptTcpClient(new AsyncCallback(OnClientConnect), null);
+                                }
+                            }
+                        }, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
                     }
                     else tcpClient.Close();
                 }
