@@ -19,6 +19,8 @@
                MouseLeftButtonUp="screenImg_MouseLeftButtonUp"
                MouseWheel="screenImg_MouseWheel"
                MouseEnter="screenImg_MouseEnter"
-               MouseLeave="screenImg_MouseLeave"/>
+               MouseLeave="screenImg_MouseLeave"
+               KeyDown="screenImg_KeyDown"
+               KeyUp="screenImg_KeyUp"/>
     </Grid>
 </Window>

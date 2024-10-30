@@ -7,6 +7,7 @@ using WirelessTransfer.Tools.InternetSocket.Cmd;
 using WirelessTransfer.Tools.InternetSocket.MyTcp;
 using WirelessTransfer.Tools.Screen;
 using WirelessTransfer.Windows;
+using WindowsInput;
 
 namespace WirelessTransfer.Pages
 {
@@ -20,6 +21,7 @@ namespace WirelessTransfer.Pages
         int udpPort, tcpPort;
         MyTcpServer myTcpServer;
         ScreenCaptureDX screenCaptureDX;
+        InputSimulator inputSimulator;
 
         public MirrorPage()
         {
@@ -27,6 +29,8 @@ namespace WirelessTransfer.Pages
 
             udpPort = int.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.UdpPort, IniFile.DEFAULT_PATH));
             tcpPort = int.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.TcpPort, IniFile.DEFAULT_PATH));
+
+            inputSimulator = new InputSimulator();
 
             maskGrid.Visibility = Visibility.Collapsed;
             waitRespondSp.Visibility = Visibility.Collapsed;
@@ -121,6 +125,13 @@ namespace WirelessTransfer.Pages
                             (int)mouseCmd.MouseAct, 
                             (int)mouseCmd.MousePos.X, (int)mouseCmd.MousePos.Y, 
                             mouseCmd.MiddleButtonMomentum, 0);
+                    break;
+                case CmdType.Keyboard:
+                    KeyboardCmd keyboardCmd = (KeyboardCmd)e;
+                    if (keyboardCmd.State == KeyState.Down)
+                        inputSimulator.Keyboard.KeyDown(keyboardCmd.KeyCode);
+                    else
+                        inputSimulator.Keyboard.KeyUp(keyboardCmd.KeyCode);
                     break;
             }
         }

@@ -15,6 +15,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using WindowsInput.Native;
 using WirelessTransfer.Tools.InternetSocket.Cmd;
 using WirelessTransfer.Tools.InternetSocket.MyTcp;
 using WirelessTransfer.Tools.Screen;
@@ -171,6 +172,18 @@ namespace WirelessTransfer.Windows
         private void screenImg_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
             System.Windows.Forms.Cursor.Show();
+        }
+
+        private void screenImg_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            int keyCode = KeyInterop.VirtualKeyFromKey(e.Key);
+            myTcpClient.SendCmd(new KeyboardCmd((VirtualKeyCode)keyCode, KeyState.Down));
+        }
+
+        private void screenImg_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            int keyCode = KeyInterop.VirtualKeyFromKey(e.Key);
+            myTcpClient.SendCmd(new KeyboardCmd((VirtualKeyCode)keyCode, KeyState.Up));
         }
     }
 }
