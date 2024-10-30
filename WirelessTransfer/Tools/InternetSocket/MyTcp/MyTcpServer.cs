@@ -196,15 +196,16 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
 
         public void Stop()
         {
-            Server?.Stop();
             if (ConnectedClients.Count > 0)
             {
                 foreach (var client in ConnectedClients)
                 {
+                    client.Client.Close();
                     ClientDisconnected?.Invoke(this, client);
                 }
             }
             ConnectedClients.Clear();
+            Server?.Stop();
         }
     }
 }

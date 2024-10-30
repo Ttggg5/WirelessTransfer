@@ -17,6 +17,8 @@
                MouseRightButtonUp="screenImg_MouseRightButtonUp"
                MouseLeftButtonDown="screenImg_MouseLeftButtonDown"
                MouseLeftButtonUp="screenImg_MouseLeftButtonUp"
-               MouseWheel="screenImg_MouseWheel"/>
+               MouseWheel="screenImg_MouseWheel"
+               MouseEnter="screenImg_MouseEnter"
+               MouseLeave="screenImg_MouseLeave"/>
     </Grid>
 </Window>

@@ -117,6 +117,7 @@ namespace WirelessTransfer.Windows
         {
             myTcpClient.SendCmd(new RequestCmd(RequestType.Disconnect, Environment.MachineName));
             myTcpClient.Disconnect();
+            System.Windows.Forms.Cursor.Show();
         }
 
         private System.Windows.Point GetRealPoint(System.Windows.Point point)
@@ -159,7 +160,17 @@ namespace WirelessTransfer.Windows
 
         private void screenImg_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.LeftButtonUp, e.Delta));
+            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.MiddleButtonRolled, e.Delta));
+        }
+
+        private void screenImg_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            System.Windows.Forms.Cursor.Hide();
+        }
+
+        private void screenImg_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            System.Windows.Forms.Cursor.Show();
         }
     }
 }

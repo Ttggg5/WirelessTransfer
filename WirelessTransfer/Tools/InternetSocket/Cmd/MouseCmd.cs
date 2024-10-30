@@ -4,6 +4,8 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using Point = System.Windows.Point;
+using Cursor = System.Windows.Forms.Cursor;
+using Cursors = System.Windows.Forms.Cursors;
 using System.Windows.Input;
 using static System.Runtime.CompilerServices.RuntimeHelpers;
 using static System.Windows.Forms.AxHost;
