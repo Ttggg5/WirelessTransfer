@@ -8,7 +8,9 @@
         Title="MirrorWindow"
         Height="450" Width="800"
         MinHeight="450" MinWidth="800"
-        Closing="Window_Closing">
+        Closing="Window_Closing"
+        KeyDown="Window_KeyDown"
+        KeyUp="Window_KeyUp">
     <Grid Background="Black">
         <Image x:Name="screenImg"
                MouseMove="screenImg_MouseMove"
@@ -19,8 +21,6 @@
                MouseLeftButtonUp="screenImg_MouseLeftButtonUp"
                MouseWheel="screenImg_MouseWheel"
                MouseEnter="screenImg_MouseEnter"
-               MouseLeave="screenImg_MouseLeave"
-               KeyDown="screenImg_KeyDown"
-               KeyUp="screenImg_KeyUp"/>
+               MouseLeave="screenImg_MouseLeave"/>
     </Grid>
 </Window>

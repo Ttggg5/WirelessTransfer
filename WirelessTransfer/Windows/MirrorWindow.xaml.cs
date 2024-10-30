@@ -44,6 +44,8 @@ namespace WirelessTransfer.Windows
 
             WindowState = WindowState.Maximized;
 
+            //InputLanguageManager.SetInputLanguage();
+
             this.myTcpClient = myTcpClient;
             myTcpClient.ReceivedCmd += myTcpClient_ReceivedCmd;
             myTcpClient.Connected += myTcpClient_Connected;
@@ -174,13 +176,13 @@ namespace WirelessTransfer.Windows
             System.Windows.Forms.Cursor.Show();
         }
 
-        private void screenImg_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             int keyCode = KeyInterop.VirtualKeyFromKey(e.Key);
             myTcpClient.SendCmd(new KeyboardCmd((VirtualKeyCode)keyCode, KeyState.Down));
         }
 
-        private void screenImg_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        private void Window_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
         {
             int keyCode = KeyInterop.VirtualKeyFromKey(e.Key);
             myTcpClient.SendCmd(new KeyboardCmd((VirtualKeyCode)keyCode, KeyState.Up));

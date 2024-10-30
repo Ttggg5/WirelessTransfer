@@ -83,10 +83,6 @@ namespace WirelessTransfer.Tools.Screen
                             if (screenResource == null)
                                 continue;
 
-                            CURSORINFO ci = new CURSORINFO();
-                            ci.cbSize = Marshal.SizeOf(ci);
-                            if (!GetCursorInfo(out ci)) ci.cbSize = 0;
-
                             // copy resource into memory that can be accessed by the CPU
                             using (var screenTexture2D = screenResource.QueryInterface<Texture2D>())
                             device.ImmediateContext.CopyResource(screenTexture2D, screenTexture);
@@ -117,9 +113,7 @@ namespace WirelessTransfer.Tools.Screen
                             device.ImmediateContext.UnmapSubresource(screenTexture, 0);
 
                             // Draw cursor
-                            if (ci.cbSize != 0)
-                                DrawCursorOnBitmap(bitmap, 
-                                    output.Description.DesktopBounds.Left, output.Description.DesktopBounds.Top, ci);
+                            //DrawCursorOnBitmap(bitmap, output.Description.DesktopBounds.Left, output.Description.DesktopBounds.Top);
 
                             ScreenRefreshed?.Invoke(this, bitmap);
 
