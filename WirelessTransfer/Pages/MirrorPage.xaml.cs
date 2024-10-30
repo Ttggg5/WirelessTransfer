@@ -112,10 +112,12 @@ namespace WirelessTransfer.Pages
                 case CmdType.Mouse:
                     // move mouse
                     MouseCmd mouseCmd = (MouseCmd)e;
-                    SetCursorPos((int)mouseCmd.MousePos.X, (int)mouseCmd.MousePos.Y);
+                    System.Windows.Forms.Cursor.Position = 
+                        new System.Drawing.Point((int)mouseCmd.MousePos.X, (int)mouseCmd.MousePos.Y);
 
                     // do mouse action
-                    mouse_event((int)mouseCmd.MouseAct, (int)mouseCmd.MousePos.X, (int)mouseCmd.MousePos.Y, 0, 0);
+                    if (mouseCmd.MouseAct != MouseAct.None)
+                        mouse_event((int)mouseCmd.MouseAct, (int)mouseCmd.MousePos.X, (int)mouseCmd.MousePos.Y, 0, 0);
                     break;
             }
         }
