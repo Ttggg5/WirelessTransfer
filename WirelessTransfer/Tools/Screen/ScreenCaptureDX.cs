@@ -15,28 +15,22 @@ namespace WirelessTransfer.Tools.Screen
 {
     public class ScreenCaptureDX
     {
-        public EventHandler<Bitmap[]>? ScreenRefreshed;
+        public EventHandler<Bitmap>? ScreenRefreshed;
 
-        private Bitmap[]? previousScreen;
         private bool isRunning;
 
         public int ScreenIndex { get; }
         public int AdapterIndex { get; }
         public int OutputIndex { get; }
-        public int BitmapCount { get; }
-        public Size BitmapSize { get; private set; }
 
         /// <param name="screenIndex"></param>
-        /// <param name="splitTimes">This only split vertically</param>
-        public ScreenCaptureDX(int screenIndex, int splitTimes)
+        public ScreenCaptureDX(int screenIndex)
         {
             ScreenRefreshed = null;
-            previousScreen = null;
             isRunning = false;
             ScreenIndex = screenIndex;
             AdapterIndex = screenIndex / 2;
             OutputIndex = screenIndex % 2;
-            BitmapCount = splitTimes + 1;
         }
 
         public void Start()
@@ -54,8 +48,6 @@ namespace WirelessTransfer.Tools.Screen
             // Width/Height of desktop to capture
             int width = output.Description.DesktopBounds.Right - output.Description.DesktopBounds.Left;
             int height = output.Description.DesktopBounds.Bottom - output.Description.DesktopBounds.Top;
-
-            BitmapSize = new Size(width, height / BitmapCount);
 
             // Create Staging texture CPU-accessible
             var textureDesc = new Texture2DDescription
@@ -98,36 +90,32 @@ namespace WirelessTransfer.Tools.Screen
                             var mapSource = device.ImmediateContext.MapSubresource(screenTexture, 0, MapMode.Read, SharpDX.Direct3D11.MapFlags.None);
                             var sourcePtr = mapSource.DataPointer;
 
-                            var boundsRect = new Rectangle(0, 0, BitmapSize.Width, BitmapSize.Height);
+                            var boundsRect = new Rectangle(0, 0, width, height);
 
-                            var bitmaps = new Bitmap[BitmapCount];
-                            for (int i = 0; i < BitmapCount; i++)
+                            var bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+
+                            // Copy pixels from screen capture Texture to GDI bitmap
+                            var mapDest = bitmap.LockBits(boundsRect, ImageLockMode.WriteOnly, bitmap.PixelFormat);
+                            var destPtr = mapDest.Scan0;
+                            for (int y = 0; y < height; y++)
                             {
-                                bitmaps[i] = new Bitmap(BitmapSize.Width, BitmapSize.Height, PixelFormat.Format32bppArgb);
+                                // Copy a single line 
+                                Utilities.CopyMemory(destPtr, sourcePtr, width * 4);
 
-                                // Copy pixels from screen capture Texture to GDI bitmap
-                                var mapDest = bitmaps[i].LockBits(boundsRect, ImageLockMode.WriteOnly, bitmaps[i].PixelFormat);
-                                var destPtr = mapDest.Scan0;
-                                for (int y = i * BitmapSize.Height; y < (i + 1) * BitmapSize.Height; y++)
-                                {
-                                    // Copy a single line 
-                                    Utilities.CopyMemory(destPtr, sourcePtr, BitmapSize.Width * 4);
-
-                                    // Advance pointers
-                                    sourcePtr = IntPtr.Add(sourcePtr, mapSource.RowPitch);
-                                    destPtr = IntPtr.Add(destPtr, mapDest.Stride);
-                                }
-
-                                // Release source and dest locks
-                                bitmaps[i].UnlockBits(mapDest);
+                                // Advance pointers
+                                sourcePtr = IntPtr.Add(sourcePtr, mapSource.RowPitch);
+                                destPtr = IntPtr.Add(destPtr, mapDest.Stride);
                             }
+
+                            // Release source and dest locks
+                            bitmap.UnlockBits(mapDest);
+
                             device.ImmediateContext.UnmapSubresource(screenTexture, 0);
 
-                            ScreenRefreshed?.Invoke(this, bitmaps);
+                            ScreenRefreshed?.Invoke(this, bitmap);
 
                             screenResource.Dispose();
                             duplicatedOutput.ReleaseFrame();
-                            previousScreen = bitmaps;
                             GC.Collect();
                         }
                         catch (SharpDXException e)

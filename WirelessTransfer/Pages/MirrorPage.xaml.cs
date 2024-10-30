@@ -152,19 +152,19 @@ namespace WirelessTransfer.Pages
                 }
             }
 
-            screenCaptureDX = new ScreenCaptureDX(0, 0);
+            screenCaptureDX = new ScreenCaptureDX(0);
             screenCaptureDX.ScreenRefreshed += screenCaptureDX_ScreenRefreshed;
             screenCaptureDX.Start();
         }
 
-        private void screenCaptureDX_ScreenRefreshed(object? sender, Bitmap[] e)
+        private void screenCaptureDX_ScreenRefreshed(object? sender, Bitmap e)
         {
             if (myTcpServer != null)
             {
                 lock (myTcpServer.ConnectedClients)
                 {
                     if (myTcpServer.ConnectedClients.Count > 0)
-                        myTcpServer.SendCmd(new ScreenCmd(e.First()), myTcpServer.ConnectedClients.First());
+                        myTcpServer.SendCmd(new ScreenCmd(e), myTcpServer.ConnectedClients.First());
                 }
             }
         }

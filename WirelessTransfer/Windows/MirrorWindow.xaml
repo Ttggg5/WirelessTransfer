@@ -9,7 +9,7 @@
         Height="450" Width="800"
         MinHeight="450" MinWidth="800"
         Closing="Window_Closing">
-    <Grid Background="{StaticResource MainColor2Brush}">
+    <Grid Background="Black">
         <Image x:Name="screenImg"
                MouseMove="screenImg_MouseMove"
                SizeChanged="screenImg_SizeChanged"
