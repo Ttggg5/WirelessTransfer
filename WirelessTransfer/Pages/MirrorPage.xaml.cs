@@ -32,7 +32,7 @@ namespace WirelessTransfer.Pages
 
             inputSimulator = new InputSimulator();
 
-            maskGrid.Visibility = Visibility.Collapsed;
+            maskBorder.Visibility = Visibility.Collapsed;
             waitRespondSp.Visibility = Visibility.Collapsed;
             disconnectSp.Visibility = Visibility.Collapsed;
 
@@ -44,7 +44,7 @@ namespace WirelessTransfer.Pages
         private void deviceFinder_DeviceChoosed(object? sender, CustomControls.DeviceTag e)
         {
             deviceFinder.StopSearching();
-            maskGrid.Visibility = Visibility.Visible;
+            maskBorder.Visibility = Visibility.Visible;
             waitRespondSp.Visibility = Visibility.Visible;
 
             myTcpServer = new MyTcpServer(tcpPort);
@@ -190,7 +190,7 @@ namespace WirelessTransfer.Pages
         {
             Disconnect();
 
-            maskGrid.Visibility = Visibility.Collapsed;
+            maskBorder.Visibility = Visibility.Collapsed;
             waitRespondSp.Visibility = Visibility.Collapsed;
             disconnectSp.Visibility = Visibility.Collapsed;
 

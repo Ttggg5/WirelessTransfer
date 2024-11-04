@@ -47,38 +47,41 @@
             <Image x:Name="qrCodeImg"/>
         </Grid>
 
-        <Grid Grid.ColumnSpan="2"
-              x:Name="maskGrid"
-              Background="#CC000000">
-            <StackPanel x:Name="waitRespondSp"
-                        VerticalAlignment="Center">
-                <mp:WaveAnimation Width="100" Height="100"
-                                  Color="{StaticResource MainColorBrush}"
-                                  Duration="0:0:2.0" />
-                <TextBlock Text="等待對方確認"
-                           HorizontalAlignment="Center"
-                           FontSize="20"
-                           FontWeight="Bold"
-                           Foreground="White"/>
-            </StackPanel>
+        <Border Grid.ColumnSpan="2"
+                x:Name="maskBorder"
+                Background="#CC000000"
+                CornerRadius="10">
+            <Grid>
+                <StackPanel x:Name="waitRespondSp"
+                            VerticalAlignment="Center">
+                    <mp:WaveAnimation Width="100" Height="100"
+                                      Color="{StaticResource MainColorBrush}"
+                                      Duration="0:0:2.0" />
+                    <TextBlock Text="等待對方確認"
+                               HorizontalAlignment="Center"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               Foreground="White"/>
+                </StackPanel>
 
-            <StackPanel x:Name="disconnectSp"
-                        VerticalAlignment="Center">
-                <TextBlock Text="已成功連線"
-                           HorizontalAlignment="Center"
-                           FontSize="20"
-                           FontWeight="Bold"
-                           Foreground="White"/>
-                <TextBlock Text="傳輸中..."
-                           HorizontalAlignment="Center"
-                           FontSize="20"
-                           FontWeight="Bold"
-                           Foreground="White"/>
-                <Button x:Name="disconnectBtn"
-                        Width="100" Height="30"
-                        Content="Disconnect"
-                        Click="disconnectBtn_Click"/>
-            </StackPanel>
-        </Grid>
+                <StackPanel x:Name="disconnectSp"
+                            VerticalAlignment="Center">
+                    <TextBlock Text="已成功連線"
+                               HorizontalAlignment="Center"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               Foreground="White"/>
+                    <TextBlock Text="分享中..."
+                               HorizontalAlignment="Center"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               Foreground="White"/>
+                    <Button x:Name="disconnectBtn"
+                            Width="100" Height="30"
+                            Content="Disconnect"
+                            Click="disconnectBtn_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
     </Grid>
 </Page>

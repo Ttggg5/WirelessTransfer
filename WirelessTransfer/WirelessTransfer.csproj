@@ -16,12 +16,21 @@
     <None Remove="Assets\back_arrow_pressed.png" />
     <None Remove="Assets\down_arrow.png" />
     <None Remove="Assets\extend_screen_icon.png" />
-    <None Remove="Assets\file-arrow-down-solid.png" />
-    <None Remove="Assets\file-arrow-up-solid.png" />
+    <None Remove="Assets\file_icon.png" />
     <None Remove="Assets\file_sharing_icon.png" />
+    <None Remove="Assets\image_icon.png" />
     <None Remove="Assets\mirror_icon.png" />
+    <None Remove="Assets\music_icon.png" />
     <None Remove="Assets\setting_icon.png" />
+    <None Remove="Assets\trash_icon.png" />
+    <None Remove="Assets\video_icon.png" />
     <None Remove="Assets\wifi_icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\music_icon.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>
@@ -44,9 +53,13 @@
     <Resource Include="Assets\extend_screen_icon.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Assets\file-arrow-down-solid.png" />
-    <Resource Include="Assets\file-arrow-up-solid.png" />
+    <Resource Include="Assets\file_icon.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Assets\file_sharing_icon.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\image_icon.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\mirror_icon.png">
@@ -55,10 +68,21 @@
     <Resource Include="Assets\setting_icon.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Assets\trash_icon.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\video_icon.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Assets\wifi_icon.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Pages\FileIconResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileIconResources.resx</DependentUpon>
+    </Compile>
     <Compile Update="Pages\PageIconResources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -72,6 +96,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Pages\FileIconResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileIconResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="Pages\PageIconResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>PageIconResources.Designer.cs</LastGenOutput>

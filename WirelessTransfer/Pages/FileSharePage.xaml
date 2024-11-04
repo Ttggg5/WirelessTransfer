@@ -3,12 +3,162 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:WirelessTransfer.Pages"
+      xmlns:local="clr-namespace:WirelessTransfer.Pages" xmlns:customcontrols="clr-namespace:WirelessTransfer.CustomControls" xmlns:mp="http://schemas.mpcoding.com/mpcoding/wpf/loadinganimation"
       mc:Ignorable="d" 
       d:DesignHeight="410" d:DesignWidth="540"
       Title="FileSharePage">
-
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Styles/ScrollBarStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+    
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0">
+            <customcontrols:DeviceFinder x:Name="deviceFinder"/>
+        </Grid>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Label Grid.Row="0"
+                   FontSize="30"
+                   FontWeight="Bold"
+                   Foreground="White"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Bottom">
+                <Grid>
+                    <TextBlock Text="掃描QR Code"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="以直接連接"
+                               HorizontalAlignment="Center"
+                               Margin="0, 35, 0, 0"/>
+                </Grid>
+            </Label>
+
+            <Image Grid.Row="1"
+                   Source="/Assets/down_arrow.png"/>
+
+            <Image x:Name="qrCodeImg"/>
+        </Grid>
+
+        <Border Grid.ColumnSpan="2"
+                x:Name="maskBorder"
+                Background="#CC000000"
+                CornerRadius="10">
+            <Grid>
+                <StackPanel x:Name="waitRespondSp"
+                            VerticalAlignment="Center">
+                    <mp:WaveAnimation Width="100" Height="100"
+                                      Color="{StaticResource MainColorBrush}"
+                                      Duration="0:0:2.0" />
+                    <TextBlock Text="等待對方確認"
+                               HorizontalAlignment="Center"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               Foreground="White"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Border Grid.ColumnSpan="2"
+                Background="{StaticResource MainColor2Brush}"
+                CornerRadius="10">
+            <Border CornerRadius="10"
+                    BorderBrush="White"
+                    BorderThickness="2"
+                    Margin="10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="2*"/>
+                        <RowDefinition Height="12*"/>
+                        <RowDefinition Height="2*"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+                        <TextBlock Text="選擇檔案"
+                                   FontSize="20"
+                                   Foreground="White"
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center"
+                                   Margin="15, 0, 0, 0"/>
+
+                        <Button x:Name="addFileBtn"
+                                Width="80" Height="30"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Margin="0, 0, 15, 0"
+                                Click="addFileBtn_Click">
+                            <Button.Resources>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type Button}">
+                                                <Border Name="border"
+                                                        Background="#FF279174"
+                                                        CornerRadius="8">
+                                                    <Grid VerticalAlignment="Center"
+                                                          Margin="5">
+                                                        <Grid HorizontalAlignment="Left"
+                                                              VerticalAlignment="Center"
+                                                              Margin="5, 0, 0, 0">
+                                                            <Border Background="White"
+                                                                    Width="5" Height="15"/>
+                                                            <Border Background="White"
+                                                                    Width="15" Height="5"/>
+                                                        </Grid>
+
+                                                        <TextBlock Text="新增"
+                                                                   FontSize="16"
+                                                                   Foreground="White"
+                                                                   VerticalAlignment="Center"
+                                                                   HorizontalAlignment="Right"
+                                                                   Margin="0, 0, 10, 0"/>
+                                                    </Grid>
+                                                </Border>
+
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" TargetName="border" Value="#FF4FAB92"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter Property="Background" TargetName="border" Value="#FF2C6757"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
+                    </Grid>
+
+                    <Grid Grid.Row="1">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel x:Name="fileTagSp"
+                                        HorizontalAlignment="Center">
+                                
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+
+                    <Grid Grid.Row="2">
+                        
+                    </Grid>
+                </Grid>
+            </Border>
+        </Border>
     </Grid>
 </Page>
