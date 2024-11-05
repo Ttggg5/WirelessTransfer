@@ -43,13 +43,21 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Assets\back_arrow_hover.png" />
+    <Resource Include="Assets\back_arrow_hover.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Assets\back_arrow.png" />
-    <Resource Include="Assets\back_arrow_pressed.png" />
-    <Resource Include="Assets\down_arrow.png" />
+    <Resource Include="Assets\back_arrow.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\back_arrow_pressed.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\down_arrow.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Assets\extend_screen_icon.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -74,11 +82,13 @@
     <Resource Include="Assets\video_icon.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Assets\wifi_icon.png" />
+    <Resource Include="Assets\wifi_icon.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Pages\FileIconResources.Designer.cs">
+    <Compile Update="CustomControls\FileIconResources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>FileIconResources.resx</DependentUpon>
@@ -96,7 +106,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Pages\FileIconResources.resx">
+    <EmbeddedResource Update="CustomControls\FileIconResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>FileIconResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>

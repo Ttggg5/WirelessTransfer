@@ -144,6 +144,30 @@ namespace WirelessTransfer.Pages
                         case RequestType.Extend:
                             break;
                         case RequestType.FileShare:
+                            MessageWindow messageWindow = new MessageWindow(
+                                "\"" + requestCmd.DeviceName + "\" 正在嘗試與你分享檔案，是否要接受連接?", true);
+                            messageWindow.Topmost = true;
+                            if (!(bool)messageWindow.ShowDialog())
+                            {
+                                // refuse
+                                tmpBytes = new ReplyCmd(ReplyType.Refuse).Encode();
+                                udpListen.Send(tmpBytes, tmpBytes.Length, remoteEP);
+                            }
+                            else
+                            {
+                                // accept
+                                tmpBytes = new ReplyCmd(ReplyType.Accept).Encode();
+                                udpListen.Send(tmpBytes, tmpBytes.Length, remoteEP);
+
+                                MyTcpClient myTcpClient = new MyTcpClient(remoteEP.Address, tcpPort, Environment.MachineName);
+                                StopListening();
+
+                                FileReceiveWindow fileShareWindow = new FileReceiveWindow(myTcpClient);
+                                fileShareWindow.ShowDialog();
+
+                                myTcpClient.Disconnect();
+                                ListenForConnections();
+                            }
                             break;
                     }
                 }

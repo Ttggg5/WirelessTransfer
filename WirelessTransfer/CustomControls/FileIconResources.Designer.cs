@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WirelessTransfer.Pages {
+namespace WirelessTransfer.CustomControls {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace WirelessTransfer.Pages {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WirelessTransfer.Pages.FileIconResources", typeof(FileIconResources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WirelessTransfer.CustomControls.FileIconResources", typeof(FileIconResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

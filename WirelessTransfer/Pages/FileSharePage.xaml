@@ -3,7 +3,9 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:WirelessTransfer.Pages" xmlns:customcontrols="clr-namespace:WirelessTransfer.CustomControls" xmlns:mp="http://schemas.mpcoding.com/mpcoding/wpf/loadinganimation"
+      xmlns:local="clr-namespace:WirelessTransfer.Pages"
+      xmlns:customcontrols="clr-namespace:WirelessTransfer.CustomControls"
+      xmlns:mp="http://schemas.mpcoding.com/mpcoding/wpf/loadinganimation"
       mc:Ignorable="d" 
       d:DesignHeight="410" d:DesignWidth="540"
       Title="FileSharePage">
@@ -14,7 +16,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Page.Resources>
-    
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="300"/>
@@ -22,7 +24,56 @@
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Column="0">
-            <customcontrols:DeviceFinder x:Name="deviceFinder"/>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="7*"/>
+            </Grid.RowDefinitions>
+
+            <Button x:Name="changeFileBtn"
+                    Margin="20, 20, 20, 0"
+                    Click="changeFileBtn_Click">
+                <Button.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Button}">
+                                    <Border Name="border"
+                                            Background="#FF279174"
+                                            CornerRadius="8">
+                                        <Border.Effect>
+                                            <DropShadowEffect Opacity="0.5"
+                                                              BlurRadius="20"
+                                                              ShadowDepth="3"/>
+                                        </Border.Effect>
+                                        
+                                        <Grid VerticalAlignment="Center"
+                                              Margin="5">
+                                            <TextBlock Text="更換檔案"
+                                                       FontSize="16"
+                                                       Foreground="White"
+                                                       VerticalAlignment="Center"
+                                                       HorizontalAlignment="Center"
+                                                       Margin="0, 0, 0, 0"/>
+                                        </Grid>
+                                    </Border>
+
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" TargetName="border" Value="#FF4FAB92"/>
+                                        </Trigger>
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter Property="Background" TargetName="border" Value="#FF2C6757"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Button.Resources>
+            </Button>
+            
+            <customcontrols:DeviceFinder Grid.Row="1"
+                                         x:Name="deviceFinder"/>
         </Grid>
 
         <Grid Grid.Column="1">
@@ -56,7 +107,8 @@
         <Border Grid.ColumnSpan="2"
                 x:Name="maskBorder"
                 Background="#CC000000"
-                CornerRadius="10">
+                CornerRadius="10"
+                Visibility="Collapsed">
             <Grid>
                 <StackPanel x:Name="waitRespondSp"
                             VerticalAlignment="Center">
@@ -73,8 +125,10 @@
         </Border>
 
         <Border Grid.ColumnSpan="2"
+                x:Name="chooseFileBorder"
                 Background="{StaticResource MainColor2Brush}"
-                CornerRadius="10">
+                CornerRadius="10"
+                Visibility="Visible">
             <Border CornerRadius="10"
                     BorderBrush="White"
                     BorderThickness="2"
@@ -109,11 +163,17 @@
                                                 <Border Name="border"
                                                         Background="#FF279174"
                                                         CornerRadius="8">
+                                                    <Border.Effect>
+                                                        <DropShadowEffect Opacity="0.5"
+                                                                          BlurRadius="20"
+                                                                          ShadowDepth="3"/>
+                                                    </Border.Effect>
+                                                    
                                                     <Grid VerticalAlignment="Center"
                                                           Margin="5">
                                                         <Grid HorizontalAlignment="Left"
                                                               VerticalAlignment="Center"
-                                                              Margin="5, 0, 0, 0">
+                                                              Margin="10, 0, 0, 0">
                                                             <Border Background="White"
                                                                     Width="5" Height="15"/>
                                                             <Border Background="White"
@@ -146,16 +206,78 @@
                     </Grid>
 
                     <Grid Grid.Row="1">
-                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                      Margin="0, 5, 0, 5">
                             <StackPanel x:Name="fileTagSp"
                                         HorizontalAlignment="Center">
-                                
+
                             </StackPanel>
                         </ScrollViewer>
                     </Grid>
 
-                    <Grid Grid.Row="2">
-                        
+                    <Grid Grid.Row="2"
+                          HorizontalAlignment="Right"
+                          VerticalAlignment="Center">
+                        <WrapPanel>
+                            <TextBlock Text="總計:"
+                                       FontSize="14"
+                                       Foreground="White"
+                                       VerticalAlignment="Center"
+                                       Margin="0, 0, 10, 0"/>
+                            <TextBlock x:Name="totalSizeTb"
+                                       Text="0Bytes"
+                                       FontSize="14"
+                                       Foreground="White"
+                                       VerticalAlignment="Center"
+                                       Margin="0, 0, 10, 0"/>
+
+                            <Button x:Name="confirmBtn"
+                                    Width="100" Height="30"
+                                    Margin="0, 0, 15, 0"
+                                    Click="confirmBtn_Click">
+                                <Button.Resources>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type Button}">
+                                                    <Border Name="border"
+                                                            Background="#FF279174"
+                                                            CornerRadius="8">
+                                                        <Border.Effect>
+                                                            <DropShadowEffect Opacity="0.5"
+                                                                              BlurRadius="20"
+                                                                              ShadowDepth="3"/>
+                                                        </Border.Effect>
+                                                    
+                                                        <Grid VerticalAlignment="Center"
+                                                              Margin="5">
+                                                            <TextBlock Text="確認"
+                                                                       FontSize="16"
+                                                                       Foreground="White"
+                                                                       VerticalAlignment="Center"
+                                                                       HorizontalAlignment="Center"
+                                                                       Margin="0, 0, 0, 0"/>
+                                                        </Grid>
+                                                    </Border>
+
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Background" TargetName="border" Value="#FF4FAB92"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsPressed" Value="True">
+                                                            <Setter Property="Background" TargetName="border" Value="#FF2C6757"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsEnabled" Value="False">
+                                                            <Setter Property="Background" TargetName="border" Value="gray"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </Button.Resources>
+                            </Button>
+                        </WrapPanel>
                     </Grid>
                 </Grid>
             </Border>

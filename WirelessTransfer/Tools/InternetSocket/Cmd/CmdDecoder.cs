@@ -167,8 +167,10 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
                     cmd = new ClientInfoCmd(data);
                     break;
                 case CmdType.FileData:
+                    cmd = new FileDataCmd(data);
                     break;
                 case CmdType.FileInfo:
+                    cmd = new FileInfoCmd(data);
                     break;
                 case CmdType.Reply:
                     cmd = new ReplyCmd(data);

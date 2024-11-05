@@ -74,7 +74,7 @@ namespace WirelessTransfer.Pages
                     
                     break;
                 case PageFunction.FileShare:
-
+                    ((FileSharePage)page).StopAll();
                     break;
                 case PageFunction.Setting:
                     break;
