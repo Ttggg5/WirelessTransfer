@@ -62,6 +62,7 @@ namespace WirelessTransfer.Pages
 
             myTcpServer = new MyTcpServer(tcpPort);
             myTcpServer.Start(MAX_CLIENT);
+            fileSendWindow = new FileSendWindow(myTcpServer);
 
             Dispatcher.BeginInvoke(() =>
             {
