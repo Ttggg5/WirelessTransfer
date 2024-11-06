@@ -36,6 +36,7 @@ namespace WirelessTransfer.Pages
         int udpPort, tcpPort;
         long totalSize = 0;
         MyTcpServer myTcpServer;
+        FileSendWindow fileSendWindow;
 
         public FileSharePage()
         {
@@ -60,10 +61,12 @@ namespace WirelessTransfer.Pages
             maskBorder.Visibility = Visibility.Visible;
 
             myTcpServer = new MyTcpServer(tcpPort);
-            myTcpServer.ClientConnected += myTcpServer_ClientConnected;
-            myTcpServer.ClientDisconnected += myTcpServer_ClientDisconnected;
-            myTcpServer.ReceivedCmd += myTcpServer_ReceivedCmd;
             myTcpServer.Start(MAX_CLIENT);
+
+            Dispatcher.BeginInvoke(() =>
+            {
+                fileSendWindow = new FileSendWindow(myTcpServer);
+            });
 
             // send request
             UdpClient udpClient = new UdpClient();
@@ -91,6 +94,18 @@ namespace WirelessTransfer.Pages
                                 maskBorder.Visibility = Visibility.Collapsed;
                             });
                         }
+                        else if (replyCmd.ReplyType == ReplyType.Accept)
+                        {
+                            Dispatcher.BeginInvoke(() =>
+                            {
+                                foreach (FileTag ft in fileTagSp.Children)
+                                {
+                                    fileSendWindow.AddFile(ft.FilePath, ft.FileName, ft.FileSize);
+                                }
+                                fileSendWindow.ShowDialog();
+                                maskBorder.Visibility = Visibility.Collapsed;
+                            });
+                        }
                     }
                 }
                 else
@@ -105,21 +120,6 @@ namespace WirelessTransfer.Pages
                 }
                 udpClient.Close();
             });
-        }
-
-        private void myTcpServer_ReceivedCmd(object? sender, Cmd e)
-        {
-            
-        }
-
-        private void myTcpServer_ClientDisconnected(object? sender, MyTcpClientInfo e)
-        {
-            
-        }
-
-        private void myTcpServer_ClientConnected(object? sender, MyTcpClientInfo e)
-        {
-            
         }
 
         private void addFileBtn_Click(object sender, RoutedEventArgs e)

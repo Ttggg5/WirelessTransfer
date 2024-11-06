@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ini;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using WirelessTransfer.CustomControls;
 using WirelessTransfer.Tools.InternetSocket.Cmd;
 using WirelessTransfer.Tools.InternetSocket.MyTcp;
 
@@ -56,8 +58,31 @@ namespace WirelessTransfer.Windows
             switch (e.CmdType)
             {
                 case CmdType.FileInfo:
+                    FileInfoCmd fic = (FileInfoCmd)e;
+                    string filePath = IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.ReceivePath, IniFile.DEFAULT_PATH) 
+                        + "\\" + fic.FileName;
+                    FileShareProgressTag fspt = new FileShareProgressTag(filePath, fic.FileName, fic.FileSize, fic.MD5, false);
+                    fspt.Margin = new Thickness(10);
+                    progressTagSp.Children.Add(fspt);
                     break;
                 case CmdType.FileData:
+                    FileDataCmd fdc = (FileDataCmd)e;
+                    Dispatcher.Invoke(() =>
+                    {
+                        foreach (FileShareProgressTag fspt in progressTagSp.Children)
+                        {
+                            if (fspt.FileName.Equals(fdc.FileName))
+                            {
+                                fspt.WriteDataToFile(fdc.FileData);
+                                break;
+                            }
+                        }
+                    });
+                    break;
+                case CmdType.Request:
+                    RequestCmd rc = (RequestCmd)e;
+                    if (rc.RequestType == RequestType.FileShare)
+                        myTcpClient.SendCmd(new ReplyCmd(ReplyType.Accept));
                     break;
             }
         }

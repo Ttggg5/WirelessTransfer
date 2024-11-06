@@ -82,14 +82,14 @@
                                    VerticalAlignment="Bottom"/>
                     </Grid>
 
-                    <Grid x:Name="downloadingGrid"
+                    <Grid x:Name="processingGrid"
                           Margin="0, 5, 0, 5"
                           Visibility="Collapsed">
                         <mp:DonutSpinner Width="20" Height="20"
                                          SpinnerColor="{StaticResource MainColorBrush}"
                                          VerticalAlignment="Top"/>
 
-                        <TextBlock Text="Downloading..."
+                        <TextBlock Text="Processing..."
                                    FontSize="12"
                                    Foreground="White"
                                    HorizontalAlignment="Center"
