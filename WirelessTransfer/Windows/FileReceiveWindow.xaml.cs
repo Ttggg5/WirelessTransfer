@@ -61,9 +61,12 @@ namespace WirelessTransfer.Windows
                     FileInfoCmd fic = (FileInfoCmd)e;
                     string filePath = IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.ReceivePath, IniFile.DEFAULT_PATH) 
                         + "\\" + fic.FileName;
-                    FileShareProgressTag fspt = new FileShareProgressTag(filePath, fic.FileName, fic.FileSize, fic.MD5, false);
-                    fspt.Margin = new Thickness(10);
-                    progressTagSp.Children.Add(fspt);
+                    Dispatcher.Invoke(() =>
+                    {
+                        FileShareProgressTag fspt = new FileShareProgressTag(filePath, fic.FileName, fic.FileSize, fic.MD5, false);
+                        fspt.Margin = new Thickness(10);
+                        progressTagSp.Children.Add(fspt);
+                    });
                     break;
                 case CmdType.FileData:
                     FileDataCmd fdc = (FileDataCmd)e;
