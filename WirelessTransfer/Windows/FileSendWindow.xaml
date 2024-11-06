@@ -1,14 +1,12 @@
-﻿<Window x:Class="WirelessTransfer.Windows.FileReceiveWindow"
+﻿<Window x:Class="WirelessTransfer.Windows.FileSendWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WirelessTransfer.Windows"
-        xmlns:custombuttons="clr-namespace:WirelessTransfer.CustomButtons"
+        xmlns:local="clr-namespace:WirelessTransfer.Windows" xmlns:custombuttons="clr-namespace:WirelessTransfer.CustomButtons"
         mc:Ignorable="d"
-        Title="FileReceiveWindow"
-        Height="500" Width="700"
-        WindowStartupLocation="CenterScreen"
+        Title="FileSendWindow" 
+        Height="500" Width="600"
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent">
@@ -19,7 +17,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
-    
+
     <Border Background="#FF313131"
             CornerRadius="10"
             Margin="10">
@@ -51,7 +49,7 @@
                           MouseLeftButtonDown="titlebar_MouseLeftButtonDown"/>
 
                     <TextBlock x:Name="curPageLb"
-                               Text="File receive"
+                               Text="File send"
                                Foreground="White"
                                FontSize="16"
                                FontWeight="Bold"
@@ -72,33 +70,26 @@
             </Border>
 
             <Grid Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="3*"/>
-                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="6*"/>
+                </Grid.RowDefinitions>
 
-                <Grid Grid.Column="0"
+                <Grid Grid.Row="0"
                       VerticalAlignment="Center">
-                    <TextBlock x:Name="fileCompleteTb"
-                               Text="已完成0個下載"
-                               Foreground="White"
-                               FontSize="20"
-                               FontWeight="Bold"
-                               HorizontalAlignment="Center"/>
-
                     <TextBlock x:Name="fileLeftTb"
-                               Text="剩餘0個下載"
+                               Text="剩餘0個檔案"
                                Foreground="White"
                                FontSize="20"
                                FontWeight="Bold"
-                               HorizontalAlignment="Center"
-                               Margin="0, 30, 0, 0"/>
+                               HorizontalAlignment="Right"
+                               Margin="0, 0, 40, 0"/>
                 </Grid>
 
-                <Grid Grid.Column="1">
+                <Grid Grid.Row="1">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel x:Name="progressTagSp">
-                            
+
                         </StackPanel>
                     </ScrollViewer>
                 </Grid>
