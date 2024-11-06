@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:WirelessTransfer.CustomControls"
              xmlns:mp="http://schemas.mpcoding.com/mpcoding/wpf/loadinganimation"
              mc:Ignorable="d" 
-             d:DesignHeight="200" d:DesignWidth="500">
+             Height="200" Width="500">
     <Border Background="{StaticResource MainColor2Brush}"
             CornerRadius="10"
             Margin="5">

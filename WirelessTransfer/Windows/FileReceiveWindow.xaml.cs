@@ -87,9 +87,25 @@ namespace WirelessTransfer.Windows
             }
         }
 
+        private void closeBtn_Click(object sender, MouseButtonEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void minimizeBtn_Click(object sender, MouseButtonEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
+
         private void titlebar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             DragMove();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            myTcpClient.SendCmd(new RequestCmd(RequestType.Disconnect, Environment.MachineName));
+            myTcpClient.Disconnect();
         }
     }
 }
