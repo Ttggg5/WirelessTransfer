@@ -144,7 +144,8 @@ namespace WirelessTransfer.Windows
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            myTcpServer.SendCmd(new RequestCmd(RequestType.Disconnect, Environment.MachineName), myTcpServer.ConnectedClients.FirstOrDefault());
+            if (myTcpServer.ConnectedClients.FirstOrDefault() != null)
+                myTcpServer.SendCmd(new RequestCmd(RequestType.Disconnect, Environment.MachineName), myTcpServer.ConnectedClients.First());
             myTcpServer.Stop();
         }
     }

@@ -39,7 +39,8 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
 
         public override byte[] Encode()
         {
-            Data = Encoding.UTF8.GetBytes(ClientName.Length.ToString("000") + ClientName + IP.ToString());
+            byte[] tmp = Encoding.UTF8.GetBytes(ClientName);
+            Data = Encoding.UTF8.GetBytes(tmp.Length.ToString("000") + ClientName + IP.ToString());
             return AddHeadTail(Data);
         }
 

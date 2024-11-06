@@ -11,7 +11,7 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
     {
         // Correct message format:
         //---------------------------------------------------------------------------------
-        // data = fileNameLength + fileName + fileSize + "," + mD5
+        // data = fileNameLength + fileName + fileSize + "," + md5
         //---------------------------------------------------------------------------------
         // fileNameLength: 3 bytes to present (fill 0 in front if it not full).
 
@@ -22,11 +22,11 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
         /// <summary>
         /// For sender.
         /// </summary>
-        public FileInfoCmd(string fileName, long fileSize, string mD5)
+        public FileInfoCmd(string fileName, long fileSize, string md5)
         {
             FileName = fileName;
             FileSize = fileSize;
-            MD5 = mD5;
+            MD5 = md5;
             CmdType = CmdType.FileInfo;
         }
 
@@ -41,7 +41,8 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
 
         public override byte[] Encode()
         {
-            Data = Encoding.UTF8.GetBytes(FileName.Length.ToString("000") + FileName + 
+            byte[] tmp = Encoding.UTF8.GetBytes(FileName);
+            Data = Encoding.UTF8.GetBytes(tmp.Length.ToString("000") + FileName + 
                 FileSize.ToString() + "," + MD5);
             return AddHeadTail(Data);
         }
