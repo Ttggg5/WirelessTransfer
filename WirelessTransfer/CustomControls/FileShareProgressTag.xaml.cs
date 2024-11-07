@@ -59,7 +59,6 @@ namespace WirelessTransfer.CustomControls
             CurProgress = 0;
             if (isReceiver)
             {
-                MD5 = string.Empty;
                 if (File.Exists(filePath))
                     FilePath = GetNonDuplicateFilePath(filePath);
             }
@@ -85,7 +84,7 @@ namespace WirelessTransfer.CustomControls
             string extension = Path.GetExtension(filePath);
             while (true)
             {
-                result = Path.GetFileNameWithoutExtension(filePath) + "(" + count + ")" + extension;
+                result = Path.ChangeExtension(filePath, "") + "(" + count + ")" + extension;
                 count++;
 
                 if (!File.Exists(result)) break;

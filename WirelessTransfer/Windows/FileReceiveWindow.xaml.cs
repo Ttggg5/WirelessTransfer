@@ -122,10 +122,7 @@ namespace WirelessTransfer.Windows
             if (leftCount > 0)
             {
                 MessageWindow messageWindow = new MessageWindow("傳輸尚未完成，確定要取消嗎?", true);
-                if ((bool)messageWindow.ShowDialog())
-                {
-                    Close();
-                }
+                if ((bool)messageWindow.ShowDialog()) Close();
             }
             else Close();
         }
