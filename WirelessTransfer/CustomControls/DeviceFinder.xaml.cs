@@ -20,12 +20,20 @@ using WirelessTransfer.Tools.InternetSocket.MyUdp;
 
 namespace WirelessTransfer.CustomControls
 {
+    public enum DeviceFinderState
+    {
+        Searching,
+        Stoped,
+    }
+
     /// <summary>
     /// DeviceFinder.xaml 的互動邏輯
     /// </summary>
     public partial class DeviceFinder : System.Windows.Controls.UserControl
     {
         public event EventHandler<DeviceTag> DeviceChoosed;
+
+        public DeviceFinderState State { get; private set; }
 
         const int SEARCH_CYCLE = 1; // unit is "second"
 
@@ -41,6 +49,8 @@ namespace WirelessTransfer.CustomControls
             port = int.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.UdpPort, IniFile.DEFAULT_PATH));
             deviceTags = new List<DeviceTag>();
 
+            State = DeviceFinderState.Stoped;
+
             /*
             DeviceTag deviceTag = new DeviceTag("test", IPAddress.Any);
             deviceTag.Width = 230;
@@ -51,6 +61,8 @@ namespace WirelessTransfer.CustomControls
 
         public void StartSearching()
         {
+            if (State == DeviceFinderState.Searching) return;
+
             if (searchClient == null)
             {
                 searchClient = new UdpClient();
@@ -92,6 +104,7 @@ namespace WirelessTransfer.CustomControls
                     }
                     catch (ObjectDisposedException) { }
                 });
+                State = DeviceFinderState.Searching;
             }
         }
 
@@ -135,12 +148,14 @@ namespace WirelessTransfer.CustomControls
             {
                 searchClient?.Close();
                 searchClient = null;
+                State = DeviceFinderState.Stoped;
             }
         }
 
         public void StopSearching()
         {
             searchClient?.Close();
+            State = DeviceFinderState.Stoped;
         }
 
         private void foundDevicesListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

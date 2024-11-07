@@ -111,7 +111,7 @@ namespace WirelessTransfer.Windows
                     break;
                 case CmdType.Request:
                     RequestCmd rc = (RequestCmd)e;
-                    if (rc.RequestType == RequestType.Disconnect) Close();
+                    if (rc.RequestType == RequestType.Disconnect) myTcpClient.Disconnect();
                     break;
             }
         }
@@ -120,6 +120,7 @@ namespace WirelessTransfer.Windows
         {
             myTcpClient.SendCmd(new RequestCmd(RequestType.Disconnect, Environment.MachineName));
             myTcpClient.Disconnect();
+            frameSw.Stop();
             System.Windows.Forms.Cursor.Show();
         }
 

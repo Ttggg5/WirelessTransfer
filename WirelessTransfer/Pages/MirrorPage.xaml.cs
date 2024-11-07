@@ -107,10 +107,11 @@ namespace WirelessTransfer.Pages
                     RequestCmd rc = (RequestCmd)e;
                     if (rc.RequestType == RequestType.Disconnect)
                     {
-                        Dispatcher.BeginInvoke(() =>
+                        try
                         {
-                            disconnectBtn_Click(sender, null);
-                        });
+                            myTcpServer.SendCmd(new ReplyCmd(ReplyType.Accept), myTcpServer.ConnectedClients.First());
+                        }
+                        catch { }
                     }
                     break;
                 case CmdType.Mouse:
@@ -138,7 +139,7 @@ namespace WirelessTransfer.Pages
 
         private void myTcpServer_ClientDisconnected(object? sender, MyTcpClientInfo e)
         {
-            Dispatcher.BeginInvoke(() =>
+            Dispatcher.Invoke(() =>
             {
                 disconnectBtn_Click(sender, null);
             });
@@ -170,13 +171,13 @@ namespace WirelessTransfer.Pages
 
         private void screenCaptureDX_ScreenRefreshed(object? sender, Bitmap e)
         {
-            if (myTcpServer != null)
+            if (myTcpServer.CurState == MyTcpServerState.Listening)
             {
-                lock (myTcpServer.ConnectedClients)
+                try
                 {
-                    if (myTcpServer.ConnectedClients.Count > 0)
-                        myTcpServer.SendCmd(new ScreenCmd(e), myTcpServer.ConnectedClients.First());
+                    myTcpServer.SendCmd(new ScreenCmd(e), myTcpServer.ConnectedClients.First());
                 }
+                catch { }
             }
         }
 
@@ -200,15 +201,14 @@ namespace WirelessTransfer.Pages
         private void Disconnect()
         {
             screenCaptureDX?.Stop();
-            if (myTcpServer != null)
+            if (myTcpServer.CurState == MyTcpServerState.Listening)
             {
-                lock (myTcpServer.ConnectedClients)
+                try
                 {
-                    if (myTcpServer.ConnectedClients.Count > 0)
-                        myTcpServer.SendCmd(new RequestCmd(RequestType.Disconnect, Environment.MachineName), myTcpServer.ConnectedClients.First());
+                    myTcpServer.SendCmd(new RequestCmd(RequestType.Disconnect, Environment.MachineName), myTcpServer.ConnectedClients.First());
                 }
+                catch { }
                 myTcpServer?.Stop();
-                myTcpServer = null;
             }
         }
     }
