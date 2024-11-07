@@ -62,13 +62,30 @@
 
                 <Grid Grid.Column="0">
                     <ProgressBar x:Name="pb"
-                                 Foreground="{StaticResource MainColorBrush}"
-                                 Background="#FF8A8A8A"
-                                 BorderThickness="0"
+                                 Value="0"
                                  Margin="20, 15, 5, 15">
                         <ProgressBar.Resources>
-                            <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="8"/>
+                            <Style TargetType="ProgressBar">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate>
+                                            <ControlTemplate.Resources>
+                                                <local:MyCustomConverter x:Key="sttc"/>
+                                            </ControlTemplate.Resources>
+                                            
+                                            <Border Background="#FF8A8A8A"
+                                                    CornerRadius="10"
+                                                    ClipToBounds="True">
+                                                <Grid x:Name="PART_Track">
+                                                    <Border x:Name="PART_Indicator"
+                                                            HorizontalAlignment="Left"
+                                                            Background="{StaticResource MainColorBrush}"
+                                                            CornerRadius="10"/>
+                                                </Grid>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
                             </Style>
                         </ProgressBar.Resources>
                     </ProgressBar>
