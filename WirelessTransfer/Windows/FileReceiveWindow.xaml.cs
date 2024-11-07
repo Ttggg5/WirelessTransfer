@@ -65,7 +65,7 @@ namespace WirelessTransfer.Windows
                         + "\\" + fic.FileName;
                     Dispatcher.Invoke(() =>
                     {
-                        FileShareProgressTag fspt = new FileShareProgressTag(filePath, fic.FileName, fic.FileSize, fic.MD5, false);
+                        FileShareProgressTag fspt = new FileShareProgressTag(filePath, fic.FileName, fic.FileSize, fic.MD5, true);
                         fspt.Completed += FileShareProgressTag_Completed;
                         fspt.Margin = new Thickness(10);
                         progressTagSp.Children.Add(fspt);
