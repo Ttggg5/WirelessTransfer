@@ -127,6 +127,7 @@ namespace WirelessTransfer.Windows
                     Close();
                 }
             }
+            else Close();
         }
 
         private void minimizeBtn_Click(object sender, MouseButtonEventArgs e)

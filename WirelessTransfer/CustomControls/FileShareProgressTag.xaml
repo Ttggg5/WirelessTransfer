@@ -30,7 +30,7 @@
 
                 <Grid Grid.Column="0">
                     <Image x:Name="fileIconImg"
-                           Margin="10"/>
+                           Margin="15"/>
                 </Grid>
                 
                 <Grid Grid.Column="1">
@@ -69,7 +69,7 @@
                     <Grid x:Name="waitingGrid"
                           HorizontalAlignment="Center"
                           Margin="0, 5, 0, 5"
-                          Visibility="Visible">
+                          Visibility="Collapsed">
                         <mp:WaveAnimation Width="40" Height="20"
                                           Color="{StaticResource MainColorBrush}"
                                           Duration="0:0:2.0"
@@ -98,9 +98,9 @@
 
                     <Grid x:Name="completeGrid"
                           Margin="0, 5, 0, 5"
-                          Visibility="Collapsed">
+                          Visibility="Visible">
                         <Grid HorizontalAlignment="Center"
-                                VerticalAlignment="Top">
+                                VerticalAlignment="Center">
                             <Line StrokeThickness="5"
                                     Stroke="{StaticResource MainColorBrush}"
                                     X1="5" Y1="15"
@@ -111,12 +111,6 @@
                                     X1="25" Y1="5"
                                     X2="13" Y2="25"/>
                         </Grid>
-
-                        <TextBlock Text="Complete"
-                                    FontSize="12"
-                                    Foreground="White"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Bottom"/>
                     </Grid>
                 </Grid>
             </Grid>

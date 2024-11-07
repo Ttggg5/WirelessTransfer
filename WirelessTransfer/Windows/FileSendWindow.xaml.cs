@@ -47,13 +47,13 @@ namespace WirelessTransfer.Windows
             progressTagSp.Children.Add(fspt);
 
             leftCount++;
-            fileLeftTb.Text = "剩餘" + leftCount + "個下載";
+            fileLeftTb.Text = "剩餘" + leftCount + "個檔案";
         }
 
         private void FileShareProgressTag_Completed(object? sender, EventArgs e)
         {
             leftCount--;
-            fileLeftTb.Text = "剩餘" + leftCount + "個下載";
+            fileLeftTb.Text = "剩餘" + leftCount + "個檔案";
         }
 
         private void myTcpServer_ReceivedCmd(object? sender, Cmd e)
@@ -152,6 +152,7 @@ namespace WirelessTransfer.Windows
                     Close();
                 }
             }
+            else Close();
         }
 
         private void minimizeBtn_Click(object sender, MouseButtonEventArgs e)

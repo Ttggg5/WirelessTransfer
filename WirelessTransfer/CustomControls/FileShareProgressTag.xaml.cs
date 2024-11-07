@@ -65,6 +65,7 @@ namespace WirelessTransfer.CustomControls
             }
             MD5 = md5;
             CurState = FileShareTagState.Waiting;
+            RefreshShowedState();
 
             string extension = Path.GetExtension(filePath);
             fileIconImg.Source = FileInfoPresenter.GetFileIcon(extension);
