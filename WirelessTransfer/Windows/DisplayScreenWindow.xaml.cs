@@ -95,7 +95,7 @@ namespace WirelessTransfer.Windows
                         fps = frameCount / (frameSw.ElapsedMilliseconds / 1000.0);
                         frameCount = 0;
                         frameSw.Restart();
-                        Dispatcher.BeginInvoke(() => { this.Title = $"FPS: {fps:F2}"; });
+                        Dispatcher.BeginInvoke(() => { curPageLb.Text = $"FPS: {fps:F2}"; });
                     }
                     break;
                 case CmdType.ScreenInfo:
