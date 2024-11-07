@@ -226,5 +226,11 @@ namespace WirelessTransfer.Pages
             basePage?.StopAllProcess();
             ListenForConnections();
         }
+
+        public void StopAll()
+        {
+            basePage?.StopAllProcess();
+            StopListening();
+        }
     }
 }

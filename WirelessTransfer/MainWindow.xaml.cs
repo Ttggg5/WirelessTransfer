@@ -76,5 +76,10 @@ namespace WirelessTransfer
             xBtn1 = e.XButton1;
             xBtn2 = e.XButton2;
         }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            homePage.StopAll();
+        }
     }
 }

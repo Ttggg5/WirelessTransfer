@@ -12,7 +12,8 @@
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         AllowsTransparency="True"
-        Background="Transparent">
+        Background="Transparent"
+        Closing="Window_Closing">
     <Border Background="#FF313131"
             CornerRadius="10"
             Margin="20">

@@ -102,9 +102,7 @@ namespace WirelessTransfer.Pages
                                 {
                                     fileSendWindow.AddFile(ft.FilePath, ft.FileName, ft.FileSize);
                                 }
-                                deviceFinder.StopSearching();
                                 fileSendWindow.ShowDialog();
-                                deviceFinder.StartSearching();
                                 maskBorder.Visibility = Visibility.Collapsed;
                             });
                         }
@@ -121,6 +119,10 @@ namespace WirelessTransfer.Pages
                     });
                 }
                 udpClient.Close();
+                Dispatcher.BeginInvoke(() =>
+                {
+                    deviceFinder.StartSearching();
+                });
             });
         }
 
