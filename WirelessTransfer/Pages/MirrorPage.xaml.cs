@@ -106,13 +106,7 @@ namespace WirelessTransfer.Pages
                 case CmdType.Request:
                     RequestCmd rc = (RequestCmd)e;
                     if (rc.RequestType == RequestType.Disconnect)
-                    {
-                        try
-                        {
-                            myTcpServer.SendCmd(new ReplyCmd(ReplyType.Accept), myTcpServer.ConnectedClients.First());
-                        }
-                        catch { }
-                    }
+                        Disconnect();
                     break;
                 case CmdType.Mouse:
                     // move mouse

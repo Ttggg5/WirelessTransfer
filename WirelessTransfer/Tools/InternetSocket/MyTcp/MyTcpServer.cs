@@ -70,7 +70,6 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                         ConnectedClients.Add(new MyTcpClientInfo(tcpClient, ((ClientInfoCmd)cmd).ClientName, ((ClientInfoCmd)cmd).IP));
                         ClientConnected?.Invoke(this, ConnectedClients.Last());
 
-                        //tcpClient.GetStream().BeginRead(tmpBuffer, 0, tmpBuffer.Length, new AsyncCallback(ReceiveCallBack), ConnectedClients.Last());
                         Task.Factory.StartNew(() =>
                         {
                             MyTcpClientInfo clientInfo = ConnectedClients.Last();
@@ -93,15 +92,7 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                                             Array.Copy(tmpBuffer, tmpLength, buffer, 0, actualLength - tmpLength);
                                             EndIndex = actualLength - tmpLength;
                                         }
-                                        /*
-                                        for (int i = 0; i < actualLength; i++)
-                                        {
-                                            buffer[EndIndex++] = tmpBuffer[i];
-                                            if (EndIndex == buffer.Length) EndIndex = 0;
-                                            if (startIndex == EndIndex) startIndex++;
-                                            if (startIndex == buffer.Length) startIndex = 0;
-                                        }
-                                        */
+
                                         while (true)
                                         {
                                             Cmd.Cmd? cmd = CmdDecoder.DecodeCmd(buffer, ref startIndex, ref EndIndex);
@@ -117,12 +108,11 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                             }
                             catch
                             {
+                                bool removeable = false;
                                 lock (ConnectedClients)
                                 {
-                                    if (ConnectedClients.Remove(clientInfo))
+                                    if (removeable = ConnectedClients.Remove(clientInfo))
                                     {
-                                        ClientDisconnected?.Invoke(this, clientInfo);
-
                                         // Start accepting the next client asynchronously when client is not full
                                         if (ConnectedClients.Count < MaxClient)
                                         {
@@ -137,6 +127,8 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                                         }
                                     }
                                 }
+                                if (removeable)
+                                    ClientDisconnected?.Invoke(this, clientInfo);
                             }
                         }, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
                     }
@@ -160,56 +152,6 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
             catch (ObjectDisposedException) { }
         }
 
-        private void ReceiveCallBack(IAsyncResult ar)
-        {
-            if (ar.AsyncState == null) return;
-
-            MyTcpClientInfo mtci = (MyTcpClientInfo)ar.AsyncState;
-            try
-            {
-                TcpClient client = mtci.Client;
-                int actualLength = client.GetStream().EndRead(ar);
-                if (actualLength > 0)
-                {
-                    int tmpLength = buffer.Length - EndIndex;
-                    if (actualLength <= tmpLength)
-                    {
-                        Array.Copy(tmpBuffer, 0, buffer, EndIndex, actualLength);
-                        EndIndex += actualLength;
-                    }
-                    else
-                    {
-                        Array.Copy(tmpBuffer, 0, buffer, EndIndex, tmpLength);
-                        Array.Copy(tmpBuffer, tmpLength, buffer, 0, actualLength - tmpLength);
-                        EndIndex = actualLength - tmpLength;
-                    }
-                    /*
-                    for (int i = 0; i < actualLength; i++)
-                    {
-                        buffer[EndIndex++] = tmpBuffer[i];
-                        if (EndIndex == buffer.Length) EndIndex = 0;
-                        if (startIndex == EndIndex) startIndex++;
-                        if (startIndex == buffer.Length) startIndex = 0;
-                    }
-                    */
-                    Cmd.Cmd? cmd = CmdDecoder.DecodeCmd(buffer, ref startIndex, ref EndIndex);
-                    if (cmd != null) ReceivedCmd?.Invoke(this, cmd);
-                }
-                client.GetStream().BeginRead(tmpBuffer, 0, tmpBuffer.Length, new AsyncCallback(ReceiveCallBack), mtci);
-            }
-            catch (Exception ex)
-            {
-                if (ConnectedClients.Remove(mtci))
-                {
-                    ClientDisconnected?.Invoke(this, mtci);
-
-                    // Start accepting the next client asynchronously when client is not full
-                    if (ConnectedClients.Count < MaxClient)
-                        Server.BeginAcceptTcpClient(new AsyncCallback(OnClientConnect), null);
-                }
-            }
-        }
-
         public void SendCmd(Cmd.Cmd cmd, MyTcpClientInfo clientInfo)
         {
             if (CurState == MyTcpServerState.Closed) return;
@@ -221,16 +163,19 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
             }
             catch
             {
+                bool removeable = false;
                 lock (ConnectedClients)
                 {
-                    if (ConnectedClients.Remove(clientInfo))
-                        ClientDisconnected?.Invoke(this, clientInfo);
+                    removeable = ConnectedClients.Remove(clientInfo);
                 }
+                if (removeable)
+                    ClientDisconnected?.Invoke(this, clientInfo);
             }
         }
 
         public void Stop()
         {
+            List<MyTcpClientInfo> tmp = new List<MyTcpClientInfo>();
             lock (ConnectedClients)
             {
                 if (ConnectedClients.Count > 0)
@@ -238,11 +183,18 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                     foreach (var client in ConnectedClients)
                     {
                         client.Client.Close();
-                        ClientDisconnected?.Invoke(this, client);
+                        tmp.Add(client);
                     }
                 }
                 ConnectedClients.Clear();
             }
+
+            tmp.ForEach(client =>
+            {
+                ClientDisconnected?.Invoke(this, client);
+            });
+            tmp.Clear();
+
             Server?.Stop();
             CurState = MyTcpServerState.Closed;
         }

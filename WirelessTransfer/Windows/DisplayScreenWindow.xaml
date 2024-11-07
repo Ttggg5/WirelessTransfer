@@ -3,24 +3,81 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WirelessTransfer.Windows"
+        xmlns:local="clr-namespace:WirelessTransfer.Windows" xmlns:custombuttons="clr-namespace:WirelessTransfer.CustomButtons"
         mc:Ignorable="d"
         Title="MirrorWindow"
         Height="450" Width="800"
         MinHeight="450" MinWidth="800"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
         Closing="Window_Closing"
         KeyDown="Window_KeyDown"
         KeyUp="Window_KeyUp">
-    <Grid Background="Black">
-        <Image x:Name="screenImg"
-               MouseMove="screenImg_MouseMove"
-               SizeChanged="screenImg_SizeChanged"
-               MouseRightButtonDown="screenImg_MouseRightButtonDown"
-               MouseRightButtonUp="screenImg_MouseRightButtonUp"
-               MouseLeftButtonDown="screenImg_MouseLeftButtonDown"
-               MouseLeftButtonUp="screenImg_MouseLeftButtonUp"
-               MouseWheel="screenImg_MouseWheel"
-               MouseEnter="screenImg_MouseEnter"
-               MouseLeave="screenImg_MouseLeave"/>
-    </Grid>
+    <Border Background="#FF313131"
+            CornerRadius="10"
+            Margin="10">
+        <Border.Effect>
+            <DropShadowEffect Opacity="0.5"
+                              BlurRadius="20"
+                              ShadowDepth="3"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <!--Titlebar-->
+            <Border Grid.Row="0"
+                    Background="{StaticResource MainColor2Brush}"
+                    CornerRadius="10, 10, 0, 0">
+                <Border.Effect>
+                    <DropShadowEffect Opacity="0.5"
+                                      BlurRadius="20"
+                                      ShadowDepth="3"/>
+                </Border.Effect>
+
+                <Grid>
+                    <Grid x:Name="titlebar"
+                          Background="Transparent"
+                          MouseLeftButtonDown="titlebar_MouseLeftButtonDown"/>
+
+                    <TextBlock x:Name="curPageLb"
+                               Text="File receive"
+                               Foreground="White"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Left"
+                               Margin="15, 0, 0, 0"/>
+
+                    <custombuttons:CloseBtn x:Name="closeBtn"
+                                            HorizontalAlignment="Right"
+                                            Margin="0, 0, 15, 0"
+                                            Click="closeBtn_Click"/>
+
+                    <custombuttons:MinimizeBtn x:Name="minimizeBtn"
+                                               HorizontalAlignment="Right"
+                                               Margin="0, 0, 50, 0"
+                                               Click="minimizeBtn_Click"/>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1"
+                  Background="Black">
+                <Image x:Name="screenImg"
+                       MouseMove="screenImg_MouseMove"
+                       SizeChanged="screenImg_SizeChanged"
+                       MouseRightButtonDown="screenImg_MouseRightButtonDown"
+                       MouseRightButtonUp="screenImg_MouseRightButtonUp"
+                       MouseLeftButtonDown="screenImg_MouseLeftButtonDown"
+                       MouseLeftButtonUp="screenImg_MouseLeftButtonUp"
+                       MouseWheel="screenImg_MouseWheel"
+                       MouseEnter="screenImg_MouseEnter"
+                       MouseLeave="screenImg_MouseLeave"/>
+            </Grid>
+        </Grid>
+    </Border>
 </Window>

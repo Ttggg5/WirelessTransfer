@@ -188,5 +188,20 @@ namespace WirelessTransfer.Windows
             int keyCode = KeyInterop.VirtualKeyFromKey(e.Key);
             myTcpClient.SendCmd(new KeyboardCmd((VirtualKeyCode)keyCode, KeyState.Up));
         }
+
+        private void closeBtn_Click(object sender, MouseButtonEventArgs e)
+        {
+            Close();
+        }
+
+        private void minimizeBtn_Click(object sender, MouseButtonEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void titlebar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            DragMove();
+        }
     }
 }
