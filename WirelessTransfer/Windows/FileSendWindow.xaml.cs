@@ -69,6 +69,8 @@ namespace WirelessTransfer.Windows
                             bool isAllComplete = false;
                             while (true)
                             {
+                                if (myTcpServer.ConnectedClients.Count == 0) break;
+
                                 int curIndex = 0;
                                 string filePath = "";
                                 string fileName = "";
@@ -97,8 +99,15 @@ namespace WirelessTransfer.Windows
                                     int actualLength = 0;
                                     while ((actualLength = fs.Read(buffer, 0, buffer.Length)) > 0)
                                     {
-                                        myTcpServer.SendCmd(new FileDataCmd(fileName, buffer.Take(actualLength).ToArray()), 
-                                            myTcpServer.ConnectedClients.First());
+                                        try
+                                        {
+                                            myTcpServer.SendCmd(new FileDataCmd(fileName, buffer.Take(actualLength).ToArray()), 
+                                                myTcpServer.ConnectedClients.First());
+                                        }
+                                        catch
+                                        {
+                                            break;
+                                        }
 
                                         Dispatcher.Invoke(() =>
                                         {
