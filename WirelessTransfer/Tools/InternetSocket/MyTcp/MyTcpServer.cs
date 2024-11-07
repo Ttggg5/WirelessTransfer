@@ -11,12 +11,19 @@ using System.IO;
 
 namespace WirelessTransfer.Tools.InternetSocket.MyTcp
 {
+    public enum MyTcpServerState
+    {
+        Listening,
+        Closed,
+    }
+
     public class MyTcpServer
     {
         public event EventHandler<MyTcpClientInfo> ClientConnected;
         public event EventHandler<MyTcpClientInfo> ClientDisconnected;
         public event EventHandler<Cmd.Cmd> ReceivedCmd;
 
+        public MyTcpServerState CurState { get; private set; }
         public TcpListener? Server { get; }
         public List<MyTcpClientInfo> ConnectedClients { get; set; }
         public IPEndPoint LocalIPEP { get; }
@@ -31,6 +38,7 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
             LocalIPEP = new IPEndPoint(IPAddress.Any, port);
             ConnectedClients = new List<MyTcpClientInfo>();
             Server = new TcpListener(LocalIPEP);
+            CurState = MyTcpServerState.Closed;
         }
 
         /// <summary>
@@ -42,6 +50,7 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
             MaxClient = maxClient;
             Server?.Start();
             Server?.BeginAcceptTcpClient(new AsyncCallback(OnClientConnect), null);
+            CurState = MyTcpServerState.Listening;
         }
 
         private void OnClientConnect(IAsyncResult ar)
@@ -108,13 +117,16 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                             }
                             catch
                             {
-                                if (ConnectedClients.Remove(clientInfo))
+                                if (CurState == MyTcpServerState.Listening)
                                 {
-                                    ClientDisconnected?.Invoke(this, clientInfo);
+                                    if (ConnectedClients.Remove(clientInfo))
+                                    {
+                                        ClientDisconnected?.Invoke(this, clientInfo);
 
-                                    // Start accepting the next client asynchronously when client is not full
-                                    if (ConnectedClients.Count < MaxClient)
-                                        Server.BeginAcceptTcpClient(new AsyncCallback(OnClientConnect), null);
+                                        // Start accepting the next client asynchronously when client is not full
+                                        if (ConnectedClients.Count < MaxClient)
+                                            Server.BeginAcceptTcpClient(new AsyncCallback(OnClientConnect), null);
+                                    }
                                 }
                             }
                         }, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
@@ -182,6 +194,8 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
 
         public void SendCmd(Cmd.Cmd cmd, MyTcpClientInfo clientInfo)
         {
+            if (CurState == MyTcpServerState.Closed) return;
+
             try
             {
                 byte[] bytes = cmd.Encode();
@@ -189,23 +203,30 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
             }
             catch
             {
-                if (ConnectedClients.Remove(clientInfo))
-                    ClientDisconnected?.Invoke(this, clientInfo);
+                lock (ConnectedClients)
+                {
+                    if (ConnectedClients.Remove(clientInfo))
+                        ClientDisconnected?.Invoke(this, clientInfo);
+                }
             }
         }
 
         public void Stop()
         {
-            if (ConnectedClients.Count > 0)
+            lock (ConnectedClients)
             {
-                foreach (var client in ConnectedClients)
+                if (ConnectedClients.Count > 0)
                 {
-                    client.Client.Close();
-                    ClientDisconnected?.Invoke(this, client);
+                    foreach (var client in ConnectedClients)
+                    {
+                        client.Client.Close();
+                        ClientDisconnected?.Invoke(this, client);
+                    }
                 }
+                ConnectedClients.Clear();
             }
-            ConnectedClients.Clear();
             Server?.Stop();
+            CurState = MyTcpServerState.Closed;
         }
     }
 }

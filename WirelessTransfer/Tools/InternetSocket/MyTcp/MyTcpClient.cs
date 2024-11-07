@@ -10,6 +10,13 @@ using System.IO;
 
 namespace WirelessTransfer.Tools.InternetSocket.MyTcp
 {
+    public enum MyTcpClientState
+    {
+        Waiting,
+        Connected,
+        Disconnected,
+    }
+
     public class MyTcpClient
     {
         public event EventHandler Connected;

@@ -33,6 +33,8 @@ namespace WirelessTransfer.CustomControls
     /// </summary>
     public partial class FileShareProgressTag : System.Windows.Controls.UserControl
     {
+        public event EventHandler Completed;
+
         public string FilePath { get; }
         public string FileName { get; }
         public long FileSize { get; }
@@ -112,6 +114,7 @@ namespace WirelessTransfer.CustomControls
                 {
                     CurState = FileShareTagState.Complete;
                     RefreshShowedState();
+                    Completed?.Invoke(this, EventArgs.Empty);
                 }
             });
         }

@@ -25,6 +25,8 @@ namespace WirelessTransfer.Windows
     /// </summary>
     public partial class FileSendWindow : Window
     {
+        int leftCount = 0;
+        int completeCount = 0;
         MyTcpServer myTcpServer;
 
         public FileSendWindow(MyTcpServer myTcpServer)
@@ -40,8 +42,18 @@ namespace WirelessTransfer.Windows
         public void AddFile(string filePath, string fileName, long fileSize)
         {
             FileShareProgressTag fspt = new FileShareProgressTag(filePath, fileName, fileSize, FileInfoPresenter.CalculateMD5(filePath), false);
+            fspt.Completed += FileShareProgressTag_Completed;
             fspt.Margin = new Thickness(10);
             progressTagSp.Children.Add(fspt);
+
+            leftCount++;
+            fileLeftTb.Text = "剩餘" + leftCount + "個下載";
+        }
+
+        private void FileShareProgressTag_Completed(object? sender, EventArgs e)
+        {
+            leftCount--;
+            fileLeftTb.Text = "剩餘" + leftCount + "個下載";
         }
 
         private void myTcpServer_ReceivedCmd(object? sender, Cmd e)

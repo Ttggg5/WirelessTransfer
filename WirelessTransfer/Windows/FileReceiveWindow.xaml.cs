@@ -23,6 +23,8 @@ namespace WirelessTransfer.Windows
     /// </summary>
     public partial class FileReceiveWindow : Window
     {
+        int leftCount = 0;
+        int completeCount = 0;
         MyTcpClient myTcpClient;
 
         public FileReceiveWindow(MyTcpClient myTcpClient)
@@ -64,8 +66,12 @@ namespace WirelessTransfer.Windows
                     Dispatcher.Invoke(() =>
                     {
                         FileShareProgressTag fspt = new FileShareProgressTag(filePath, fic.FileName, fic.FileSize, fic.MD5, false);
+                        fspt.Completed += FileShareProgressTag_Completed;
                         fspt.Margin = new Thickness(10);
                         progressTagSp.Children.Add(fspt);
+
+                        leftCount++;
+                        fileLeftTb.Text = "剩餘" + leftCount + "個下載";
                     });
                     break;
                 case CmdType.FileData:
@@ -88,6 +94,15 @@ namespace WirelessTransfer.Windows
                         myTcpClient.SendCmd(new ReplyCmd(ReplyType.Accept));
                     break;
             }
+        }
+
+        private void FileShareProgressTag_Completed(object? sender, EventArgs e)
+        {
+            leftCount--;
+            fileLeftTb.Text = "剩餘" + leftCount + "個下載";
+
+            completeCount++;
+            fileLeftTb.Text = "已完成" + completeCount + "個下載";
         }
 
         private void closeBtn_Click(object sender, MouseButtonEventArgs e)
