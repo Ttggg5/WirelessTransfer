@@ -195,7 +195,7 @@ namespace WirelessTransfer.Pages
         private void Disconnect()
         {
             screenCaptureDX?.Stop();
-            if (myTcpServer.CurState == MyTcpServerState.Listening)
+            if (myTcpServer?.CurState == MyTcpServerState.Listening)
             {
                 try
                 {
