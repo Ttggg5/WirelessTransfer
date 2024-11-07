@@ -62,14 +62,23 @@
 
                 <Grid Grid.Column="0">
                     <ProgressBar x:Name="pb"
-                                 Margin="20, 15, 20, 15"/>
+                                 Foreground="{StaticResource MainColorBrush}"
+                                 Background="#FF8A8A8A"
+                                 BorderThickness="0"
+                                 Margin="20, 15, 5, 15">
+                        <ProgressBar.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="8"/>
+                            </Style>
+                        </ProgressBar.Resources>
+                    </ProgressBar>
                 </Grid>
 
                 <Grid Grid.Column="1">
                     <Grid x:Name="waitingGrid"
                           HorizontalAlignment="Center"
                           Margin="0, 5, 0, 5"
-                          Visibility="Collapsed">
+                          Visibility="Visible">
                         <mp:WaveAnimation Width="40" Height="20"
                                           Color="{StaticResource MainColorBrush}"
                                           Duration="0:0:2.0"
@@ -98,7 +107,7 @@
 
                     <Grid x:Name="completeGrid"
                           Margin="0, 5, 0, 5"
-                          Visibility="Visible">
+                          Visibility="Collapsed">
                         <Grid HorizontalAlignment="Center"
                                 VerticalAlignment="Center">
                             <Line StrokeThickness="5"
