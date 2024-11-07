@@ -14,15 +14,7 @@
         Closing="Window_Closing"
         KeyDown="Window_KeyDown"
         KeyUp="Window_KeyUp">
-    <Border Background="#FF313131"
-            CornerRadius="10"
-            Margin="10">
-        <Border.Effect>
-            <DropShadowEffect Opacity="0.5"
-                              BlurRadius="20"
-                              ShadowDepth="3"/>
-        </Border.Effect>
-
+    <Border Background="#FF313131">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="35"/>
@@ -31,21 +23,14 @@
 
             <!--Titlebar-->
             <Border Grid.Row="0"
-                    Background="{StaticResource MainColor2Brush}"
-                    CornerRadius="10, 10, 0, 0">
-                <Border.Effect>
-                    <DropShadowEffect Opacity="0.5"
-                                      BlurRadius="20"
-                                      ShadowDepth="3"/>
-                </Border.Effect>
-
+                    Background="{StaticResource MainColor2Brush}">
                 <Grid>
                     <Grid x:Name="titlebar"
                           Background="Transparent"
                           MouseLeftButtonDown="titlebar_MouseLeftButtonDown"/>
 
                     <TextBlock x:Name="curPageLb"
-                               Text="File receive"
+                               Text="Mirror"
                                Foreground="White"
                                FontSize="16"
                                FontWeight="Bold"
