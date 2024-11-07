@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:WirelessTransfer.CustomControls"
              xmlns:mp="http://schemas.mpcoding.com/mpcoding/wpf/loadinganimation"
              mc:Ignorable="d" 
-             Height="200" Width="500">
+             Height="150" Width="500">
     <Border Background="{StaticResource MainColor2Brush}"
             CornerRadius="10"
             Margin="5">
@@ -18,8 +18,8 @@
 
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="3*"/>
-                <RowDefinition Height="1*"/>
+                <RowDefinition Height="4*"/>
+                <RowDefinition Height="2*"/>
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0">
@@ -30,7 +30,7 @@
 
                 <Grid Grid.Column="0">
                     <Image x:Name="fileIconImg"
-                           Margin="30"/>
+                           Margin="10"/>
                 </Grid>
                 
                 <Grid Grid.Column="1">

@@ -135,6 +135,7 @@ namespace WirelessTransfer.CustomControls
                 {
                     CurState = FileShareTagState.Complete;
                     RefreshShowedState();
+                    Completed?.Invoke(this, EventArgs.Empty);
                 }
             });
         }

@@ -117,7 +117,7 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                             }
                             catch
                             {
-                                if (CurState == MyTcpServerState.Listening)
+                                lock (ConnectedClients)
                                 {
                                     if (ConnectedClients.Remove(clientInfo))
                                     {
@@ -125,7 +125,16 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
 
                                         // Start accepting the next client asynchronously when client is not full
                                         if (ConnectedClients.Count < MaxClient)
-                                            Server.BeginAcceptTcpClient(new AsyncCallback(OnClientConnect), null);
+                                        {
+                                            try
+                                            {
+                                                Server.BeginAcceptTcpClient(new AsyncCallback(OnClientConnect), null);
+                                            }
+                                            catch
+                                            {
+                                                CurState = MyTcpServerState.Closed;
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -136,7 +145,16 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
 
                 // Start accepting the next client asynchronously when client is not full
                 if (ConnectedClients.Count < MaxClient)
-                    Server.BeginAcceptTcpClient(new AsyncCallback(OnClientConnect), null);
+                {
+                    try
+                    {
+                        Server.BeginAcceptTcpClient(new AsyncCallback(OnClientConnect), null);
+                    }
+                    catch
+                    {
+                        CurState = MyTcpServerState.Closed;
+                    }
+                }
             }
             catch (IOException) { }
             catch (ObjectDisposedException) { }

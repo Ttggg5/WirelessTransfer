@@ -6,8 +6,9 @@
         xmlns:local="clr-namespace:WirelessTransfer.Windows" xmlns:custombuttons="clr-namespace:WirelessTransfer.CustomButtons"
         mc:Ignorable="d"
         Title="FileSendWindow" 
-        Height="500" Width="600"
+        Height="600" Width="600"
         WindowStyle="None"
+        WindowStartupLocation="CenterScreen"
         AllowsTransparency="True"
         Background="Transparent"
         Closing="Window_Closing">

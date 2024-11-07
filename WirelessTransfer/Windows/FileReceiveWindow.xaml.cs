@@ -92,6 +92,18 @@ namespace WirelessTransfer.Windows
                     RequestCmd rc = (RequestCmd)e;
                     if (rc.RequestType == RequestType.FileShare)
                         myTcpClient.SendCmd(new ReplyCmd(ReplyType.Accept));
+                    else if (rc.RequestType == RequestType.Disconnect)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            if (leftCount > 0)
+                            {
+                                MessageWindow messageWindow = new MessageWindow("連線已斷開!", false);
+                                messageWindow.ShowDialog();
+                                Close();
+                            }
+                        });
+                    }
                     break;
             }
         }
@@ -107,12 +119,19 @@ namespace WirelessTransfer.Windows
 
         private void closeBtn_Click(object sender, MouseButtonEventArgs e)
         {
-            this.Close();
+            if (leftCount > 0)
+            {
+                MessageWindow messageWindow = new MessageWindow("傳輸尚未完成，確定要取消嗎?", true);
+                if ((bool)messageWindow.ShowDialog())
+                {
+                    Close();
+                }
+            }
         }
 
         private void minimizeBtn_Click(object sender, MouseButtonEventArgs e)
         {
-            this.WindowState = WindowState.Minimized;
+            WindowState = WindowState.Minimized;
         }
 
         private void titlebar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

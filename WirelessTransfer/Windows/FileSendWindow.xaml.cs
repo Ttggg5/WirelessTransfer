@@ -119,8 +119,11 @@ namespace WirelessTransfer.Windows
             {
                 try
                 {
-                    MessageWindow messageWindow = new MessageWindow("連線已斷開!", false);
-                    messageWindow.ShowDialog();
+                    if (leftCount > 0)
+                    {
+                        MessageWindow messageWindow = new MessageWindow("連線已斷開!", false);
+                        messageWindow.ShowDialog();
+                    }
                     Close();
                 }
                 catch { }
@@ -141,12 +144,19 @@ namespace WirelessTransfer.Windows
 
         private void closeBtn_Click(object sender, MouseButtonEventArgs e)
         {
-            this.Close();
+            if (leftCount > 0)
+            {
+                MessageWindow messageWindow = new MessageWindow("傳輸尚未完成，確定要取消嗎?", true);
+                if ((bool)messageWindow.ShowDialog())
+                {
+                    Close();
+                }
+            }
         }
 
         private void minimizeBtn_Click(object sender, MouseButtonEventArgs e)
         {
-            this.WindowState = WindowState.Minimized;
+            WindowState = WindowState.Minimized;
         }
 
         private void titlebar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
