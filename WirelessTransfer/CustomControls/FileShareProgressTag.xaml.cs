@@ -122,15 +122,17 @@ namespace WirelessTransfer.CustomControls
         public void AddCurProgress(long dataLength)
         {
             CurState = FileShareTagState.Processing;
-            Dispatcher.Invoke(() =>
-            {
-                RefreshShowedState();
-            });
 
             CurProgress += dataLength;
             Dispatcher.Invoke(() =>
             {
                 pb.Value = (CurProgress / FileSize) * 100;
+                RefreshShowedState();
+            });
+
+            
+            Dispatcher.Invoke(() =>
+            {
                 if (pb.Value >= 100)
                 {
                     CurState = FileShareTagState.Complete;
