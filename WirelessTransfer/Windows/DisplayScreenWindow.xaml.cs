@@ -123,7 +123,6 @@ namespace WirelessTransfer.Windows
             myTcpClient.SendCmd(new RequestCmd(RequestType.Disconnect, Environment.MachineName));
             myTcpClient.Disconnect();
             frameSw.Stop();
-            System.Windows.Forms.Cursor.Show();
         }
 
         private System.Windows.Point GetRealPoint(System.Windows.Point point)
