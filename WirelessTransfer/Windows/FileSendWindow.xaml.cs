@@ -41,7 +41,7 @@ namespace WirelessTransfer.Windows
 
         public void AddFile(string filePath, string fileName, long fileSize)
         {
-            FileShareProgressTag fspt = new FileShareProgressTag(filePath, fileName, fileSize, "", false);
+            FileShareProgressTag fspt = new FileShareProgressTag(filePath, fileName, fileSize, FileInfoPresenter.CalculateMD5(filePath), false);
             fspt.Completed += FileShareProgressTag_Completed;
             fspt.Margin = new Thickness(10);
             progressTagSp.Children.Add(fspt);

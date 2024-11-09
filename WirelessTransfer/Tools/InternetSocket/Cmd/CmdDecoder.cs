@@ -107,20 +107,6 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
         /// <returns></returns>
         public static Cmd? DecodeCmd(byte[] buffer, int startIndex, int length)
         {
-            return DecodeCmd(buffer, startIndex, length, out int endIndex);
-        }
-
-        /// <summary>
-        /// Normal decode (no cycle).
-        /// </summary>
-        /// <param name="buffer"></param>
-        /// <param name="startIndex"></param>
-        /// <param name="length"></param>
-        /// <param name="endIndex">Cmd end index(if no cmd found it will be 0).</param>
-        /// <returns></returns>
-        public static Cmd? DecodeCmd(byte[] buffer, int startIndex, int length, out int endIndex)
-        {
-            endIndex = 0;
             Cmd? cmd = null;
             CmdType cmdType;
             if (buffer[startIndex] == frontSymbol)
@@ -162,7 +148,6 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
                 curIndex = previousIndex + 7 + dataLength + 1;
                 if (tmpBuffer[curIndex] == endSymbol)
                 {
-                    endIndex = curIndex + Enum.GetName(typeof(CmdType), cmdType).Length + 1;
                     // create cmd class
                     byte[] data = tmpBuffer.Skip(previousIndex + 7).Take(dataLength).ToArray();
                     cmd = CreateDecodeCmd(cmdType, data);

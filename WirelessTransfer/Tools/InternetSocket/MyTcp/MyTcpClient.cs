@@ -23,11 +23,10 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
         public event EventHandler Disconnected;
         public event EventHandler<Cmd.Cmd> ReceivedCmd;
 
-        public MyTcpClientState State { get; private set; }
-        public TcpClient client { get; private set; }
-        public IPAddress serverIp { get; private set; }
-        public int serverPort { get; private set; }
-        public string clientName { get; private set; }
+        TcpClient client;
+        IPAddress serverIp;
+        int serverPort;
+        string clientName;
 
         int timeoutCounter = 0;
         int startIndex = 0, EndIndex = 0;
@@ -40,8 +39,6 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
             this.serverIp = serverIp;
             this.serverPort = serverPort;
             this.clientName = clientName;
-
-            State = MyTcpClientState.Disconnected;
         }
 
         /// <summary>
@@ -49,11 +46,8 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
         /// </summary>
         public void Connect()
         {
-            if (State == MyTcpClientState.Disconnected)
-            {
-                State = MyTcpClientState.Waiting;
+            if (!IsConnected())
                 client.BeginConnect(serverIp, serverPort, new AsyncCallback(OnConnect), null);
-            }
         }
 
         private void OnConnect(IAsyncResult ar)
@@ -64,7 +58,6 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                 ClientInfoCmd clientInfoCmd = new ClientInfoCmd(clientName, GetLocalIPAddress());
                 byte[] bytes = clientInfoCmd.Encode();
                 client.GetStream().Write(bytes);
-                State = MyTcpClientState.Connected;
                 Connected?.Invoke(this, new EventArgs());
 
                 //client.GetStream().BeginRead(tmpBuffer, 0, tmpBuffer.Length, new AsyncCallback(ReceiveCallBack), null);
@@ -89,7 +82,15 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                                     Array.Copy(tmpBuffer, tmpLength, buffer, 0, actualLength - tmpLength);
                                     EndIndex = actualLength - tmpLength;
                                 }
-
+                                /*
+                                for (int i = 0; i < actualLength; i++)
+                                {
+                                    buffer[EndIndex++] = tmpBuffer[i];
+                                    if (EndIndex == buffer.Length) EndIndex = 0;
+                                    if (startIndex == EndIndex) startIndex++;
+                                    if (startIndex == buffer.Length) startIndex = 0;
+                                }
+                                */
                                 // prevent it doesn't only read one cmd
                                 while (true)
                                 {
@@ -106,31 +107,19 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                     }
                     catch (Exception ex)
                     {
-                        if (State != MyTcpClientState.Disconnected)
-                        {
-                            State = MyTcpClientState.Disconnected;
-                            Disconnected?.Invoke(this, new EventArgs());
-                        }
+                        Disconnected?.Invoke(this, new EventArgs());
                     }
                 });
             }
             catch (IOException)
             {
-                if (State != MyTcpClientState.Disconnected)
-                {
-                    State = MyTcpClientState.Disconnected;
-                    Disconnected?.Invoke(this, new EventArgs());
-                }
+                Disconnected?.Invoke(this, new EventArgs());
             }
             catch (SocketException)
             {
                 if (timeoutCounter == 10)
                 {
-                    if (State != MyTcpClientState.Disconnected)
-                    {
-                        State = MyTcpClientState.Disconnected;
-                        Disconnected?.Invoke(this, new EventArgs());
-                    }
+                    Disconnected?.Invoke(this, new EventArgs());
                     timeoutCounter = 0;
                 }
                 else
@@ -193,11 +182,7 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
             }
             catch (Exception ex)
             {
-                if (State != MyTcpClientState.Disconnected)
-                {
-                    State = MyTcpClientState.Disconnected;
-                    Disconnected?.Invoke(this, new EventArgs());
-                }
+                Disconnected?.Invoke(this, new EventArgs());
             }
         }
 
@@ -214,11 +199,22 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
             return IPAddress.None;
         }
 
+        public bool IsConnected()
+        {
+            if (client.Client == null) return false;
+            try
+            {
+                byte[] buffer = new byte[1];
+                client.Client.Send(buffer, SocketFlags.Peek);
+                return true; // If no exception, client is still connected
+            }
+            catch { return false; }
+        }
+
         public void Disconnect()
         {
-            if (State != MyTcpClientState.Disconnected)
+            if (IsConnected())
             {
-                State = MyTcpClientState.Disconnected;
                 client.Close();
                 Disconnected?.Invoke(this, new EventArgs());
             }
