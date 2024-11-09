@@ -113,7 +113,7 @@ namespace WirelessTransfer.Tools.Screen
                             device.ImmediateContext.UnmapSubresource(screenTexture, 0);
 
                             // Draw cursor
-                            //DrawCursorOnBitmap(bitmap, output.Description.DesktopBounds.Left, output.Description.DesktopBounds.Top);
+                            DrawCursorOnBitmap(bitmap, output.Description.DesktopBounds.Left, output.Description.DesktopBounds.Top);
 
                             ScreenRefreshed?.Invoke(this, bitmap);
 
@@ -134,52 +134,56 @@ namespace WirelessTransfer.Tools.Screen
             });
         }
 
-        [DllImport("user32.dll")]
-        static extern bool GetCursorInfo(out CURSORINFO pci);
-
-        [DllImport("user32.dll")]
-        static extern bool DrawIcon(IntPtr hdc, int x, int y, IntPtr hIcon);
-
         [StructLayout(LayoutKind.Sequential)]
-        public struct CURSORINFO
+        public struct ICONINFOEX
         {
             public int cbSize;
-            public int flags;
-            public IntPtr hCursor;
-            public Point ptScreenPos;
+            public bool fIcon;
+            public int xHotspot;
+            public int yHotspot;
+            public IntPtr hbmMask;
+            public IntPtr hbmColor;
+            public ushort wResID;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
+            public string szResID;
         }
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern bool GetIconInfoEx(IntPtr hIcon, ref ICONINFOEX piconinfo);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool DrawIconEx(IntPtr hdc, int x, int y, IntPtr hIcon, int cx, int cy, int istepIfAniCur, IntPtr hbrFlickerFreeDraw, uint diFlags);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetCursor();
+
+        [DllImport("gdi32.dll")]
+        public static extern bool DeleteObject(IntPtr hObject);
+
+        const uint DI_NORMAL = 0x0003;
 
         public static void DrawCursorOnBitmap(Bitmap bitmap, int offsetX, int offsetY)
         {
-            CURSORINFO ci = new CURSORINFO();
-            ci.cbSize = Marshal.SizeOf(ci);
-
-            if (GetCursorInfo(out ci))
-            {
-                // Adjust cursor position to be relative to the captured bitmap
-                int cursorX = ci.ptScreenPos.X - offsetX;
-                int cursorY = ci.ptScreenPos.Y - offsetY;
-
-                using (Graphics g = Graphics.FromImage(bitmap))
-                {
-                    // Draw the cursor on the bitmap at the adjusted position
-                    DrawIcon(g.GetHdc(), cursorX, cursorY, ci.hCursor);
-                    g.ReleaseHdc();
-                }
-            }
-        }
-
-        public static void DrawCursorOnBitmap(Bitmap bitmap, int offsetX, int offsetY, CURSORINFO ci)
-        {
-            // Adjust cursor position to be relative to the captured bitmap
-            int cursorX = ci.ptScreenPos.X - offsetX;
-            int cursorY = ci.ptScreenPos.Y - offsetY;
-
             using (Graphics g = Graphics.FromImage(bitmap))
             {
-                // Draw the cursor on the bitmap at the adjusted position
-                DrawIcon(g.GetHdc(), cursorX, cursorY, ci.hCursor);
-                g.ReleaseHdc();
+                IntPtr hdc = g.GetHdc();
+                IntPtr hCursor = GetCursor();
+                ICONINFOEX iconInfoEx = new ICONINFOEX();
+                iconInfoEx.cbSize = Marshal.SizeOf(typeof(ICONINFOEX));
+
+                if (GetIconInfoEx(hCursor, ref iconInfoEx))
+                {
+                    int cursorX = iconInfoEx.xHotspot - offsetX;
+                    int cursorY = iconInfoEx.yHotspot - offsetY;
+
+                    DrawIconEx(hdc, cursorX, cursorY, hCursor, bitmap.Width, bitmap.Height, 0, IntPtr.Zero, DI_NORMAL);
+
+                    // Clean resource
+                    DeleteObject(iconInfoEx.hbmMask);
+                    DeleteObject(iconInfoEx.hbmColor);
+                }
+
+                g.ReleaseHdc(hdc);
             }
         }
 

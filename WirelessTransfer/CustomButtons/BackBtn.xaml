@@ -9,7 +9,8 @@
              MouseLeftButtonDown="UserControl_MouseLeftButtonDown"
              MouseLeftButtonUp="UserControl_MouseLeftButtonUp"
              MouseEnter="UserControl_MouseEnter"
-             MouseLeave="UserControl_MouseLeave">
+             MouseLeave="UserControl_MouseLeave"
+             IsEnabledChanged="UserControl_IsEnabledChanged">
     <Grid>
         <Image x:Name="img"
                Source="/Assets/back_arrow.png"/>

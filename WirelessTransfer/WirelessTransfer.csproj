@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <None Remove="Assets\back_arrow.png" />
+    <None Remove="Assets\back_arrow_disable.png" />
     <None Remove="Assets\back_arrow_hover.png" />
     <None Remove="Assets\back_arrow_pressed.png" />
     <None Remove="Assets\down_arrow.png" />
@@ -28,6 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Assets\back_arrow_disable.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Assets\music_icon.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>

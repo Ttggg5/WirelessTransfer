@@ -115,6 +115,8 @@ namespace WirelessTransfer.Windows
 
             completeCount++;
             fileLeftTb.Text = "已完成" + completeCount + "個下載";
+
+            if (leftCount == 0) myTcpClient.Disconnect();
         }
 
         private void closeBtn_Click(object sender, MouseButtonEventArgs e)

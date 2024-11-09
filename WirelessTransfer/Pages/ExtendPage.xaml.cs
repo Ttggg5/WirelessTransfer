@@ -29,6 +29,10 @@ namespace WirelessTransfer.Pages
     /// </summary>
     public partial class ExtendPage : Page
     {
+        public event EventHandler<CustomControls.DeviceTag> DeviceChoosed;
+        public event EventHandler DeviceConnected;
+        public event EventHandler DeviceDisconnected;
+
         const int MAX_CLIENT = 1;
 
         int udpPort, tcpPort;
@@ -58,6 +62,9 @@ namespace WirelessTransfer.Pages
         private void deviceFinder_DeviceChoosed(object? sender, CustomControls.DeviceTag e)
         {
             deviceFinder.StopSearching();
+
+            DeviceChoosed?.Invoke(this, e);
+
             maskBorder.Visibility = Visibility.Visible;
             waitRespondSp.Visibility = Visibility.Visible;
 
@@ -164,6 +171,8 @@ namespace WirelessTransfer.Pages
                 disconnectSp.Visibility = Visibility.Visible;
             });
 
+            DeviceConnected?.Invoke(this, EventArgs.Empty);
+
             if (myTcpServer != null)
             {
                 CreateVirtualScreen(1920, 1080);
@@ -250,6 +259,8 @@ namespace WirelessTransfer.Pages
                 myTcpServer?.Stop();
             }
             CloseVirtualScreen();
+
+            DeviceDisconnected?.Invoke(this, EventArgs.Empty);
         }
     }
 }

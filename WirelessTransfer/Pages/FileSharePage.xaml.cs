@@ -31,6 +31,10 @@ namespace WirelessTransfer.Pages
     /// </summary>
     public partial class FileSharePage : Page
     {
+        public event EventHandler<DeviceTag> DeviceChoosed;
+        public event EventHandler DeviceConnected;
+        public event EventHandler DeviceDisconnected;
+
         const int MAX_CLIENT = 1;
 
         int udpPort, tcpPort;
@@ -58,6 +62,9 @@ namespace WirelessTransfer.Pages
         private void deviceFinder_DeviceChoosed(object? sender, DeviceTag e)
         {
             deviceFinder.StopSearching();
+
+            DeviceChoosed?.Invoke(this, e);
+
             maskBorder.Visibility = Visibility.Visible;
 
             myTcpServer = new MyTcpServer(tcpPort);
@@ -96,6 +103,8 @@ namespace WirelessTransfer.Pages
                         }
                         else if (replyCmd.ReplyType == ReplyType.Accept)
                         {
+                            DeviceConnected?.Invoke(this, EventArgs.Empty);
+
                             Dispatcher.BeginInvoke(() =>
                             {
                                 foreach (FileTag ft in fileTagSp.Children)
@@ -105,6 +114,8 @@ namespace WirelessTransfer.Pages
                                 fileSendWindow.ShowDialog();
                                 maskBorder.Visibility = Visibility.Collapsed;
                             });
+
+                            DeviceDisconnected?.Invoke(this, EventArgs.Empty);
                         }
                     }
                 }
@@ -234,6 +245,8 @@ namespace WirelessTransfer.Pages
                 myTcpServer?.Stop();
                 myTcpServer = null;
             }
+
+            DeviceDisconnected?.Invoke(this, EventArgs.Empty);
         }
     }
 }

@@ -41,16 +41,25 @@ namespace WirelessTransfer.Pages
             {
                 case PageFunction.Mirror:
                     page = new MirrorPage();
+                    ((MirrorPage)page).DeviceChoosed += Mirror_or_Extend_DeviceChoosed;
+                    ((MirrorPage)page).DeviceDisconnected += Mirror_or_Extend_DeviceDisconnected;
+
                     functionIcon.Source = BitmapConverter.ByteArrayToBitmapImage(PageIconResources.mirror_icon);
                     functionTitle.Text = PageTitleResources.MirrorPageTitle;
                     break;
                 case PageFunction.Extend:
                     page = new ExtendPage();
+                    ((ExtendPage)page).DeviceChoosed += Mirror_or_Extend_DeviceChoosed;
+                    ((ExtendPage)page).DeviceDisconnected += Mirror_or_Extend_DeviceDisconnected;
+
                     functionIcon.Source = BitmapConverter.ByteArrayToBitmapImage(PageIconResources.extend_screen_icon);
                     functionTitle.Text = PageTitleResources.ExtendPageTitle;
                     break;
                 case PageFunction.FileShare:
                     page = new FileSharePage();
+                    ((FileSharePage)page).DeviceChoosed += Mirror_or_Extend_DeviceChoosed;
+                    ((FileSharePage)page).DeviceDisconnected += Mirror_or_Extend_DeviceDisconnected;
+
                     functionIcon.Source = BitmapConverter.ByteArrayToBitmapImage(PageIconResources.file_sharing_icon);
                     functionTitle.Text = PageTitleResources.FileSharePageTitle;
                     break;
@@ -61,6 +70,22 @@ namespace WirelessTransfer.Pages
                     break;
             }
             mainContent.Navigate(page);
+        }
+
+        private void Mirror_or_Extend_DeviceChoosed(object? sender, CustomControls.DeviceTag e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                backBtn.IsEnabled = false;
+            });
+        }
+
+        private void Mirror_or_Extend_DeviceDisconnected(object? sender, EventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                backBtn.IsEnabled = true;
+            });
         }
 
         public void StopAllProcess()
