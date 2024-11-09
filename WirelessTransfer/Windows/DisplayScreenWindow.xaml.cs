@@ -34,6 +34,8 @@ namespace WirelessTransfer.Windows
         WriteableBitmap screenWB;
         Stopwatch frameSw;
 
+        byte[] udpReceiveBytes = Array.Empty<byte>();
+
         int udpPort;
         int screenWidth = 0;
         int screenHeight = 0;
@@ -74,50 +76,49 @@ namespace WirelessTransfer.Windows
 
         private void myTcpClient_Connected(object? sender, EventArgs e)
         {
-            screenUdpClient = new UdpClient(new IPEndPoint(myTcpClient.serverIp, udpPort));
-            Task.Factory.StartNew(() =>
+            screenUdpClient = new UdpClient(new IPEndPoint(IPAddress.Any, udpPort));
+            screenUdpClient.BeginReceive(ReceiveCallBack, null);
+        }
+
+        private void ReceiveCallBack(IAsyncResult ar)
+        {
+            IPEndPoint? remoteEP = null;
+            byte[] tmp = screenUdpClient.EndReceive(ar, ref remoteEP);
+            if (myTcpClient.State == MyTcpClientState.Connected)
             {
-                try
+                udpReceiveBytes = udpReceiveBytes.Concat(tmp).ToArray();
+                Cmd cmd = CmdDecoder.DecodeCmd(udpReceiveBytes, 0, udpReceiveBytes.Length, out int endIndex);
+                if (cmd != null)
                 {
-                    IPEndPoint ipep = null;
-                    byte[] receive = Array.Empty<byte>();
-                    while (myTcpClient.State == MyTcpClientState.Connected)
+                    udpReceiveBytes = udpReceiveBytes.Skip(endIndex + 1).ToArray();
+                    switch (cmd.CmdType)
                     {
-                        byte[] tmp = screenUdpClient.Receive(ref ipep);
-                        receive = receive.Concat(tmp).ToArray();
-                        Cmd cmd = CmdDecoder.DecodeCmd(receive, 0, receive.Length, out int endIndex);
-                        if (cmd == null) continue;
-
-                        receive = receive.Skip(endIndex + 1).ToArray();
-                        switch (cmd.CmdType)
-                        {
-                            case CmdType.Screen:
-                                ScreenCmd sc = (ScreenCmd)cmd;
-                                if (sc.ScreenBmp != null && screenWB != null)
+                        case CmdType.Screen:
+                            ScreenCmd sc = (ScreenCmd)cmd;
+                            if (sc.ScreenBmp != null && screenWB != null)
+                            {
+                                Dispatcher.Invoke(() =>
                                 {
-                                    Dispatcher.Invoke(() =>
-                                    {
-                                        BitmapConverter.DrawBitmapToWriteableBitmap(sc.ScreenBmp, screenWB, 0, 0);
-                                    });
-                                    frameCount++;
-                                }
-                                cmd = null;
-                                GC.Collect();
+                                    BitmapConverter.DrawBitmapToWriteableBitmap(sc.ScreenBmp, screenWB, 0, 0);
+                                });
+                                frameCount++;
+                            }
+                            cmd = null;
+                            GC.Collect();
 
-                                // Every second, calculate the FPS (frames per second)
-                                if (frameSw.ElapsedMilliseconds >= 1000)
-                                {
-                                    fps = frameCount / (frameSw.ElapsedMilliseconds / 1000.0);
-                                    frameCount = 0;
-                                    frameSw.Restart();
-                                    Dispatcher.BeginInvoke(() => { curPageLb.Text = $"FPS: {fps:F2}"; });
-                                }
-                                break;
-                        }
+                            // Every second, calculate the FPS (frames per second)
+                            if (frameSw.ElapsedMilliseconds >= 1000)
+                            {
+                                fps = frameCount / (frameSw.ElapsedMilliseconds / 1000.0);
+                                frameCount = 0;
+                                frameSw.Restart();
+                                Dispatcher.BeginInvoke(() => { curPageLb.Text = $"FPS: {fps:F2}"; });
+                            }
+                            break;
                     }
                 }
-                catch { }
-            }, TaskCreationOptions.LongRunning);
+                screenUdpClient.BeginReceive(ReceiveCallBack, null);
+            }
         }
 
         private void myTcpClient_ReceivedCmd(object? sender, Cmd e)
