@@ -25,9 +25,9 @@ using WirelessTransfer.Tools.Screen;
 namespace WirelessTransfer.Windows
 {
     /// <summary>
-    /// MirrorWindow.xaml 的互動邏輯
+    /// DisplayScreenWindow.xaml 的互動邏輯
     /// </summary>
-    public partial class MirrorWindow : Window
+    public partial class DisplayScreenWindow : Window
     {
         MyTcpClient myTcpClient;
         WriteableBitmap screenWB;
@@ -40,7 +40,7 @@ namespace WirelessTransfer.Windows
         int frameCount = 0;
         double fps = 0;
 
-        public MirrorWindow(MyTcpClient myTcpClient)
+        public DisplayScreenWindow(MyTcpClient myTcpClient)
         {
             InitializeComponent();
 

@@ -135,55 +135,52 @@ namespace WirelessTransfer.Tools.Screen
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct ICONINFOEX
+        public struct CursorInfo
         {
             public int cbSize;
+            public int flags;
+            public IntPtr hCursor;
+            public Point ptScreenPos;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct IconInfo
+        {
             public bool fIcon;
             public int xHotspot;
             public int yHotspot;
             public IntPtr hbmMask;
             public IntPtr hbmColor;
-            public ushort wResID;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
-            public string szResID;
         }
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        public static extern bool GetIconInfoEx(IntPtr hIcon, ref ICONINFOEX piconinfo);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        public static extern bool DrawIconEx(IntPtr hdc, int x, int y, IntPtr hIcon, int cx, int cy, int istepIfAniCur, IntPtr hbrFlickerFreeDraw, uint diFlags);
+        [DllImport("user32.dll")]
+        public static extern bool GetCursorInfo(out CursorInfo pci);
 
         [DllImport("user32.dll")]
-        public static extern IntPtr GetCursor();
+        public static extern IntPtr CopyIcon(IntPtr hCursor);
 
-        [DllImport("gdi32.dll")]
-        public static extern bool DeleteObject(IntPtr hObject);
+        [DllImport("user32.dll")]
+        public static extern bool GetIconInfo(IntPtr hIcon, ref IconInfo pIconInfo);
 
-        const uint DI_NORMAL = 0x0003;
+        private const int CURSOR_SHOWING = 0x00000001;
 
-        public static void DrawCursorOnBitmap(Bitmap bitmap, int offsetX, int offsetY)
+        private void DrawCursorOnBitmap(Bitmap bitmap, int offsetX, int offsetY)
         {
-            using (Graphics g = Graphics.FromImage(bitmap))
+            var cursorInfo = new CursorInfo();
+            cursorInfo.cbSize = Marshal.SizeOf(typeof(CursorInfo));
+
+            if (GetCursorInfo(out cursorInfo) && cursorInfo.flags == CURSOR_SHOWING)
             {
-                IntPtr hdc = g.GetHdc();
-                IntPtr hCursor = GetCursor();
-                ICONINFOEX iconInfoEx = new ICONINFOEX();
-                iconInfoEx.cbSize = Marshal.SizeOf(typeof(ICONINFOEX));
-
-                if (GetIconInfoEx(hCursor, ref iconInfoEx))
+                using (Graphics g = Graphics.FromImage(bitmap))
                 {
-                    int cursorX = iconInfoEx.xHotspot - offsetX;
-                    int cursorY = iconInfoEx.yHotspot - offsetY;
+                    var iconHandle = CopyIcon(cursorInfo.hCursor);
+                    var iconInfo = new IconInfo();
+                    GetIconInfo(iconHandle, ref iconInfo);
 
-                    DrawIconEx(hdc, cursorX, cursorY, hCursor, bitmap.Width, bitmap.Height, 0, IntPtr.Zero, DI_NORMAL);
-
-                    // Clean resource
-                    DeleteObject(iconInfoEx.hbmMask);
-                    DeleteObject(iconInfoEx.hbmColor);
+                    int x = cursorInfo.ptScreenPos.X - iconInfo.xHotspot - offsetX;
+                    int y = cursorInfo.ptScreenPos.Y - iconInfo.yHotspot - offsetY;
+                    g.DrawIcon(Icon.FromHandle(iconHandle), x, y);
                 }
-
-                g.ReleaseHdc(hdc);
             }
         }
 

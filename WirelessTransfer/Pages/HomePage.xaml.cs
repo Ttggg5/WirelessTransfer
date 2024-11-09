@@ -134,7 +134,7 @@ namespace WirelessTransfer.Pages
                                     MyTcpClient myTcpClient = new MyTcpClient(remoteEP.Address, tcpPort, Environment.MachineName);
                                     StopListening();
 
-                                    MirrorWindow mirrorWindow = new MirrorWindow(myTcpClient);
+                                    DisplayScreenWindow mirrorWindow = new DisplayScreenWindow(myTcpClient);
                                     mirrorWindow.ShowDialog();
 
                                     myTcpClient.Disconnect();
