@@ -50,7 +50,7 @@ namespace WirelessTransfer.Pages
             waitRespondSp.Visibility = Visibility.Collapsed;
             disconnectSp.Visibility = Visibility.Collapsed;
 
-            Tag = PageFunction.Mirror;
+            Tag = PageFunction.Extend;
             deviceFinder.DeviceChoosed += deviceFinder_DeviceChoosed;
             deviceFinder.StartSearching();
         }
@@ -126,13 +126,16 @@ namespace WirelessTransfer.Pages
                     // move mouse
                     MouseCmd mouseCmd = (MouseCmd)e;
                     System.Windows.Forms.Cursor.Position =
-                        new System.Drawing.Point((int)mouseCmd.MousePos.X, (int)mouseCmd.MousePos.Y);
+                        new System.Drawing.Point(
+                            (int)mouseCmd.MousePos.X + Screen.AllScreens.Last().Bounds.X, 
+                            (int)mouseCmd.MousePos.Y + Screen.AllScreens.Last().Bounds.Y);
 
                     // do mouse action
                     if (mouseCmd.MouseAct != MouseAct.None)
                         mouse_event(
                             (int)mouseCmd.MouseAct,
-                            (int)mouseCmd.MousePos.X, (int)mouseCmd.MousePos.Y,
+                            (int)mouseCmd.MousePos.X + Screen.AllScreens.Last().Bounds.X,
+                            (int)mouseCmd.MousePos.Y + Screen.AllScreens.Last().Bounds.Y,
                             mouseCmd.MiddleButtonMomentum, 0);
                     break;
                 case CmdType.Keyboard:
