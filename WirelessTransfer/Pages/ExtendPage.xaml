@@ -5,10 +5,86 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:WirelessTransfer.Pages"
       xmlns:custombuttons="clr-namespace:WirelessTransfer.CustomButtons"
+      xmlns:mp="http://schemas.mpcoding.com/mpcoding/wpf/loadinganimation"
+      xmlns:customcontrols="clr-namespace:WirelessTransfer.CustomControls"
       mc:Ignorable="d" 
       d:DesignHeight="410" d:DesignWidth="540"
       Title="BasicPage">
     <Grid>
-        
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0">
+                <customcontrols:DeviceFinder x:Name="deviceFinder"/>
+            </Grid>
+
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0"
+                       FontSize="30"
+                       FontWeight="Bold"
+                       Foreground="White"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Bottom">
+                    <Grid>
+                        <TextBlock Text="掃描QR Code"
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock Text="以直接連接"
+                                   HorizontalAlignment="Center"
+                                   Margin="0, 35, 0, 0"/>
+                    </Grid>
+                </Label>
+
+                <Image Grid.Row="1"
+                       Source="/Assets/down_arrow.png"/>
+
+                <Image x:Name="qrCodeImg"/>
+            </Grid>
+
+            <Border Grid.ColumnSpan="2"
+                    x:Name="maskBorder"
+                    Background="#CC000000"
+                    CornerRadius="10">
+                <Grid>
+                    <StackPanel x:Name="waitRespondSp"
+                                VerticalAlignment="Center">
+                        <mp:WaveAnimation Width="100" Height="100"
+                                          Color="{StaticResource MainColorBrush}"
+                                          Duration="0:0:2.0" />
+                        <TextBlock Text="等待對方確認"
+                                   HorizontalAlignment="Center"
+                                   FontSize="20"
+                                   FontWeight="Bold"
+                                   Foreground="White"/>
+                    </StackPanel>
+
+                    <StackPanel x:Name="disconnectSp"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="已成功連線"
+                                   HorizontalAlignment="Center"
+                                   FontSize="20"
+                                   FontWeight="Bold"
+                                   Foreground="White"/>
+                        <TextBlock Text="分享中..."
+                                   HorizontalAlignment="Center"
+                                   FontSize="20"
+                                   FontWeight="Bold"
+                                   Foreground="White"/>
+                        <Button x:Name="disconnectBtn"
+                                Width="100" Height="30"
+                                Content="Disconnect"
+                                Click="disconnectBtn_Click"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
     </Grid>
 </Page>

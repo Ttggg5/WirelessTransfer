@@ -73,12 +73,10 @@ namespace WirelessTransfer.Pages
                     ((MirrorPage)page).StopAll();
                     break;
                 case PageFunction.Extend:
-                    
+                    ((ExtendPage)page).StopAll();
                     break;
                 case PageFunction.FileShare:
                     ((FileSharePage)page).StopAll();
-                    break;
-                case PageFunction.Setting:
                     break;
             }
             page = null;

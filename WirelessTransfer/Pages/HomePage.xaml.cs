@@ -113,6 +113,7 @@ namespace WirelessTransfer.Pages
                             udpListen.Send(tmpBytes, tmpBytes.Length, remoteEP);
                             break;
                         case RequestType.Mirror:
+                        case RequestType.Extend:
                             Dispatcher.Invoke(() =>
                             {
                                 MessageWindow messageWindow = new MessageWindow(
@@ -140,8 +141,6 @@ namespace WirelessTransfer.Pages
                                     ListenForConnections();
                                 }
                             });
-                            break;
-                        case RequestType.Extend:
                             break;
                         case RequestType.FileShare:
                             Dispatcher.Invoke(() =>
