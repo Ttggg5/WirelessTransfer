@@ -65,6 +65,8 @@ namespace WirelessTransfer.Pages
 
         public void StopAllProcess()
         {
+            if (page == null) return;
+
             switch ((PageFunction)page.Tag)
             {
                 case PageFunction.Mirror:
