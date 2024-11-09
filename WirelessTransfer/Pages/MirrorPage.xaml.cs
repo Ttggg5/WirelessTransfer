@@ -161,9 +161,7 @@ namespace WirelessTransfer.Pages
                 }
             }
 
-            screenUdpClient = new UdpClient();
-            screenUdpClient.Client.SendBufferSize = 6291456; // 6MB
-            screenUdpClient.Client.ReceiveBufferSize = 6291456; // 6MB
+            screenUdpClient = new UdpClient(new IPEndPoint(myTcpServer.ConnectedClients.First().Address, udpPort));
 
             screenCaptureDX = new ScreenCaptureDX(0);
             screenCaptureDX.ScreenRefreshed += screenCaptureDX_ScreenRefreshed;
@@ -177,8 +175,7 @@ namespace WirelessTransfer.Pages
                 try
                 {
                     //myTcpServer.SendCmd(new ScreenCmd(e), myTcpServer.ConnectedClients.First());
-                    screenUdpClient.Send(new ScreenCmd(e).Encode(),
-                        new IPEndPoint(myTcpServer.ConnectedClients.First().Address, udpPort));
+                    screenUdpClient.Send(new ScreenCmd(e).Encode());
                 }
                 catch { }
             }
