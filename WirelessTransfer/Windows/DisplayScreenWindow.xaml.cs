@@ -75,6 +75,8 @@ namespace WirelessTransfer.Windows
         private void myTcpClient_Connected(object? sender, EventArgs e)
         {
             screenUdpClient = new UdpClient(new IPEndPoint(myTcpClient.serverIp, udpPort));
+            screenUdpClient.Client.SendBufferSize = 6291456; // 6MB
+            screenUdpClient.Client.ReceiveBufferSize = 6291456; // 6MB
             Task.Factory.StartNew(() =>
             {
                 try
