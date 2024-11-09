@@ -22,7 +22,6 @@ namespace WirelessTransfer.Pages
 
         int udpPort, tcpPort;
         MyTcpServer myTcpServer;
-        UdpClient screenUdpClient;
         ScreenCaptureDX screenCaptureDX;
         InputSimulator inputSimulator;
 
@@ -161,8 +160,6 @@ namespace WirelessTransfer.Pages
                 }
             }
 
-            screenUdpClient = new UdpClient(new IPEndPoint(myTcpServer.ConnectedClients.First().Address, udpPort));
-
             screenCaptureDX = new ScreenCaptureDX(0);
             screenCaptureDX.ScreenRefreshed += screenCaptureDX_ScreenRefreshed;
             screenCaptureDX.Start();
@@ -174,8 +171,7 @@ namespace WirelessTransfer.Pages
             {
                 try
                 {
-                    //myTcpServer.SendCmd(new ScreenCmd(e), myTcpServer.ConnectedClients.First());
-                    screenUdpClient.Send(new ScreenCmd(e).Encode());
+                    myTcpServer.SendCmd(new ScreenCmd(e), myTcpServer.ConnectedClients.First());
                 }
                 catch { }
             }
@@ -210,7 +206,6 @@ namespace WirelessTransfer.Pages
                 catch { }
                 myTcpServer?.Stop();
             }
-            screenUdpClient?.Close();
         }
     }
 }

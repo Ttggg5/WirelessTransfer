@@ -29,12 +29,10 @@ namespace WirelessTransfer.Windows
     /// </summary>
     public partial class MirrorWindow : Window
     {
-        UdpClient screenUdpClient;
         MyTcpClient myTcpClient;
         WriteableBitmap screenWB;
         Stopwatch frameSw;
 
-        int udpPort;
         int screenWidth = 0;
         int screenHeight = 0;
         double widthScale = 1.0;
@@ -47,7 +45,6 @@ namespace WirelessTransfer.Windows
             InitializeComponent();
 
             WindowState = WindowState.Maximized;
-            udpPort = int.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.UdpPort, IniFile.DEFAULT_PATH));
 
             //InputLanguageManager.SetInputLanguage();
 
@@ -74,50 +71,7 @@ namespace WirelessTransfer.Windows
 
         private void myTcpClient_Connected(object? sender, EventArgs e)
         {
-            screenUdpClient = new UdpClient(new IPEndPoint(myTcpClient.serverIp, udpPort));
-            Task.Factory.StartNew(() =>
-            {
-                try
-                {
-                    IPEndPoint ipep = null;
-                    byte[] receive = Array.Empty<byte>();
-                    while (myTcpClient.State == MyTcpClientState.Connected)
-                    {
-                        byte[] tmp = screenUdpClient.Receive(ref ipep);
-                        receive = receive.Concat(tmp).ToArray();
-                        Cmd cmd = CmdDecoder.DecodeCmd(receive, 0, receive.Length, out int endIndex);
-                        if (cmd == null) continue;
-
-                        receive = receive.Skip(endIndex + 1).ToArray();
-                        switch (cmd.CmdType)
-                        {
-                            case CmdType.Screen:
-                                ScreenCmd sc = (ScreenCmd)cmd;
-                                if (sc.ScreenBmp != null && screenWB != null)
-                                {
-                                    Dispatcher.Invoke(() =>
-                                    {
-                                        BitmapConverter.DrawBitmapToWriteableBitmap(sc.ScreenBmp, screenWB, 0, 0);
-                                    });
-                                    frameCount++;
-                                }
-                                cmd = null;
-                                GC.Collect();
-
-                                // Every second, calculate the FPS (frames per second)
-                                if (frameSw.ElapsedMilliseconds >= 1000)
-                                {
-                                    fps = frameCount / (frameSw.ElapsedMilliseconds / 1000.0);
-                                    frameCount = 0;
-                                    frameSw.Restart();
-                                    Dispatcher.BeginInvoke(() => { curPageLb.Text = $"FPS: {fps:F2}"; });
-                                }
-                                break;
-                        }
-                    }
-                }
-                catch { }
-            }, TaskCreationOptions.LongRunning);
+            
         }
 
         private void myTcpClient_ReceivedCmd(object? sender, Cmd e)
@@ -168,7 +122,6 @@ namespace WirelessTransfer.Windows
         {
             myTcpClient.SendCmd(new RequestCmd(RequestType.Disconnect, Environment.MachineName));
             myTcpClient.Disconnect();
-            screenUdpClient?.Close();
             frameSw.Stop();
             System.Windows.Forms.Cursor.Show();
         }
