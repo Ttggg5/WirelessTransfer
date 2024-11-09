@@ -14,9 +14,9 @@ namespace Ini
         public static void CreateDefaultIniFile(string path)
         {
             // [Option]
-            IniFile.WriteValueFromIniFile(IniFileSections.Option, IniFileKeys.TcpPort, GetDefaultValue(IniFileSections.Option, IniFileKeys.TcpPort), path);
-            IniFile.WriteValueFromIniFile(IniFileSections.Option, IniFileKeys.UdpPort, GetDefaultValue(IniFileSections.Option, IniFileKeys.UdpPort), path);
-            IniFile.WriteValueFromIniFile(IniFileSections.Option, IniFileKeys.ReceivePath, GetDefaultValue(IniFileSections.Option, IniFileKeys.ReceivePath), path);
+            IniFile.WriteValueToIniFile(IniFileSections.Option, IniFileKeys.TcpPort, GetDefaultValue(IniFileSections.Option, IniFileKeys.TcpPort), path);
+            IniFile.WriteValueToIniFile(IniFileSections.Option, IniFileKeys.UdpPort, GetDefaultValue(IniFileSections.Option, IniFileKeys.UdpPort), path);
+            IniFile.WriteValueToIniFile(IniFileSections.Option, IniFileKeys.ReceivePath, GetDefaultValue(IniFileSections.Option, IniFileKeys.ReceivePath), path);
         }
 
         public static string GetDefaultValue(IniFileSections section, IniFileKeys key)

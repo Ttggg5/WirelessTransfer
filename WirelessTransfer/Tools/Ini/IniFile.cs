@@ -19,13 +19,13 @@ namespace Ini
         [DllImport("kernel32", CharSet = CharSet.Unicode)]
         private static extern int GetPrivateProfileString(string section, string key, string def, StringBuilder retVal, int size, string filePath);
 
-        public static void WriteValueFromIniFile(IniFileSections section, IniFileKeys key, string value, string filePath)
+        public static void WriteValueToIniFile(IniFileSections section, IniFileKeys key, string value, string filePath)
         {
-            WriteValueFromIniFile(Enum.GetName(typeof(IniFileSections), section),
+            WriteValueToIniFile(Enum.GetName(typeof(IniFileSections), section),
                                   Enum.GetName(typeof(IniFileKeys), key), value, filePath);
         }
 
-        public static void WriteValueFromIniFile(string section, string key, string value, string filePath)
+        public static void WriteValueToIniFile(string section, string key, string value, string filePath)
         {
             WritePrivateProfileString(section, key, value, filePath);
             SettingChanged?.Invoke(new object(), new EventArgs());

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Media.Media3D;
 
@@ -61,7 +63,7 @@ namespace WirelessTransfer.Tools.Screen
         public static extern bool EnumDisplaySettings(string deviceName, int modeNum, ref DEVMODE devMode);
 
         // Function to change display settings of a specific monitor
-        public static void ChangeScreenResolution(string deviceName, int width, int height, int frequency)
+        public static bool ChangeScreenResolution(string deviceName, int width, int height, int frequency)
         {
             DEVMODE dm = new DEVMODE();
             dm.dmDeviceName = new string(new char[32]);
@@ -78,19 +80,29 @@ namespace WirelessTransfer.Tools.Screen
 
                 int result = ChangeDisplaySettingsEx(deviceName, ref dm, IntPtr.Zero, CDS_UPDATEREGISTRY, IntPtr.Zero);
 
-                if (result == DISP_CHANGE_SUCCESSFUL)
-                {
-                    Console.WriteLine($"Display settings changed for {deviceName} to {width}x{height} @ {frequency}Hz");
-                }
-                else
-                {
-                    Console.WriteLine($"Failed to change display settings for {deviceName}");
-                }
+                if (result == DISP_CHANGE_SUCCESSFUL) return true;
+                else return false;
             }
-            else
-            {
-                Console.WriteLine("Unable to retrieve settings for " + deviceName);
-            }
+            else return false;
+        }
+
+        [Flags]
+        public enum SetDisplayConfigFlags : uint
+        {
+            SDC_TOPOLOGY_INTERNAL = 0x00000001,
+            SDC_TOPOLOGY_CLONE = 0x00000002,
+            SDC_TOPOLOGY_EXTEND = 0x00000004,
+            SDC_TOPOLOGY_EXTERNAL = 0x00000008,
+            SDC_APPLY = 0x00000080,
+        }
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        private static extern long SetDisplayConfig(uint numPathArrayElements,
+            IntPtr pathArray, uint numModeArrayElements, IntPtr modeArray, SetDisplayConfigFlags flags);
+
+        public static void SetDisplayMode(SetDisplayConfigFlags flags)
+        {
+            SetDisplayConfig(0, IntPtr.Zero, 0, IntPtr.Zero, flags | SetDisplayConfigFlags.SDC_APPLY);
         }
     }
 }

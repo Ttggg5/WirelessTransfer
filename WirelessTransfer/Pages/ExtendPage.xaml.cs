@@ -167,6 +167,7 @@ namespace WirelessTransfer.Pages
             if (myTcpServer != null)
             {
                 CreateVirtualScreen(1920, 1080);
+                
 
                 lock (myTcpServer.ConnectedClients)
                 {

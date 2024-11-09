@@ -83,7 +83,7 @@ namespace WirelessTransfer.Pages
             GC.Collect();
         }
 
-        private void backBtn_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void backBtn_Click(object sender, MouseButtonEventArgs e)
         {
             Back?.Invoke(this, e);
         }

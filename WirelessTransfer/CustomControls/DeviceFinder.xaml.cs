@@ -134,8 +134,6 @@ namespace WirelessTransfer.CustomControls
                         Dispatcher.Invoke(() =>
                         {
                             DeviceTag deviceTag = new DeviceTag(cif.ClientName, cif.IP, DateTime.Now);
-                            deviceTag.Width = 230;
-                            deviceTag.Height = 60;
                             foundDevicesListBox.Items.Add(deviceTag);
                             deviceTags.Add(deviceTag);
                         });
