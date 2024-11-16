@@ -73,7 +73,8 @@
             </Button>
             
             <customcontrols:DeviceFinder Grid.Row="1"
-                                         x:Name="deviceFinder"/>
+                                         x:Name="deviceFinder"
+                                         Function="FileShare"/>
         </Grid>
 
         <Grid Grid.Column="1">

@@ -18,7 +18,8 @@
             </Grid.ColumnDefinitions>
 
             <Grid Grid.Column="0">
-                <customcontrols:DeviceFinder x:Name="deviceFinder"/>
+                <customcontrols:DeviceFinder x:Name="deviceFinder"
+                                             Function="Extend"/>
             </Grid>
 
             <Grid Grid.Column="1">

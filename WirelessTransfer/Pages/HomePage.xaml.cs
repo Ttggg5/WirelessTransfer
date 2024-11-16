@@ -108,7 +108,7 @@ namespace WirelessTransfer.Pages
                     RequestCmd requestCmd = (RequestCmd)cmd;
                     switch (requestCmd.RequestType)
                     {
-                        case RequestType.ClientInfo:
+                        case RequestType.PcClientInfo:
                             tmpBytes = new ClientInfoCmd(Environment.MachineName, IPAddress.Parse(GetLocalIPAddress())).Encode();
                             udpListen.Send(tmpBytes, tmpBytes.Length, remoteEP);
                             break;

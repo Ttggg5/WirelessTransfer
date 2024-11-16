@@ -15,6 +15,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WirelessTransfer.CustomButtons;
+using WirelessTransfer.Pages;
 using WirelessTransfer.Tools.InternetSocket.Cmd;
 using WirelessTransfer.Tools.InternetSocket.MyUdp;
 
@@ -33,9 +35,19 @@ namespace WirelessTransfer.CustomControls
     {
         public event EventHandler<DeviceTag> DeviceChoosed;
 
-        public DeviceFinderState State { get; private set; }
+        public PageFunction Function
+        {
+            get { return (PageFunction)GetValue(FunctionProperty); }
+            set { SetValue(FunctionProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for PageFunction.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty FunctionProperty =
+            DependencyProperty.Register("PageFunction", typeof(PageFunction), typeof(DeviceFinder), new PropertyMetadata(PageFunction.Mirror));
 
         const int SEARCH_CYCLE = 1; // unit is "second"
+
+        public DeviceFinderState State { get; private set; }
 
         int port;
 
@@ -89,8 +101,22 @@ namespace WirelessTransfer.CustomControls
                                 }
                             }
 
-                            RequestCmd requestClientInfoCmd = new RequestCmd(RequestType.ClientInfo, Environment.MachineName);
+                            // Pc request
+                            RequestCmd requestClientInfoCmd = new RequestCmd(RequestType.PcClientInfo, Environment.MachineName);
                             byte[] sendBytes = requestClientInfoCmd.Encode();
+                            searchClient.Send(sendBytes, sendBytes.Length, new IPEndPoint(IPAddress.Broadcast, port));
+
+                            // Phone request
+                            PageFunction tmp = PageFunction.Setting;
+                            Dispatcher.Invoke(() =>
+                            {
+                                tmp = Function;
+                            });
+                            if (tmp == PageFunction.Mirror || tmp == PageFunction.Extend)
+                                requestClientInfoCmd = new RequestCmd(RequestType.PhoneClientInfoShareScreen, Environment.MachineName);
+                            else
+                                requestClientInfoCmd = new RequestCmd(RequestType.PhoneClientInfoFileShare, Environment.MachineName);
+                            sendBytes = requestClientInfoCmd.Encode();
                             searchClient.Send(sendBytes, sendBytes.Length, new IPEndPoint(IPAddress.Broadcast, port));
 
                             // Waiting
@@ -102,7 +128,7 @@ namespace WirelessTransfer.CustomControls
                             }
                         }
                     }
-                    catch (ObjectDisposedException) { }
+                    catch (Exception) { }
                 });
                 State = DeviceFinderState.Searching;
             }

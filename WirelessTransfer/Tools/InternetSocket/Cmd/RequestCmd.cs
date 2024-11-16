@@ -10,10 +10,12 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
     public enum RequestType
     {
         Disconnect,
-        ClientInfo,
+        PcClientInfo,
         Mirror,
         Extend,
         FileShare,
+        PhoneClientInfoShareScreen,
+        PhoneClientInfoFileShare,
     }
 
     public class RequestCmd : Cmd
