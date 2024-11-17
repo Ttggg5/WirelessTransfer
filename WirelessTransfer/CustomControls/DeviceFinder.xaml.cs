@@ -25,7 +25,7 @@ namespace WirelessTransfer.CustomControls
     public enum DeviceFinderState
     {
         Searching,
-        Stoped,
+        Stopped,
     }
 
     /// <summary>
@@ -61,7 +61,7 @@ namespace WirelessTransfer.CustomControls
             port = int.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.UdpPort, IniFile.DEFAULT_PATH));
             deviceTags = new List<DeviceTag>();
 
-            State = DeviceFinderState.Stoped;
+            State = DeviceFinderState.Stopped;
 
             /*
             DeviceTag deviceTag = new DeviceTag("test", IPAddress.Any);
@@ -104,7 +104,7 @@ namespace WirelessTransfer.CustomControls
                             // Pc request
                             RequestCmd requestClientInfoCmd = new RequestCmd(RequestType.PcClientInfo, Environment.MachineName);
                             byte[] sendBytes = requestClientInfoCmd.Encode();
-                            searchClient.Send(sendBytes, sendBytes.Length, new IPEndPoint(IPAddress.Broadcast, port));
+                            searchClient?.Send(sendBytes, sendBytes.Length, new IPEndPoint(IPAddress.Broadcast, port));
 
                             // Phone request
                             PageFunction tmp = PageFunction.Setting;
@@ -117,7 +117,7 @@ namespace WirelessTransfer.CustomControls
                             else
                                 requestClientInfoCmd = new RequestCmd(RequestType.PhoneClientInfoFileShare, Environment.MachineName);
                             sendBytes = requestClientInfoCmd.Encode();
-                            searchClient.Send(sendBytes, sendBytes.Length, new IPEndPoint(IPAddress.Broadcast, port));
+                            searchClient?.Send(sendBytes, sendBytes.Length, new IPEndPoint(IPAddress.Broadcast, port));
 
                             // Waiting
                             for (int i = 0; i < SEARCH_CYCLE * 10; i++)
@@ -140,6 +140,9 @@ namespace WirelessTransfer.CustomControls
             {
                 IPEndPoint? remoteEP = null;
                 byte[] receiveBytes = searchClient.EndReceive(ar, ref remoteEP);
+                if (State == DeviceFinderState.Stopped) 
+                    return;
+
                 Cmd cmd = CmdDecoder.DecodeCmd(receiveBytes, 0, receiveBytes.Length);
                 if (cmd != null && cmd.CmdType == CmdType.ClientInfo)
                 {
@@ -172,14 +175,14 @@ namespace WirelessTransfer.CustomControls
             {
                 searchClient?.Close();
                 searchClient = null;
-                State = DeviceFinderState.Stoped;
+                State = DeviceFinderState.Stopped;
             }
         }
 
         public void StopSearching()
         {
             searchClient?.Close();
-            State = DeviceFinderState.Stoped;
+            State = DeviceFinderState.Stopped;
         }
 
         private void foundDevicesListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

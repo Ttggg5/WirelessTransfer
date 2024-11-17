@@ -23,6 +23,8 @@ namespace WirelessTransfer.Windows
         {
             InitializeComponent();
 
+            Topmost = true;
+
             messageTb.Text = message;
 
             if (!hasOption)

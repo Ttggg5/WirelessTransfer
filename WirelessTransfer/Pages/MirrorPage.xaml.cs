@@ -64,14 +64,15 @@ namespace WirelessTransfer.Pages
 
             // send request
             UdpClient udpClient = new UdpClient();
+            udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, udpPort));
             byte[] bytes = new RequestCmd(RequestType.Mirror, Environment.MachineName).Encode();
-            udpClient.Send(bytes, bytes.Length, new System.Net.IPEndPoint(e.Address, udpPort));
+            udpClient.Send(bytes, bytes.Length, new IPEndPoint(e.Address, udpPort));
 
             // waiting for accept
             Task<UdpReceiveResult> receiveTask = udpClient.ReceiveAsync();
             Task.Run(() =>
             {
-                if (receiveTask.Wait(30000))
+                if (receiveTask.Wait(20000))
                 {
                     byte[] bytes = receiveTask.Result.Buffer;
                     Cmd cmd = CmdDecoder.DecodeCmd(bytes, 0, bytes.Length);
@@ -87,6 +88,15 @@ namespace WirelessTransfer.Pages
                                 messageWindow.ShowDialog();
                             });
                         }
+                    }
+                    else
+                    {
+                        Dispatcher.BeginInvoke(() =>
+                        {
+                            disconnectBtn_Click(this, null);
+                            MessageWindow messageWindow = new MessageWindow("Error reply!", false);
+                            messageWindow.ShowDialog();
+                        });
                     }
                 }
                 else
