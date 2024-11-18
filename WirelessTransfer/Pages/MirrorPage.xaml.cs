@@ -72,7 +72,7 @@ namespace WirelessTransfer.Pages
             Task<UdpReceiveResult> receiveTask = udpClient.ReceiveAsync();
             Task.Run(() =>
             {
-                if (receiveTask.Wait(30000))
+                if (receiveTask.Wait(20000))
                 {
                     byte[] bytes = receiveTask.Result.Buffer;
                     Cmd cmd = CmdDecoder.DecodeCmd(bytes, 0, bytes.Length);
@@ -87,19 +87,6 @@ namespace WirelessTransfer.Pages
                                 MessageWindow messageWindow = new MessageWindow("對方已拒絕連接!", false);
                                 messageWindow.ShowDialog();
                             });
-                        }
-                        else
-                        {
-                            Task.Delay(10000).Wait();
-                            if (myTcpServer.CurState == MyTcpServerState.Listening && myTcpServer.ConnectedClients.Count == 0)
-                            {
-                                Dispatcher.BeginInvoke(() =>
-                                {
-                                    disconnectBtn_Click(this, null);
-                                    MessageWindow messageWindow = new MessageWindow("連接超時!", false);
-                                    messageWindow.ShowDialog();
-                                });
-                            }
                         }
                     }
                     else
@@ -192,7 +179,7 @@ namespace WirelessTransfer.Pages
                 }
             }
 
-            screenCaptureDX = new ScreenCaptureDX(Screen.PrimaryScreen.DeviceName);
+            screenCaptureDX = new ScreenCaptureDX(0);
             screenCaptureDX.ScreenRefreshed += screenCaptureDX_ScreenRefreshed;
             screenCaptureDX.Start();
         }

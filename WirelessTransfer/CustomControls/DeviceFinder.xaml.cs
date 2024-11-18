@@ -61,10 +61,6 @@ namespace WirelessTransfer.CustomControls
             port = int.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.UdpPort, IniFile.DEFAULT_PATH));
             deviceTags = new List<DeviceTag>();
 
-            searchClient = new UdpClient();
-            searchClient.EnableBroadcast = true;
-            searchClient.Client.Bind(new IPEndPoint(IPAddress.Any, port));
-
             State = DeviceFinderState.Stopped;
 
             /*
@@ -79,8 +75,11 @@ namespace WirelessTransfer.CustomControls
         {
             if (State == DeviceFinderState.Searching) return;
 
-            try
+            if (searchClient == null)
             {
+                searchClient = new UdpClient();
+                searchClient.EnableBroadcast = true;
+                searchClient.Client.Bind(new IPEndPoint(IPAddress.Any, port));
                 searchClient.BeginReceive(new AsyncCallback(ReceiveCallBack), null);
                 Task.Run(() =>
                 {
@@ -129,15 +128,10 @@ namespace WirelessTransfer.CustomControls
                             }
                         }
                     }
-                    catch (Exception)
-                    {
-                        searchClient?.Close();
-                        State = DeviceFinderState.Stopped;
-                    }
+                    catch (Exception) { }
                 });
                 State = DeviceFinderState.Searching;
             }
-            catch { }
         }
 
         private void ReceiveCallBack(IAsyncResult ar)
@@ -180,6 +174,7 @@ namespace WirelessTransfer.CustomControls
             catch
             {
                 searchClient?.Close();
+                searchClient = null;
                 State = DeviceFinderState.Stopped;
             }
         }
@@ -193,10 +188,7 @@ namespace WirelessTransfer.CustomControls
         private void foundDevicesListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (foundDevicesListBox.SelectedIndex > -1)
-            {
                 DeviceChoosed?.Invoke(this, (DeviceTag)foundDevicesListBox.SelectedItem);
-                foundDevicesListBox.SelectedIndex = -1;
-            } 
         }
     }
 }
