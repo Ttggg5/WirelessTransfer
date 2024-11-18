@@ -72,9 +72,10 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
 
                         Task.Factory.StartNew(() =>
                         {
-                            MyTcpClientInfo clientInfo = ConnectedClients.Last();
+                            MyTcpClientInfo clientInfo = null;
                             try
                             {
+                                clientInfo = ConnectedClients.Last();
                                 while (true)
                                 {
                                     int actualLength = clientInfo.Client.GetStream().Read(tmpBuffer, 0, tmpBuffer.Length);

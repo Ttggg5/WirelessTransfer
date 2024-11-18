@@ -20,18 +20,28 @@ namespace WirelessTransfer.Tools.Screen
 
         private bool isRunning;
 
-        public int ScreenIndex { get; }
         public int AdapterIndex { get; }
         public int OutputIndex { get; }
 
         /// <param name="screenIndex"></param>
-        public ScreenCaptureDX(int screenIndex)
+        public ScreenCaptureDX(string deviceName)
         {
             ScreenRefreshed = null;
             isRunning = false;
-            ScreenIndex = screenIndex;
-            AdapterIndex = screenIndex / 2;
-            OutputIndex = screenIndex % 2;
+
+            var factory = new Factory1();
+            for (int i = 0; i < factory.Adapters1.Length; i++)
+            {
+                for (int j = 0; j < factory.Adapters1[i].Outputs.Length; j++)
+                {
+                    if (factory.Adapters1[i].Outputs[j].Description.DeviceName.Equals(deviceName))
+                    {
+                        AdapterIndex = i;
+                        OutputIndex = j;
+                        break;
+                    }
+                }
+            }
         }
 
         public void Start()

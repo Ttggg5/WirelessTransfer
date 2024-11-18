@@ -186,7 +186,7 @@ namespace WirelessTransfer.Pages
                             myTcpServer.ConnectedClients.First());
                 }
 
-                screenCaptureDX = new ScreenCaptureDX(Screen.AllScreens.Count() - 1);
+                screenCaptureDX = new ScreenCaptureDX(Screen.AllScreens.Last().DeviceName);
                 screenCaptureDX.ScreenRefreshed += screenCaptureDX_ScreenRefreshed;
                 screenCaptureDX.Start();
             }
