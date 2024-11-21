@@ -156,7 +156,7 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                 byte[] bytes = cmd.Encode();
                 clientInfo.Client.GetStream().Write(bytes, 0, bytes.Length);
             }
-            catch
+            catch (Exception ex)
             {
                 bool removeable = false;
                 lock (ConnectedClients)

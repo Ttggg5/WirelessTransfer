@@ -121,7 +121,7 @@ namespace WirelessTransfer.Pages
                 }
                 udpClient.Close();
 
-                Task.Delay(1000).Wait();
+                Task.Delay(3000).Wait();
                 if (myTcpServer.ConnectedClients.Count == 0)
                 {
                     Dispatcher.BeginInvoke(() =>

@@ -19,6 +19,10 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
 
         public Bitmap ScreenBmp { get; private set; }
 
+        EncoderParameters eps = new EncoderParameters(1);
+        EncoderParameter ep = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 50);
+        ImageCodecInfo jpegCodec;
+
         /// <summary>
         /// For sender.
         /// </summary>
@@ -26,6 +30,10 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
         {
             ScreenBmp = screenBmp;
             CmdType = CmdType.Screen;
+
+            eps.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 75L);
+
+            jpegCodec = GetEncoderInfo(ImageFormat.Jpeg);
         }
 
         /// <summary>
@@ -37,11 +45,20 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
             CmdType = CmdType.Screen;
         }
 
+        private static ImageCodecInfo GetEncoderInfo(ImageFormat imageFormat)
+        {
+            foreach (ImageCodecInfo codec in ImageCodecInfo.GetImageEncoders())
+                if (codec.FormatID == imageFormat.Guid)
+                    return codec;
+
+            return null;
+        }
+
         public override byte[] Encode()
         {
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                ScreenBmp.Save(memoryStream, ImageFormat.Jpeg);
+                ScreenBmp.Save(memoryStream, jpegCodec, eps);
                 Data = memoryStream.GetBuffer();
             }
             return AddHeadTail(Data);
