@@ -32,7 +32,6 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
         int timeoutCounter = 0;
         int startIndex = 0, EndIndex = 0;
         byte[] buffer = new byte[12582912]; // 12MB
-        byte[] tmpBuffer = new byte[6291456]; // 6MB
 
         public MyTcpClient(IPAddress serverIp, int serverPort, string clientName)
         {
@@ -74,21 +73,12 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                     {
                         while (true)
                         {
-                            int actualLength = client.GetStream().Read(tmpBuffer, 0, tmpBuffer.Length);
+                            int actualLength = client.GetStream().Read(buffer, EndIndex, buffer.Length - EndIndex);
                             if (actualLength > 0)
                             {
-                                int tmpLength = buffer.Length - EndIndex;
-                                if (actualLength <= tmpLength)
-                                {
-                                    Array.Copy(tmpBuffer, 0, buffer, EndIndex, actualLength);
-                                    EndIndex += actualLength;
-                                }
-                                else
-                                {
-                                    Array.Copy(tmpBuffer, 0, buffer, EndIndex, tmpLength);
-                                    Array.Copy(tmpBuffer, tmpLength, buffer, 0, actualLength - tmpLength);
-                                    EndIndex = actualLength - tmpLength;
-                                }
+                                EndIndex += actualLength;
+                                if (EndIndex >= buffer.Length)
+                                    EndIndex -= buffer.Length;
 
                                 // prevent it doesn't only read one cmd
                                 while (true)
@@ -141,46 +131,6 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                         client.BeginConnect(serverIp, serverPort, new AsyncCallback(OnConnect), null);
                     });
                 }
-            }
-        }
-
-        private void ReceiveCallBack(IAsyncResult ar)
-        {
-            try
-            {
-                int actualLength = client.GetStream().EndRead(ar);
-                if (actualLength > 0)
-                {
-                    int tmpLength = buffer.Length - EndIndex;
-                    if (actualLength <= tmpLength)
-                    {
-                        Array.Copy(tmpBuffer, 0, buffer, EndIndex, actualLength);
-                        EndIndex += actualLength;
-                    }
-                    else
-                    {
-                        Array.Copy(tmpBuffer, 0, buffer, EndIndex, tmpLength);
-                        Array.Copy(tmpBuffer, tmpLength, buffer, 0, actualLength - tmpLength);
-                        EndIndex = actualLength - tmpLength;
-                    }
-                    /*
-                    for (int i = 0; i < actualLength; i++)
-                    {
-                        buffer[EndIndex++] = tmpBuffer[i];
-                        if (EndIndex == buffer.Length) EndIndex = 0;
-                        if (startIndex == EndIndex) startIndex++;
-                        if (startIndex == buffer.Length) startIndex = 0;
-                    }
-                    */
-                    Cmd.Cmd? cmd = CmdDecoder.DecodeCmd(buffer, ref startIndex, ref EndIndex);
-                    if (cmd != null) ReceivedCmd?.Invoke(this, cmd);
-                }
-
-                client.GetStream().BeginRead(tmpBuffer, 0, tmpBuffer.Length, new AsyncCallback(ReceiveCallBack), null);
-            }
-            catch (Exception ex)
-            {
-                Disconnected?.Invoke(this, new EventArgs());
             }
         }
 

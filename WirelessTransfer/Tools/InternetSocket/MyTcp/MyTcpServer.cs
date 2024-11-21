@@ -31,7 +31,6 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
 
         int startIndex = 0, EndIndex = 0;
         byte[] buffer = new byte[12582912]; // 12MB
-        byte[] tmpBuffer = new byte[6291456]; // 6MB
 
         public MyTcpServer(int port)
         {
@@ -79,22 +78,14 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                                 clientInfo = ConnectedClients.Last();
                                 while (true)
                                 {
-                                    int actualLength = clientInfo.Client.GetStream().Read(tmpBuffer, 0, tmpBuffer.Length);
+                                    int actualLength = clientInfo.Client.GetStream().Read(buffer, EndIndex, buffer.Length - EndIndex);
                                     if (actualLength > 0)
                                     {
-                                        int tmpLength = buffer.Length - EndIndex;
-                                        if (actualLength <= tmpLength)
-                                        {
-                                            Array.Copy(tmpBuffer, 0, buffer, EndIndex, actualLength);
-                                            EndIndex += actualLength;
-                                        }
-                                        else
-                                        {
-                                            Array.Copy(tmpBuffer, 0, buffer, EndIndex, tmpLength);
-                                            Array.Copy(tmpBuffer, tmpLength, buffer, 0, actualLength - tmpLength);
-                                            EndIndex = actualLength - tmpLength;
-                                        }
+                                        EndIndex += actualLength;
+                                        if (EndIndex >= buffer.Length)
+                                            EndIndex -= buffer.Length;
 
+                                        // prevent it doesn't only read one cmd
                                         while (true)
                                         {
                                             Cmd.Cmd? cmd = CmdDecoder.DecodeCmd(buffer, ref startIndex, ref EndIndex);

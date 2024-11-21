@@ -34,6 +34,7 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
             CmdType cmdType;
             string cmdStr;
             int length = endIndex - startIndex < 0 ? buffer.Length - startIndex + endIndex + 1 : endIndex - startIndex;
+            if (length == 0) return null;
             if (buffer[startIndex] == frontSymbol)
             {
                 int fl = startIndex + length > buffer.Length ? buffer.Length - startIndex : length;
@@ -123,6 +124,7 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
             endIndex = 0;
             Cmd? cmd = null;
             CmdType cmdType;
+            if (length == 0) return null;
             if (buffer[startIndex] == frontSymbol)
             {
                 byte[] tmpBuffer = new byte[length];
