@@ -79,18 +79,25 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
 
                 // find end symbol
                 curIndex = previousIndex + 7 + dataLength + 1;
-                if (tmpBuffer[curIndex] == endSymbol)
+                try
                 {
-                    // create cmd class
-                    byte[] data = tmpBuffer.Skip(previousIndex + 7).Take(dataLength).ToArray();
-                    cmd = CreateDecodeCmd(cmdType, data);
+                    if (tmpBuffer[curIndex] == endSymbol)
+                    {
+                        // create cmd class
+                        byte[] data = tmpBuffer.Skip(previousIndex + 7).Take(dataLength).ToArray();
+                        cmd = CreateDecodeCmd(cmdType, data);
 
-                    startIndex += curIndex + cmdStr.Length + 2;
-                    if (startIndex >= buffer.Length) startIndex -= buffer.Length;
+                        startIndex += curIndex + cmdStr.Length + 2;
+                        if (startIndex >= buffer.Length) startIndex -= buffer.Length;
 
-                    return cmd;
+                        return cmd;
+                    }
+                    else return null;
                 }
-                else return null;
+                catch (IndexOutOfRangeException)
+                {
+                    return null;
+                }
             }
             else
             {
@@ -162,12 +169,19 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
 
                 // find end symbol
                 curIndex = previousIndex + 7 + dataLength + 1;
-                if (tmpBuffer[curIndex] == endSymbol)
+                try
                 {
-                    endIndex = curIndex + Enum.GetName(typeof(CmdType), cmdType).Length + 1;
-                    // create cmd class
-                    byte[] data = tmpBuffer.Skip(previousIndex + 7).Take(dataLength).ToArray();
-                    cmd = CreateDecodeCmd(cmdType, data);
+                    if (tmpBuffer[curIndex] == endSymbol)
+                    {
+                        endIndex = curIndex + Enum.GetName(typeof(CmdType), cmdType).Length + 1;
+                        // create cmd class
+                        byte[] data = tmpBuffer.Skip(previousIndex + 7).Take(dataLength).ToArray();
+                        cmd = CreateDecodeCmd(cmdType, data);
+                    }
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    return null;
                 }
             }
             return cmd;
