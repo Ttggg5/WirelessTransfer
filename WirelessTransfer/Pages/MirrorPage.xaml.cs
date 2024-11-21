@@ -10,6 +10,8 @@ using WirelessTransfer.Windows;
 using WindowsInput;
 using System.Windows.Forms;
 using System.Net;
+using ScreenCapturerNS;
+using SharpDX.DXGI;
 
 namespace WirelessTransfer.Pages
 {
@@ -72,21 +74,38 @@ namespace WirelessTransfer.Pages
             Task<UdpReceiveResult> receiveTask = udpClient.ReceiveAsync();
             Task.Run(() =>
             {
-                if (receiveTask.Wait(20000))
+                while (true)
                 {
-                    byte[] bytes = receiveTask.Result.Buffer;
-                    Cmd cmd = CmdDecoder.DecodeCmd(bytes, 0, bytes.Length);
-                    if (cmd != null && cmd.CmdType == CmdType.Reply)
+                    if (receiveTask.Wait(30000))
                     {
-                        ReplyCmd replyCmd = (ReplyCmd)cmd;
-                        if (replyCmd.ReplyType == ReplyType.Refuse)
+                        byte[] bytes = receiveTask.Result.Buffer;
+                        Cmd cmd = CmdDecoder.DecodeCmd(bytes, 0, bytes.Length);
+                        if (cmd != null && cmd.CmdType == CmdType.Reply)
                         {
+                            ReplyCmd replyCmd = (ReplyCmd)cmd;
+                            if (replyCmd.ReplyType == ReplyType.Refuse)
+                            {
+                                Dispatcher.BeginInvoke(() =>
+                                {
+                                    disconnectBtn_Click(this, null);
+                                    MessageWindow messageWindow = new MessageWindow("對方已拒絕連接!", false);
+                                    messageWindow.ShowDialog();
+                                });
+                                break;
+                            }
+                            else break;
+                        }
+                        else
+                        {
+                            /*
                             Dispatcher.BeginInvoke(() =>
                             {
                                 disconnectBtn_Click(this, null);
-                                MessageWindow messageWindow = new MessageWindow("對方已拒絕連接!", false);
+                                MessageWindow messageWindow = new MessageWindow("Error reply!", false);
                                 messageWindow.ShowDialog();
                             });
+                            */
+                            receiveTask = udpClient.ReceiveAsync();
                         }
                     }
                     else
@@ -94,21 +113,24 @@ namespace WirelessTransfer.Pages
                         Dispatcher.BeginInvoke(() =>
                         {
                             disconnectBtn_Click(this, null);
-                            MessageWindow messageWindow = new MessageWindow("Error reply!", false);
+                            MessageWindow messageWindow = new MessageWindow("請求超時!", false);
                             messageWindow.ShowDialog();
                         });
+                        break;
                     }
                 }
-                else
+                udpClient.Close();
+
+                Task.Delay(1000).Wait();
+                if (myTcpServer.ConnectedClients.Count == 0)
                 {
                     Dispatcher.BeginInvoke(() =>
                     {
                         disconnectBtn_Click(this, null);
-                        MessageWindow messageWindow = new MessageWindow("請求超時!", false);
+                        MessageWindow messageWindow = new MessageWindow("連線超時!", false);
                         messageWindow.ShowDialog();
                     });
                 }
-                udpClient.Close();
             });
         }
 
@@ -179,9 +201,53 @@ namespace WirelessTransfer.Pages
                 }
             }
 
+            int screenIndex = 0;
+            for (int i = 0; i < Screen.AllScreens.Length; i++)
+            {
+                if (Screen.AllScreens[i].Primary)
+                {
+                    screenIndex = i;
+                    break;
+                }
+            }
+
+            int adapterIndex = 0;
+            int outputIndex = 0;
+            var factory = new Factory1();
+            for (int i = 0; i < factory.Adapters1.Length; i++)
+            {
+                for (int j = 0; j < factory.Adapters1[i].Outputs.Length; j++)
+                {
+                    if (factory.Adapters1[i].Outputs[j].Description.DeviceName.Equals(Screen.AllScreens[screenIndex].DeviceName))
+                    {
+                        adapterIndex = i;
+                        outputIndex = j;
+                        break;
+                    }
+                }
+            }
+
+            ScreenCapturer.StartCapture((Bitmap bitmap) =>
+            {
+                if (myTcpServer.CurState == MyTcpServerState.Listening)
+                {
+                    try
+                    {
+                        //ScreenCaptureCpu.DrawCursor(bitmap, screenIndex, Screen.AllScreens[screenIndex].Bounds.Left, Screen.AllScreens[screenIndex].Bounds.Top);
+                        myTcpServer.SendCmd(new ScreenCmd(bitmap), myTcpServer.ConnectedClients.First());
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                }
+            }, outputIndex, adapterIndex);
+
+            /*
             screenCaptureDX = new ScreenCaptureDX(0);
             screenCaptureDX.ScreenRefreshed += screenCaptureDX_ScreenRefreshed;
             screenCaptureDX.Start();
+            */
         }
 
         private void screenCaptureDX_ScreenRefreshed(object? sender, Bitmap e)
@@ -216,6 +282,7 @@ namespace WirelessTransfer.Pages
         private void Disconnect()
         {
             screenCaptureDX?.Stop();
+            ScreenCapturer.StopCapture();
             if (myTcpServer?.CurState == MyTcpServerState.Listening)
             {
                 try

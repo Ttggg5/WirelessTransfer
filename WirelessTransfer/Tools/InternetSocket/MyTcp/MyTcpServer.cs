@@ -61,6 +61,7 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
             try
             {
                 TcpClient tcpClient = Server.EndAcceptTcpClient(ar);
+                tcpClient.SendTimeout = 1000;
                 int actualLength = tcpClient.GetStream().Read(tmpBuf, 0, tmpBuf.Length);
                 if (actualLength > 0)
                 {
@@ -72,9 +73,10 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
 
                         Task.Factory.StartNew(() =>
                         {
-                            MyTcpClientInfo clientInfo = ConnectedClients.Last();
+                            MyTcpClientInfo clientInfo = null;
                             try
                             {
+                                clientInfo = ConnectedClients.Last();
                                 while (true)
                                 {
                                     int actualLength = clientInfo.Client.GetStream().Read(tmpBuffer, 0, tmpBuffer.Length);
@@ -106,12 +108,12 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                                     }
                                 }
                             }
-                            catch
+                            catch (Exception ex)
                             {
                                 bool removeable = false;
                                 lock (ConnectedClients)
                                 {
-                                    if (removeable = ConnectedClients.Remove(clientInfo))
+                                    if (CurState == MyTcpServerState.Listening && (removeable = ConnectedClients.Remove(clientInfo)))
                                     {
                                         // Start accepting the next client asynchronously when client is not full
                                         if (ConnectedClients.Count < MaxClient)
@@ -148,8 +150,10 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                     }
                 }
             }
-            catch (IOException) { }
-            catch (ObjectDisposedException) { }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+            }
         }
 
         public void SendCmd(Cmd.Cmd cmd, MyTcpClientInfo clientInfo)

@@ -27,9 +27,9 @@ namespace Ini
                     switch (key)
                     {
                         case IniFileKeys.TcpPort:
-                            return "8889";
+                            return "13215";
                         case IniFileKeys.UdpPort:
-                            return "8888";
+                            return "13210";
                         case IniFileKeys.ReceivePath:
                             return GetDownloadFolderPath();
                     }

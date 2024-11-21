@@ -123,12 +123,15 @@ namespace WirelessTransfer.Tools.Screen
                         }
                         catch (SharpDXException e)
                         {
+                            /*
                             if (e.ResultCode.Code != SharpDX.DXGI.ResultCode.WaitTimeout.Result.Code)
                             {
                                 Trace.TraceError(e.Message);
                                 Trace.TraceError(e.StackTrace);
                             }
+                            */
                         }
+                        catch { }
                     }
                 }
             });
@@ -164,7 +167,7 @@ namespace WirelessTransfer.Tools.Screen
 
         private const int CURSOR_SHOWING = 0x00000001;
 
-        private void DrawCursorOnBitmap(Bitmap bitmap, int offsetX, int offsetY)
+        public static void DrawCursorOnBitmap(Bitmap bitmap, int offsetX, int offsetY)
         {
             var cursorInfo = new CursorInfo();
             cursorInfo.cbSize = Marshal.SizeOf(typeof(CursorInfo));
