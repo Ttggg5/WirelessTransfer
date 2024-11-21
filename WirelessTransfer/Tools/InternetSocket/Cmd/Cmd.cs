@@ -17,6 +17,7 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
         Screen,
         Keyboard,
         Mouse,
+        MouseMove,
         Webcam,
         Request,
         ScreenInfo,

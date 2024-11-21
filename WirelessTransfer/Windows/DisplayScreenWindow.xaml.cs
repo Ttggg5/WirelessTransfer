@@ -134,7 +134,7 @@ namespace WirelessTransfer.Windows
 
         private void screenImg_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.None, 0));
+            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.None, 0, true));
         }
 
         private void screenImg_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -145,27 +145,27 @@ namespace WirelessTransfer.Windows
 
         private void screenImg_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.RightButtonDown, 0));
+            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.RightButtonDown, 0, true));
         }
 
         private void screenImg_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.RightButtonUp, 0));
+            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.RightButtonUp, 0, true));
         }
 
         private void screenImg_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.LeftButtonDown, 0));
+            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.LeftButtonDown, 0, true));
         }
 
         private void screenImg_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.LeftButtonUp, 0));
+            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.LeftButtonUp, 0, true));
         }
 
         private void screenImg_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.MiddleButtonRolled, e.Delta));
+            myTcpClient.SendCmd(new MouseCmd(GetRealPoint(e.GetPosition(screenImg)), MouseAct.MiddleButtonRolled, e.Delta, true));
         }
 
         private void screenImg_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)

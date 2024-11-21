@@ -29,21 +29,23 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
     {
         // Correct message format:
         //---------------------------------------------------------------------------------
-        // data = mousePos.X + "," + mousePos.Y + "," + mouseAct + "," + middleButtonMomentum
+        // data = mousePos.X + "," + mousePos.Y + "," + mouseAct + "," + middleButtonMomentum + "," + moveMouse
         //---------------------------------------------------------------------------------
 
         public Point MousePos { get; private set; }
         public MouseAct MouseAct { get; private set; }
         public int MiddleButtonMomentum { get; private set; }
+        public bool MoveMouse { get; private set; }
 
         /// <summary>
         /// For sender.
         /// </summary>
-        public MouseCmd(Point mousePos, MouseAct mouseAct, int middleButtonMomentum)
+        public MouseCmd(Point mousePos, MouseAct mouseAct, int middleButtonMomentum, bool moveMouse)
         {
             MousePos = mousePos;
             MouseAct = mouseAct;
             MiddleButtonMomentum = middleButtonMomentum;
+            MoveMouse = moveMouse;
             CmdType = CmdType.Mouse;
         }
 
@@ -62,7 +64,8 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
                 MousePos.X.ToString() + "," + 
                 MousePos.Y.ToString() + "," +
                 MouseAct.ToString() + "," +
-                MiddleButtonMomentum.ToString());
+                MiddleButtonMomentum.ToString() + "," +
+                MoveMouse.ToString());
             return AddHeadTail(Data);
         }
 
@@ -72,6 +75,7 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
             MousePos = new Point(double.Parse(tmp[0]), double.Parse(tmp[1]));
             MouseAct = Enum.Parse<MouseAct>(tmp[2]);
             MiddleButtonMomentum = int.Parse(tmp[3]);
+            MoveMouse = bool.Parse(tmp[4]);
         }
     }
 }

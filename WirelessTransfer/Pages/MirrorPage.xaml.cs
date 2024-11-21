@@ -162,6 +162,9 @@ namespace WirelessTransfer.Pages
                             (int)mouseCmd.MousePos.X, (int)mouseCmd.MousePos.Y, 
                             mouseCmd.MiddleButtonMomentum, 0);
                     break;
+                case CmdType.MouseMove:
+
+                    break;
                 case CmdType.Keyboard:
                     KeyboardCmd keyboardCmd = (KeyboardCmd)e;
                     if (keyboardCmd.State == KeyState.Down)
@@ -233,7 +236,7 @@ namespace WirelessTransfer.Pages
                 {
                     try
                     {
-                        //ScreenCaptureCpu.DrawCursor(bitmap, screenIndex, Screen.AllScreens[screenIndex].Bounds.Left, Screen.AllScreens[screenIndex].Bounds.Top);
+                        ScreenCaptureDX.DrawCursorOnBitmap(bitmap, Screen.AllScreens[screenIndex].Bounds.Left, Screen.AllScreens[screenIndex].Bounds.Top);
                         myTcpServer.SendCmd(new ScreenCmd(bitmap), myTcpServer.ConnectedClients.First());
                     }
                     catch (Exception ex)

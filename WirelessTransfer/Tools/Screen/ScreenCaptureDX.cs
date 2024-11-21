@@ -137,6 +137,7 @@ namespace WirelessTransfer.Tools.Screen
             });
         }
 
+        // WinAPI interop for cursor info
         [StructLayout(LayoutKind.Sequential)]
         public struct CursorInfo
         {
@@ -165,10 +166,19 @@ namespace WirelessTransfer.Tools.Screen
         [DllImport("user32.dll")]
         public static extern bool GetIconInfo(IntPtr hIcon, ref IconInfo pIconInfo);
 
+        [DllImport("user32.dll")]
+        public static extern bool DrawIcon(IntPtr hdc, int x, int y, IntPtr hIcon);
+
+        [DllImport("gdi32.dll")]
+        public static extern bool DeleteObject(IntPtr hObject);
+
         private const int CURSOR_SHOWING = 0x00000001;
 
         public static void DrawCursorOnBitmap(Bitmap bitmap, int offsetX, int offsetY)
         {
+            int x = Cursor.Position.X - offsetX;
+            int y = Cursor.Position.Y - offsetY;
+
             var cursorInfo = new CursorInfo();
             cursorInfo.cbSize = Marshal.SizeOf(typeof(CursorInfo));
 
@@ -176,13 +186,19 @@ namespace WirelessTransfer.Tools.Screen
             {
                 using (Graphics g = Graphics.FromImage(bitmap))
                 {
-                    var iconHandle = CopyIcon(cursorInfo.hCursor);
-                    var iconInfo = new IconInfo();
-                    GetIconInfo(iconHandle, ref iconInfo);
+                    nint hdc = g.GetHdc();
 
-                    int x = cursorInfo.ptScreenPos.X - iconInfo.xHotspot - offsetX;
-                    int y = cursorInfo.ptScreenPos.Y - iconInfo.yHotspot - offsetY;
-                    g.DrawIcon(Icon.FromHandle(iconHandle), x, y);
+                    var iconInfo = new IconInfo();
+                    GetIconInfo(cursorInfo.hCursor, ref iconInfo);
+
+                    x -= iconInfo.xHotspot;
+                    y -= iconInfo.yHotspot;
+                    DrawIcon(hdc, x, y, cursorInfo.hCursor);
+
+                    DeleteObject(cursorInfo.hCursor);
+                    DeleteObject(hdc);
+                    DeleteObject(iconInfo.hbmMask);
+                    DeleteObject(iconInfo.hbmColor);
                 }
             }
         }
