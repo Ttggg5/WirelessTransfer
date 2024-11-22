@@ -75,63 +75,78 @@ namespace WirelessTransfer.CustomControls
         {
             if (State == DeviceFinderState.Searching) return;
 
-            if (searchClient == null)
+            try
+            {
+                searchClient?.Close();
+            }
+            catch (Exception ex)
+            {
+                
+            }
+            finally
             {
                 searchClient = new UdpClient();
                 searchClient.EnableBroadcast = true;
                 searchClient.Client.Bind(new IPEndPoint(IPAddress.Any, port));
-                searchClient.BeginReceive(new AsyncCallback(ReceiveCallBack), null);
-                Task.Run(() =>
+            }
+            
+            searchClient?.BeginReceive(new AsyncCallback(ReceiveCallBack), null);
+            State = DeviceFinderState.Searching;
+            Task.Run(() =>
+            {
+                Dispatcher.Invoke(() =>
                 {
-                    try
+                    foundDevicesListBox.SelectedIndex = -1;
+                    foundDevicesListBox.Items.Clear();
+                });
+
+                try
+                {
+                    // Send broadcast message
+                    while (true)
                     {
-                        // Send broadcast message
-                        while (true)
+                        // delete found device when no respond
+                        for (int i = 0; i < deviceTags.Count; i++)
                         {
-                            // delete found device when no respond
-                            for (int i = 0; i < deviceTags.Count; i++)
+                            if (Math.Abs(deviceTags[i].FoundTime.Second - DateTime.Now.Second) > SEARCH_CYCLE * 2)
                             {
-                                if (Math.Abs(deviceTags[i].FoundTime.Second - DateTime.Now.Second) > SEARCH_CYCLE * 2)
+                                Dispatcher.Invoke(() =>
                                 {
-                                    Dispatcher.Invoke(() =>
-                                    {
-                                        foundDevicesListBox.Items.Remove(deviceTags[i]);
-                                        deviceTags.RemoveAt(i--);
-                                    });
-                                }
-                            }
-
-                            // Pc request
-                            RequestCmd requestClientInfoCmd = new RequestCmd(RequestType.PcClientInfo, Environment.MachineName);
-                            byte[] sendBytes = requestClientInfoCmd.Encode();
-                            searchClient?.Send(sendBytes, sendBytes.Length, new IPEndPoint(IPAddress.Broadcast, port));
-
-                            // Phone request
-                            PageFunction tmp = PageFunction.Setting;
-                            Dispatcher.Invoke(() =>
-                            {
-                                tmp = Function;
-                            });
-                            if (tmp == PageFunction.Mirror || tmp == PageFunction.Extend)
-                                requestClientInfoCmd = new RequestCmd(RequestType.PhoneClientInfoShareScreen, Environment.MachineName);
-                            else
-                                requestClientInfoCmd = new RequestCmd(RequestType.PhoneClientInfoFileShare, Environment.MachineName);
-                            sendBytes = requestClientInfoCmd.Encode();
-                            searchClient?.Send(sendBytes, sendBytes.Length, new IPEndPoint(IPAddress.Broadcast, port));
-
-                            // Waiting
-                            for (int i = 0; i < SEARCH_CYCLE * 10; i++)
-                            {
-                                Task.Delay(100).Wait();
-                                if (searchClient == null)
-                                    throw new ObjectDisposedException("");
+                                    foundDevicesListBox.Items.Remove(deviceTags[i]);
+                                    deviceTags.RemoveAt(i--);
+                                });
                             }
                         }
+
+                        // Pc request
+                        RequestCmd requestClientInfoCmd = new RequestCmd(RequestType.PcClientInfo, Environment.MachineName);
+                        byte[] sendBytes = requestClientInfoCmd.Encode();
+                        searchClient?.Send(sendBytes, sendBytes.Length, new IPEndPoint(IPAddress.Broadcast, port));
+
+                        // Phone request
+                        PageFunction tmp = PageFunction.Setting;
+                        Dispatcher.Invoke(() =>
+                        {
+                            tmp = Function;
+                        });
+                        if (tmp == PageFunction.Mirror || tmp == PageFunction.Extend)
+                            requestClientInfoCmd = new RequestCmd(RequestType.PhoneClientInfoShareScreen, Environment.MachineName);
+                        else
+                            requestClientInfoCmd = new RequestCmd(RequestType.PhoneClientInfoFileShare, Environment.MachineName);
+                        sendBytes = requestClientInfoCmd.Encode();
+                        searchClient?.Send(sendBytes, sendBytes.Length, new IPEndPoint(IPAddress.Broadcast, port));
+
+                        // Waiting
+                        for (int i = 0; i < SEARCH_CYCLE * 10; i++)
+                        {
+                            Task.Delay(100).Wait();
+                            if (searchClient == null)
+                                throw new ObjectDisposedException("");
+                        }
                     }
-                    catch (Exception) { }
-                });
-                State = DeviceFinderState.Searching;
-            }
+                }
+                catch (Exception) { }
+            });
         }
 
         private void ReceiveCallBack(IAsyncResult ar)
@@ -173,22 +188,38 @@ namespace WirelessTransfer.CustomControls
             }
             catch
             {
-                searchClient?.Close();
-                searchClient = null;
-                State = DeviceFinderState.Stopped;
+                if (searchClient.Client != null)
+                {
+                    lock (searchClient.Client)
+                    {
+                        searchClient?.Close();
+                        State = DeviceFinderState.Stopped;
+                    }
+                }
             }
         }
 
         public void StopSearching()
         {
-            searchClient?.Close();
-            State = DeviceFinderState.Stopped;
+            if (searchClient.Client != null)
+            {
+                lock (searchClient.Client)
+                {
+                    searchClient?.Close();
+                    State = DeviceFinderState.Stopped;
+                }
+            }
         }
 
         private void foundDevicesListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (foundDevicesListBox.SelectedIndex > -1)
                 DeviceChoosed?.Invoke(this, (DeviceTag)foundDevicesListBox.SelectedItem);
+        }
+
+        private void foundDevicesListBox_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
         }
     }
 }

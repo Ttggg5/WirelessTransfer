@@ -19,7 +19,8 @@
                  Background="Transparent"
                  BorderThickness="0"
                  Margin="5"
-                 SelectionChanged="foundDevicesListBox_SelectionChanged">
+                 SelectionChanged="foundDevicesListBox_SelectionChanged"
+                 PreviewMouseRightButtonDown="foundDevicesListBox_PreviewMouseRightButtonDown">
             
         </ListBox>
     </Border>

@@ -28,7 +28,6 @@ namespace WirelessTransfer.Pages
 
         int udpPort, tcpPort;
         MyTcpServer myTcpServer;
-        ScreenCaptureDX screenCaptureDX;
         InputSimulator inputSimulator;
 
         public MirrorPage()
@@ -91,21 +90,15 @@ namespace WirelessTransfer.Pages
                                     MessageWindow messageWindow = new MessageWindow("對方已拒絕連接!", false);
                                     messageWindow.ShowDialog();
                                 });
-                                break;
+                                udpClient.Close();
+                                return;
                             }
                             else break;
                         }
                         else
                         {
-                            /*
-                            Dispatcher.BeginInvoke(() =>
-                            {
-                                disconnectBtn_Click(this, null);
-                                MessageWindow messageWindow = new MessageWindow("Error reply!", false);
-                                messageWindow.ShowDialog();
-                            });
-                            */
-                            receiveTask = udpClient.ReceiveAsync();
+                            if (myTcpServer.CurState == MyTcpServerState.Listening)
+                                receiveTask = udpClient.ReceiveAsync();
                         }
                     }
                     else
@@ -116,18 +109,19 @@ namespace WirelessTransfer.Pages
                             MessageWindow messageWindow = new MessageWindow("請求超時!", false);
                             messageWindow.ShowDialog();
                         });
-                        break;
+                        udpClient.Close();
+                        return;
                     }
                 }
                 udpClient.Close();
 
-                Task.Delay(3000).Wait();
+                Task.Delay(500).Wait();
                 if (myTcpServer.ConnectedClients.Count == 0)
                 {
                     Dispatcher.BeginInvoke(() =>
                     {
                         disconnectBtn_Click(this, null);
-                        MessageWindow messageWindow = new MessageWindow("連線超時!", false);
+                        MessageWindow messageWindow = new MessageWindow("連線逾時!", false);
                         messageWindow.ShowDialog();
                     });
                 }
@@ -245,12 +239,6 @@ namespace WirelessTransfer.Pages
                     }
                 }
             }, outputIndex, adapterIndex);
-
-            /*
-            screenCaptureDX = new ScreenCaptureDX(0);
-            screenCaptureDX.ScreenRefreshed += screenCaptureDX_ScreenRefreshed;
-            screenCaptureDX.Start();
-            */
         }
 
         private void screenCaptureDX_ScreenRefreshed(object? sender, Bitmap e)
@@ -284,7 +272,6 @@ namespace WirelessTransfer.Pages
 
         private void Disconnect()
         {
-            screenCaptureDX?.Stop();
             ScreenCapturer.StopCapture();
             if (myTcpServer?.CurState == MyTcpServerState.Listening)
             {
@@ -295,7 +282,6 @@ namespace WirelessTransfer.Pages
                 catch { }
                 myTcpServer?.Stop();
             }
-
             DeviceDisconnected?.Invoke(this, EventArgs.Empty);
         }
     }
