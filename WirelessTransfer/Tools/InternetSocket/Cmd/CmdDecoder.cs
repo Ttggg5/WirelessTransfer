@@ -215,6 +215,9 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
                 case CmdType.Mouse:
                     cmd = new MouseCmd(data);
                     break;
+                case CmdType.MouseMove:
+                    cmd = new MouseMoveCmd(data);
+                    break;
                 case CmdType.Webcam:
                     break;
                 case CmdType.Request:

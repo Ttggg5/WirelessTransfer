@@ -144,10 +144,12 @@ namespace WirelessTransfer.Pages
                         Disconnect();
                     break;
                 case CmdType.Mouse:
-                    // move mouse
                     MouseCmd mouseCmd = (MouseCmd)e;
-                    System.Windows.Forms.Cursor.Position = 
-                        new System.Drawing.Point((int)mouseCmd.MousePos.X, (int)mouseCmd.MousePos.Y);
+
+                    // move mouse
+                    if (mouseCmd.MoveMouse)
+                        System.Windows.Forms.Cursor.Position = 
+                            new System.Drawing.Point((int)mouseCmd.MousePos.X, (int)mouseCmd.MousePos.Y);
 
                     // do mouse action
                     if (mouseCmd.MouseAct != MouseAct.None)
@@ -157,7 +159,12 @@ namespace WirelessTransfer.Pages
                             mouseCmd.MiddleButtonMomentum, 0);
                     break;
                 case CmdType.MouseMove:
+                    MouseMoveCmd mmc = (MouseMoveCmd)e;
+                    System.Drawing.Point point = System.Windows.Forms.Cursor.Position;
+                    point.X += (int)mmc.MouseDisplacementX;
+                    point.Y += (int)mmc.MouseDisplacementY;
 
+                    System.Windows.Forms.Cursor.Position = point;
                     break;
                 case CmdType.Keyboard:
                     KeyboardCmd keyboardCmd = (KeyboardCmd)e;

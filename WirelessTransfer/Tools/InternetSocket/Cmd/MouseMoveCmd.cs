@@ -13,13 +13,13 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
         // data = MouseDisplacementX + "," + MouseDisplacementY
         //---------------------------------------------------------------------------------
 
-        public int MouseDisplacementX { get; private set; }
-        public int MouseDisplacementY { get; private set; }
+        public float MouseDisplacementX { get; private set; }
+        public float MouseDisplacementY { get; private set; }
 
         /// <summary>
         /// For sender.
         /// </summary>
-        public MouseMoveCmd(int mouseDisplacementX, int mouseDisplacementY)
+        public MouseMoveCmd(float mouseDisplacementX, float mouseDisplacementY)
         {
             MouseDisplacementX = mouseDisplacementX;
             MouseDisplacementY = mouseDisplacementY;
@@ -46,8 +46,8 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
         public override void Decode()
         {
             string[] tmp = Encoding.ASCII.GetString(Data).Split(",");
-            MouseDisplacementX = int.Parse(tmp[0]);
-            MouseDisplacementY = int.Parse(tmp[1]);
+            MouseDisplacementX = float.Parse(tmp[0]);
+            MouseDisplacementY = float.Parse(tmp[1]);
         }
     }
 }
