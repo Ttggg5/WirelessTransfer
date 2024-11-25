@@ -168,10 +168,19 @@ namespace WirelessTransfer.Pages
                     break;
                 case CmdType.Keyboard:
                     KeyboardCmd keyboardCmd = (KeyboardCmd)e;
-                    if (keyboardCmd.State == KeyState.Down)
-                        inputSimulator.Keyboard.KeyDown(keyboardCmd.KeyCode);
-                    else
-                        inputSimulator.Keyboard.KeyUp(keyboardCmd.KeyCode);
+                    switch (keyboardCmd.State)
+                    {
+                        case KeyState.Down:
+                            inputSimulator.Keyboard.KeyDown(keyboardCmd.KeyCode);
+                            break;
+                        case KeyState.Up:
+                            inputSimulator.Keyboard.KeyUp(keyboardCmd.KeyCode);
+                            break;
+                        case KeyState.Click:
+                            inputSimulator.Keyboard.KeyDown(keyboardCmd.KeyCode);
+                            inputSimulator.Keyboard.KeyUp(keyboardCmd.KeyCode);
+                            break;
+                    }
                     break;
             }
         }

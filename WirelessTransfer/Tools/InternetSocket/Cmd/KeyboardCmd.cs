@@ -13,6 +13,7 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
     {
         Down,
         Up,
+        Click,
     }
 
     public class KeyboardCmd : Cmd
