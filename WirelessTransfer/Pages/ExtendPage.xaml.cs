@@ -1,9 +1,12 @@
 ﻿using Ini;
+using ScreenCapturerNS;
+using SharpDX.DXGI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
@@ -76,6 +79,7 @@ namespace WirelessTransfer.Pages
 
             // send request
             UdpClient udpClient = new UdpClient();
+            udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, udpPort));
             byte[] bytes = new RequestCmd(RequestType.Extend, Environment.MachineName).Encode();
             udpClient.Send(bytes, bytes.Length, new System.Net.IPEndPoint(e.Address, udpPort));
 
@@ -83,34 +87,58 @@ namespace WirelessTransfer.Pages
             Task<UdpReceiveResult> receiveTask = udpClient.ReceiveAsync();
             Task.Run(() =>
             {
-                if (receiveTask.Wait(30000))
+                while (true)
                 {
-                    byte[] bytes = receiveTask.Result.Buffer;
-                    Cmd cmd = CmdDecoder.DecodeCmd(bytes, 0, bytes.Length);
-                    if (cmd != null && cmd.CmdType == CmdType.Reply)
+                    if (receiveTask.Wait(30000))
                     {
-                        ReplyCmd replyCmd = (ReplyCmd)cmd;
-                        if (replyCmd.ReplyType == ReplyType.Refuse)
+                        byte[] bytes = receiveTask.Result.Buffer;
+                        Cmd cmd = CmdDecoder.DecodeCmd(bytes, 0, bytes.Length);
+                        if (cmd != null && cmd.CmdType == CmdType.Reply)
                         {
-                            Dispatcher.BeginInvoke(() =>
+                            ReplyCmd replyCmd = (ReplyCmd)cmd;
+                            if (replyCmd.ReplyType == ReplyType.Refuse)
                             {
-                                disconnectBtn_Click(this, null);
-                                MessageWindow messageWindow = new MessageWindow("對方已拒絕連接!", false);
-                                messageWindow.ShowDialog();
-                            });
+                                Dispatcher.BeginInvoke(() =>
+                                {
+                                    disconnectBtn_Click(this, null);
+                                    MessageWindow messageWindow = new MessageWindow("對方已拒絕連接!", false);
+                                    messageWindow.ShowDialog();
+                                });
+                                udpClient.Close();
+                                return;
+                            }
+                            else break;
+                        }
+                        else
+                        {
+                            if (myTcpServer.CurState == MyTcpServerState.Listening)
+                                receiveTask = udpClient.ReceiveAsync();
                         }
                     }
+                    else
+                    {
+                        Dispatcher.BeginInvoke(() =>
+                        {
+                            disconnectBtn_Click(this, null);
+                            MessageWindow messageWindow = new MessageWindow("請求超時!", false);
+                            messageWindow.ShowDialog();
+                        });
+                        udpClient.Close();
+                        return;
+                    }
                 }
-                else
+                udpClient.Close();
+
+                Task.Delay(500).Wait();
+                if (myTcpServer.ConnectedClients.Count == 0)
                 {
                     Dispatcher.BeginInvoke(() =>
                     {
                         disconnectBtn_Click(this, null);
-                        MessageWindow messageWindow = new MessageWindow("請求超時!", false);
+                        MessageWindow messageWindow = new MessageWindow("連線逾時!", false);
                         messageWindow.ShowDialog();
                     });
                 }
-                udpClient.Close();
             });
         }
 
@@ -130,12 +158,14 @@ namespace WirelessTransfer.Pages
                         Disconnect();
                     break;
                 case CmdType.Mouse:
-                    // move mouse
                     MouseCmd mouseCmd = (MouseCmd)e;
-                    System.Windows.Forms.Cursor.Position =
-                        new System.Drawing.Point(
-                            (int)mouseCmd.MousePos.X + Screen.AllScreens.Last().Bounds.X, 
-                            (int)mouseCmd.MousePos.Y + Screen.AllScreens.Last().Bounds.Y);
+
+                    // move mouse
+                    if (mouseCmd.MoveMouse)
+                        System.Windows.Forms.Cursor.Position =
+                            new System.Drawing.Point(
+                                (int)mouseCmd.MousePos.X + Screen.AllScreens.Last().Bounds.X, 
+                                (int)mouseCmd.MousePos.Y + Screen.AllScreens.Last().Bounds.Y);
 
                     // do mouse action
                     if (mouseCmd.MouseAct != MouseAct.None)
@@ -145,12 +175,29 @@ namespace WirelessTransfer.Pages
                             (int)mouseCmd.MousePos.Y + Screen.AllScreens.Last().Bounds.Y,
                             mouseCmd.MiddleButtonMomentum, 0);
                     break;
+                case CmdType.MouseMove:
+                    MouseMoveCmd mmc = (MouseMoveCmd)e;
+                    System.Drawing.Point point = System.Windows.Forms.Cursor.Position;
+                    point.X += (int)mmc.MouseDisplacementX;
+                    point.Y += (int)mmc.MouseDisplacementY;
+
+                    System.Windows.Forms.Cursor.Position = point;
+                    break;
                 case CmdType.Keyboard:
                     KeyboardCmd keyboardCmd = (KeyboardCmd)e;
-                    if (keyboardCmd.State == KeyState.Down)
-                        inputSimulator.Keyboard.KeyDown(keyboardCmd.KeyCode);
-                    else
-                        inputSimulator.Keyboard.KeyUp(keyboardCmd.KeyCode);
+                    switch (keyboardCmd.State)
+                    {
+                        case KeyState.Down:
+                            inputSimulator.Keyboard.KeyDown(keyboardCmd.KeyCode);
+                            break;
+                        case KeyState.Up:
+                            inputSimulator.Keyboard.KeyUp(keyboardCmd.KeyCode);
+                            break;
+                        case KeyState.Click:
+                            inputSimulator.Keyboard.KeyDown(keyboardCmd.KeyCode);
+                            inputSimulator.Keyboard.KeyUp(keyboardCmd.KeyCode);
+                            break;
+                    }
                     break;
             }
         }
@@ -177,7 +224,6 @@ namespace WirelessTransfer.Pages
             {
                 CreateVirtualScreen(1920, 1080);
                 
-
                 lock (myTcpServer.ConnectedClients)
                 {
                     if (myTcpServer.ConnectedClients.Count > 0)
@@ -186,9 +232,41 @@ namespace WirelessTransfer.Pages
                             myTcpServer.ConnectedClients.First());
                 }
 
-                screenCaptureDX = new ScreenCaptureDX(Screen.AllScreens.Count() - 1);
-                screenCaptureDX.ScreenRefreshed += screenCaptureDX_ScreenRefreshed;
-                screenCaptureDX.Start();
+                int screenIndex = Screen.AllScreens.Length - 1;
+                ScreenCaptureDX.FindScreen(Screen.AllScreens[screenIndex].DeviceName, out int adapterIndex, out int outputIndex);
+                screenCaptureDX = new ScreenCaptureDX(adapterIndex, outputIndex);
+                screenCaptureDX.Start((Bitmap bitmap) =>
+                {
+                    if (myTcpServer.CurState == MyTcpServerState.Listening)
+                    {
+                        try
+                        {
+                            myTcpServer.SendCmd(new ScreenCmd(bitmap), myTcpServer.ConnectedClients.First());
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
+                    }
+                });
+
+                /*
+                ScreenCapturer.StartCapture((Bitmap bitmap) =>
+                {
+                    if (myTcpServer.CurState == MyTcpServerState.Listening)
+                    {
+                        try
+                        {
+                            ScreenCaptureDX.DrawCursorOnBitmap(bitmap, Screen.AllScreens[screenIndex].Bounds.Left, Screen.AllScreens[screenIndex].Bounds.Top);
+                            myTcpServer.SendCmd(new ScreenCmd(bitmap), myTcpServer.ConnectedClients.First());
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
+                    }
+                }, outputIndex, adapterIndex);
+                */
             }
         }
 
@@ -217,18 +295,6 @@ namespace WirelessTransfer.Pages
             virtualDisplayProcess = null;
         }
 
-        private void screenCaptureDX_ScreenRefreshed(object? sender, Bitmap e)
-        {
-            if (myTcpServer.CurState == MyTcpServerState.Listening)
-            {
-                try
-                {
-                    myTcpServer.SendCmd(new ScreenCmd(e), myTcpServer.ConnectedClients.First());
-                }
-                catch { }
-            }
-        }
-
         public void StopAll()
         {
             deviceFinder.StopSearching();
@@ -249,6 +315,7 @@ namespace WirelessTransfer.Pages
         private void Disconnect()
         {
             screenCaptureDX?.Stop();
+            //ScreenCapturer.StopCapture();
             if (myTcpServer?.CurState == MyTcpServerState.Listening)
             {
                 try

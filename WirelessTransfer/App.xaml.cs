@@ -1,4 +1,5 @@
 ﻿using Ini;
+using System.Diagnostics;
 using System.IO;
 using System.Windows.Shapes;
 
@@ -27,6 +28,17 @@ namespace WirelessTransfer
                 if (tmp.Equals("") || !System.IO.Path.Exists(tmp))
                     IniFile.WriteValueToIniFile(IniFileSections.Option, IniFileKeys.ReceivePath, DefaultSetting.GetDefaultValue(IniFileSections.Option, IniFileKeys.ReceivePath), IniFile.DEFAULT_PATH);
             }
+        }
+
+        private void Application_Exit(object sender, System.Windows.ExitEventArgs e)
+        {
+            Process process = new Process();
+            process.StartInfo.UseShellExecute = true;
+            process.StartInfo.Arguments = "enableidd 0";
+            process.StartInfo.FileName = ".\\usbmmidd_v2\\deviceinstaller64.exe";
+            process.StartInfo.Verb = "runas";
+            process.Start();
+            process.WaitForExit();
         }
     }
 }

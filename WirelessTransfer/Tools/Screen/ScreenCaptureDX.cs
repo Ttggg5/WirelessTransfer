@@ -16,25 +16,63 @@ namespace WirelessTransfer.Tools.Screen
 {
     public class ScreenCaptureDX
     {
-        public EventHandler<Bitmap>? ScreenRefreshed;
-
         private bool isRunning;
 
-        public int ScreenIndex { get; }
         public int AdapterIndex { get; }
         public int OutputIndex { get; }
 
-        /// <param name="screenIndex"></param>
-        public ScreenCaptureDX(int screenIndex)
+        public ScreenCaptureDX(int adapterIndex, int outputIndex)
         {
-            ScreenRefreshed = null;
-            isRunning = false;
-            ScreenIndex = screenIndex;
-            AdapterIndex = screenIndex / 2;
-            OutputIndex = screenIndex % 2;
+            Init();
+            AdapterIndex = adapterIndex;
+            OutputIndex = outputIndex;
         }
 
-        public void Start()
+        public ScreenCaptureDX(string deviceName)
+        {
+            Init();
+            FindScreen(deviceName, out int adapterIndex, out int outputIndex);
+            if (adapterIndex == -1 || outputIndex == -1)
+            {
+                adapterIndex = 0;
+                outputIndex = 0;
+            }
+
+            AdapterIndex = adapterIndex;
+            OutputIndex = outputIndex;
+        }
+
+        private void Init()
+        {
+            isRunning = false;
+        }
+
+        /// <summary>
+        /// adapterIndex = -1 and outputIndex = -1, if not found.
+        /// </summary>
+        /// <param name="deviceName"></param>
+        /// <param name="adapterIndex"></param>
+        /// <param name="outputIndex"></param>
+        public static void FindScreen(string deviceName, out int adapterIndex, out int outputIndex)
+        {
+            var factory = new Factory1();
+            for (int i = 0; i < factory.Adapters1.Length; i++)
+            {
+                for (int j = 0; j < factory.Adapters1[i].Outputs.Length; j++)
+                {
+                    if (factory.Adapters1[i].Outputs[j].Description.DeviceName.Equals(deviceName))
+                    {
+                        adapterIndex = i;
+                        outputIndex = j;
+                        return;
+                    }
+                }
+            }
+            adapterIndex = -1;
+            outputIndex = -1;
+        }
+
+        public void Start(Action<Bitmap> onScreenRefreshed)
         {
             isRunning = true;
             var factory = new Factory1();
@@ -115,7 +153,7 @@ namespace WirelessTransfer.Tools.Screen
                             // Draw cursor
                             DrawCursorOnBitmap(bitmap, output.Description.DesktopBounds.Left, output.Description.DesktopBounds.Top);
 
-                            ScreenRefreshed?.Invoke(this, bitmap);
+                            onScreenRefreshed.Invoke(bitmap);
 
                             screenResource.Dispose();
                             duplicatedOutput.ReleaseFrame();

@@ -30,6 +30,8 @@ namespace WirelessTransfer.Pages
         MyTcpServer myTcpServer;
         InputSimulator inputSimulator;
 
+        ScreenCaptureDX screenCaptureDX;
+
         public MirrorPage()
         {
             InitializeComponent();
@@ -212,60 +214,50 @@ namespace WirelessTransfer.Pages
                             new ScreenInfoCmd(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height),
                             myTcpServer.ConnectedClients.First());
                 }
-            }
-
-            int screenIndex = 0;
-            for (int i = 0; i < Screen.AllScreens.Length; i++)
-            {
-                if (Screen.AllScreens[i].Primary)
+                int screenIndex = 0;
+                for (int i = 0; i < Screen.AllScreens.Length; i++)
                 {
-                    screenIndex = i;
-                    break;
-                }
-            }
-
-            int adapterIndex = 0;
-            int outputIndex = 0;
-            var factory = new Factory1();
-            for (int i = 0; i < factory.Adapters1.Length; i++)
-            {
-                for (int j = 0; j < factory.Adapters1[i].Outputs.Length; j++)
-                {
-                    if (factory.Adapters1[i].Outputs[j].Description.DeviceName.Equals(Screen.AllScreens[screenIndex].DeviceName))
+                    if (Screen.AllScreens[i].Primary)
                     {
-                        adapterIndex = i;
-                        outputIndex = j;
+                        screenIndex = i;
                         break;
                     }
                 }
-            }
 
-            ScreenCapturer.StartCapture((Bitmap bitmap) =>
-            {
-                if (myTcpServer.CurState == MyTcpServerState.Listening)
+                ScreenCaptureDX.FindScreen(Screen.AllScreens[screenIndex].DeviceName, out int adapterIndex, out int outputIndex);
+                screenCaptureDX = new ScreenCaptureDX(adapterIndex, outputIndex);
+                screenCaptureDX.Start((Bitmap bitmap) =>
                 {
-                    try
+                    if (myTcpServer.CurState == MyTcpServerState.Listening)
                     {
-                        ScreenCaptureDX.DrawCursorOnBitmap(bitmap, Screen.AllScreens[screenIndex].Bounds.Left, Screen.AllScreens[screenIndex].Bounds.Top);
-                        myTcpServer.SendCmd(new ScreenCmd(bitmap), myTcpServer.ConnectedClients.First());
-                    }
-                    catch (Exception ex)
-                    {
+                        try
+                        {
+                            myTcpServer.SendCmd(new ScreenCmd(bitmap), myTcpServer.ConnectedClients.First());
+                        }
+                        catch (Exception ex)
+                        {
 
+                        }
                     }
-                }
-            }, outputIndex, adapterIndex);
-        }
+                });
 
-        private void screenCaptureDX_ScreenRefreshed(object? sender, Bitmap e)
-        {
-            if (myTcpServer.CurState == MyTcpServerState.Listening)
-            {
-                try
+                /*
+                ScreenCapturer.StartCapture((Bitmap bitmap) =>
                 {
-                    myTcpServer.SendCmd(new ScreenCmd(e), myTcpServer.ConnectedClients.First());
-                }
-                catch { }
+                    if (myTcpServer.CurState == MyTcpServerState.Listening)
+                    {
+                        try
+                        {
+                            ScreenCaptureDX.DrawCursorOnBitmap(bitmap, Screen.AllScreens[screenIndex].Bounds.Left, Screen.AllScreens[screenIndex].Bounds.Top);
+                            myTcpServer.SendCmd(new ScreenCmd(bitmap), myTcpServer.ConnectedClients.First());
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
+                    }
+                }, outputIndex, adapterIndex);
+                */
             }
         }
 
@@ -288,7 +280,8 @@ namespace WirelessTransfer.Pages
 
         private void Disconnect()
         {
-            ScreenCapturer.StopCapture();
+            screenCaptureDX.Stop();
+            //ScreenCapturer.StopCapture();
             if (myTcpServer?.CurState == MyTcpServerState.Listening)
             {
                 try
