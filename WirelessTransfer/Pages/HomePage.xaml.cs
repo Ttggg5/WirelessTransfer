@@ -7,6 +7,7 @@ using WirelessTransfer.Tools.InternetSocket.Cmd;
 using Ini;
 using WirelessTransfer.Tools.InternetSocket.MyTcp;
 using WirelessTransfer.Windows;
+using WirelessTransfer.Tools.InternetSocket;
 
 namespace WirelessTransfer.Pages
 {
@@ -31,58 +32,10 @@ namespace WirelessTransfer.Pages
             tcpPort = int.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.TcpPort, IniFile.DEFAULT_PATH));
 
             deviceNameTB.Text = Environment.MachineName;
-            deviceIpTB.Text = GetLocalIPAddress();
-            wifiNameTB.Text = GetSSID();
+            deviceIpTB.Text = InternetInfo.GetLocalIPAddress();
+            wifiNameTB.Text = InternetInfo.GetSSID();
 
             ListenForConnections();
-        }
-
-        private string GetSSID()
-        {
-            string notFoundMessage = "No wifi connected!";
-            try
-            {
-                // Run the netsh command to get the Wi-Fi info
-                ProcessStartInfo psi = new ProcessStartInfo
-                {
-                    FileName = "netsh",
-                    Arguments = "wlan show interfaces",
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
-
-                Process process = Process.Start(psi);
-                string output = process.StandardOutput.ReadToEnd();
-                process.WaitForExit();
-
-                // Extract the SSID from the output
-                int startIndex = output.IndexOf("SSID");
-                if (startIndex == -1) return notFoundMessage;
-                startIndex = output.IndexOf(":", startIndex + 4);
-                if (startIndex == -1) return notFoundMessage;
-                int endIndex = output.IndexOf("\n", startIndex + 1);
-                if (endIndex == -1) return notFoundMessage;
-                return output.Substring(startIndex + 1, endIndex - startIndex);
-            }
-            catch (Exception ex)
-            {
-                //MessageBox.Show("Error: " + ex.Message);
-                return notFoundMessage;
-            }
-        }
-
-        private string GetLocalIPAddress()
-        {
-            var host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (var ip in host.AddressList)
-            {
-                if (ip.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    return ip.ToString();
-                }
-            }
-            return "Unknown";
         }
 
         private void ListenForConnections()
@@ -109,7 +62,7 @@ namespace WirelessTransfer.Pages
                     switch (requestCmd.RequestType)
                     {
                         case RequestType.PcClientInfo:
-                            tmpBytes = new ClientInfoCmd(Environment.MachineName, IPAddress.Parse(GetLocalIPAddress())).Encode();
+                            tmpBytes = new ClientInfoCmd(Environment.MachineName, IPAddress.Parse(InternetInfo.GetLocalIPAddress())).Encode();
                             udpListen.Send(tmpBytes, tmpBytes.Length, remoteEP);
                             break;
                         case RequestType.Mirror:

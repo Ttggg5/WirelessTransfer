@@ -16,6 +16,7 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
         FileShare,
         PhoneClientInfoShareScreen,
         PhoneClientInfoFileShare,
+        QRConnect,
     }
 
     public class RequestCmd : Cmd

@@ -159,28 +159,44 @@ namespace WirelessTransfer.CustomControls
                     return;
 
                 Cmd cmd = CmdDecoder.DecodeCmd(receiveBytes, 0, receiveBytes.Length);
-                if (cmd != null && cmd.CmdType == CmdType.ClientInfo)
+                if (cmd != null)
                 {
-                    ClientInfoCmd cif = ((ClientInfoCmd)cmd);
-                    cif.Decode();
-                    bool found = false;
-                    foreach (DeviceTag dt in deviceTags)
+                    switch (cmd.CmdType)
                     {
-                        if (dt.Address.ToString().Equals(cif.IP.ToString()))
-                        {
-                            found = true;
-                            dt.FoundTime = DateTime.Now;
+                        case CmdType.ClientInfo:
+                            ClientInfoCmd cif = ((ClientInfoCmd)cmd);
+                            cif.Decode();
+                            bool found = false;
+                            foreach (DeviceTag dt in deviceTags)
+                            {
+                                if (dt.Address.ToString().Equals(cif.IP.ToString()))
+                                {
+                                    found = true;
+                                    dt.FoundTime = DateTime.Now;
+                                    break;
+                                }
+                            }
+                            if (!found)
+                            {
+                                Dispatcher.Invoke(() =>
+                                {
+                                    DeviceTag deviceTag = new DeviceTag(cif.ClientName, cif.IP, DateTime.Now);
+                                    foundDevicesListBox.Items.Add(deviceTag);
+                                    deviceTags.Add(deviceTag);
+                                });
+                            }
                             break;
-                        }
-                    }
-                    if (!found)
-                    {
-                        Dispatcher.Invoke(() =>
-                        {
-                            DeviceTag deviceTag = new DeviceTag(cif.ClientName, cif.IP, DateTime.Now);
-                            foundDevicesListBox.Items.Add(deviceTag);
-                            deviceTags.Add(deviceTag);
-                        });
+                        case CmdType.Request:
+                            RequestCmd rc = (RequestCmd)cmd;
+                            if (rc.RequestType == RequestType.QRConnect)
+                            {
+                                Dispatcher.Invoke(() =>
+                                {
+                                    DeviceTag deviceTag = new DeviceTag(rc.DeviceName, remoteEP.Address, DateTime.Now);
+                                    DeviceChoosed?.Invoke(this, deviceTag);
+                                });
+                            }
+                            break;
                     }
                 }
 

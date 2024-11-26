@@ -1,4 +1,5 @@
 ﻿using Ini;
+using QRCoder;
 using ScreenCapturerNS;
 using SharpDX.DXGI;
 using System;
@@ -20,6 +21,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WindowsInput;
+using WirelessTransfer.Tools.InternetSocket;
 using WirelessTransfer.Tools.InternetSocket.Cmd;
 using WirelessTransfer.Tools.InternetSocket.MyTcp;
 using WirelessTransfer.Tools.Screen;
@@ -60,6 +62,15 @@ namespace WirelessTransfer.Pages
             Tag = PageFunction.Extend;
             deviceFinder.DeviceChoosed += deviceFinder_DeviceChoosed;
             deviceFinder.StartSearching();
+
+            // create QR code
+            using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
+            using (QRCodeData qrCodeData = qrGenerator.CreateQrCode("Extend " + InternetInfo.GetLocalIPAddress(), QRCodeGenerator.ECCLevel.Q))
+            using (PngByteQRCode qrCode = new PngByteQRCode(qrCodeData))
+            {
+                byte[] qrCodeImage = qrCode.GetGraphic(20);
+                qrCodeImg.Source = BitmapConverter.ByteArrayToBitmapImage(qrCodeImage);
+            }
         }
 
         private void deviceFinder_DeviceChoosed(object? sender, CustomControls.DeviceTag e)
@@ -249,24 +260,6 @@ namespace WirelessTransfer.Pages
                         }
                     }
                 });
-
-                /*
-                ScreenCapturer.StartCapture((Bitmap bitmap) =>
-                {
-                    if (myTcpServer.CurState == MyTcpServerState.Listening)
-                    {
-                        try
-                        {
-                            ScreenCaptureDX.DrawCursorOnBitmap(bitmap, Screen.AllScreens[screenIndex].Bounds.Left, Screen.AllScreens[screenIndex].Bounds.Top);
-                            myTcpServer.SendCmd(new ScreenCmd(bitmap), myTcpServer.ConnectedClients.First());
-                        }
-                        catch (Exception ex)
-                        {
-
-                        }
-                    }
-                }, outputIndex, adapterIndex);
-                */
             }
         }
 
@@ -315,7 +308,6 @@ namespace WirelessTransfer.Pages
         private void Disconnect()
         {
             screenCaptureDX?.Stop();
-            //ScreenCapturer.StopCapture();
             if (myTcpServer?.CurState == MyTcpServerState.Listening)
             {
                 try

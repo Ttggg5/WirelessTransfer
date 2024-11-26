@@ -11,7 +11,8 @@ using WindowsInput;
 using System.Windows.Forms;
 using System.Net;
 using ScreenCapturerNS;
-using SharpDX.DXGI;
+using WirelessTransfer.Tools.InternetSocket;
+using QRCoder;
 
 namespace WirelessTransfer.Pages
 {
@@ -48,6 +49,15 @@ namespace WirelessTransfer.Pages
             Tag = PageFunction.Mirror;
             deviceFinder.DeviceChoosed += deviceFinder_DeviceChoosed;
             deviceFinder.StartSearching();
+
+            // create QR code
+            using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
+            using (QRCodeData qrCodeData = qrGenerator.CreateQrCode("Mirror " + InternetInfo.GetLocalIPAddress(), QRCodeGenerator.ECCLevel.Q))
+            using (PngByteQRCode qrCode = new PngByteQRCode(qrCodeData))
+            {
+                byte[] qrCodeImage = qrCode.GetGraphic(20);
+                qrCodeImg.Source = BitmapConverter.ByteArrayToBitmapImage(qrCodeImage);
+            }
         }
 
         private void deviceFinder_DeviceChoosed(object? sender, CustomControls.DeviceTag e)
@@ -280,7 +290,7 @@ namespace WirelessTransfer.Pages
 
         private void Disconnect()
         {
-            screenCaptureDX.Stop();
+            screenCaptureDX?.Stop();
             //ScreenCapturer.StopCapture();
             if (myTcpServer?.CurState == MyTcpServerState.Listening)
             {

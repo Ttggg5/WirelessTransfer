@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Shapes;
+using WirelessTransfer.Tools.InternetSocket;
+using WirelessTransfer.Windows;
 
 namespace WirelessTransfer
 {
@@ -39,6 +41,16 @@ namespace WirelessTransfer
             process.StartInfo.Verb = "runas";
             process.Start();
             process.WaitForExit();
+        }
+
+        private void Application_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
+        {
+            if (InternetInfo.GetSSID().Equals("No wifi connected!"))
+            {
+                MessageWindow messageWindow = new MessageWindow("請連接至WIFI", false);
+                messageWindow.ShowDialog();
+                System.Windows.Application.Current.Shutdown();
+            }
         }
     }
 }

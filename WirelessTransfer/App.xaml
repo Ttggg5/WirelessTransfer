@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:WirelessTransfer"
              StartupUri="MainWindow.xaml"
-             Exit="Application_Exit">
+             Exit="Application_Exit"
+             LoadCompleted="Application_LoadCompleted">
     <Application.Resources>
         <SolidColorBrush x:Key="MainColorBrush" Color="#FF279174"/>
         <SolidColorBrush x:Key="MainColor2Brush" Color="#FF4E4E4E"/>
