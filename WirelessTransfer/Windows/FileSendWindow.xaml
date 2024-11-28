@@ -11,7 +11,8 @@
         WindowStartupLocation="CenterScreen"
         AllowsTransparency="True"
         Background="Transparent"
-        Closing="Window_Closing">
+        Closing="Window_Closing"
+        Activated="Window_Activated">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

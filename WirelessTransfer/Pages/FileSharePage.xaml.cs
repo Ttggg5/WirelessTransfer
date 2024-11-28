@@ -1,9 +1,11 @@
 ﻿using Ini;
 using Microsoft.Win32;
+using QRCoder;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +19,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WirelessTransfer.CustomControls;
+using WirelessTransfer.Tools.InternetSocket;
 using WirelessTransfer.Tools.InternetSocket.Cmd;
 using WirelessTransfer.Tools.InternetSocket.MyTcp;
 using WirelessTransfer.Tools.Screen;
@@ -57,6 +60,15 @@ namespace WirelessTransfer.Pages
 
             deviceFinder.DeviceChoosed += deviceFinder_DeviceChoosed;
             deviceFinder.StartSearching();
+
+            // create QR code
+            using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
+            using (QRCodeData qrCodeData = qrGenerator.CreateQrCode("FileShare " + InternetInfo.GetLocalIPAddress(), QRCodeGenerator.ECCLevel.Q))
+            using (PngByteQRCode qrCode = new PngByteQRCode(qrCodeData))
+            {
+                byte[] qrCodeImage = qrCode.GetGraphic(20);
+                qrCodeImg.Source = BitmapConverter.ByteArrayToBitmapImage(qrCodeImage);
+            }
         }
 
         private void deviceFinder_DeviceChoosed(object? sender, DeviceTag e)
@@ -77,6 +89,7 @@ namespace WirelessTransfer.Pages
 
             // send request
             UdpClient udpClient = new UdpClient();
+            udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, udpPort));
             byte[] bytes = new RequestCmd(RequestType.FileShare, Environment.MachineName).Encode();
             udpClient.Send(bytes, bytes.Length, new System.Net.IPEndPoint(e.Address, udpPort));
 
@@ -84,52 +97,70 @@ namespace WirelessTransfer.Pages
             Task<UdpReceiveResult> receiveTask = udpClient.ReceiveAsync();
             Task.Run(() =>
             {
-                if (receiveTask.Wait(30000))
+                while (true)
                 {
-                    byte[] bytes = receiveTask.Result.Buffer;
-                    Cmd cmd = CmdDecoder.DecodeCmd(bytes, 0, bytes.Length);
-                    if (cmd != null && cmd.CmdType == CmdType.Reply)
+                    if (receiveTask.Wait(30000))
                     {
-                        ReplyCmd replyCmd = (ReplyCmd)cmd;
-                        if (replyCmd.ReplyType == ReplyType.Refuse)
+                        byte[] bytes = receiveTask.Result.Buffer;
+                        Cmd cmd = CmdDecoder.DecodeCmd(bytes, 0, bytes.Length);
+                        if (cmd != null && cmd.CmdType == CmdType.Reply)
                         {
-                            Dispatcher.BeginInvoke(() =>
+                            ReplyCmd replyCmd = (ReplyCmd)cmd;
+                            if (replyCmd.ReplyType == ReplyType.Refuse)
                             {
-                                Disconnect();
-                                MessageWindow messageWindow = new MessageWindow("對方已拒絕連接!", false);
-                                messageWindow.ShowDialog();
-                                maskBorder.Visibility = Visibility.Collapsed;
-                            });
-                        }
-                        else if (replyCmd.ReplyType == ReplyType.Accept)
-                        {
-                            DeviceConnected?.Invoke(this, EventArgs.Empty);
-
-                            Dispatcher.BeginInvoke(() =>
-                            {
-                                foreach (FileTag ft in fileTagSp.Children)
+                                Dispatcher.BeginInvoke(() =>
                                 {
-                                    fileSendWindow.AddFile(ft.FilePath, ft.FileName, ft.FileSize);
-                                }
-                                fileSendWindow.ShowDialog();
-                                maskBorder.Visibility = Visibility.Collapsed;
-                            });
+                                    Disconnect();
+                                    MessageWindow messageWindow = new MessageWindow("對方已拒絕連接!", false);
+                                    messageWindow.ShowDialog();
+                                    maskBorder.Visibility = Visibility.Collapsed;
 
-                            DeviceDisconnected?.Invoke(this, EventArgs.Empty);
+                                    udpClient.Close();
+                                    deviceFinder.StartSearching();
+                                });
+                                return;
+                            }
+                            else if (replyCmd.ReplyType == ReplyType.Accept)
+                            {
+                                DeviceConnected?.Invoke(this, EventArgs.Empty);
+
+                                Dispatcher.Invoke(() =>
+                                {
+                                    foreach (FileTag ft in fileTagSp.Children)
+                                    {
+                                        fileSendWindow.AddFile(ft.FilePath, ft.FileName, ft.FileSize);
+                                    }
+                                    fileSendWindow.ShowDialog();
+                                    maskBorder.Visibility = Visibility.Collapsed;
+                                });
+
+                                DeviceDisconnected?.Invoke(this, EventArgs.Empty);
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            if (myTcpServer.CurState == MyTcpServerState.Listening)
+                                receiveTask = udpClient.ReceiveAsync();
                         }
                     }
-                }
-                else
-                {
-                    Dispatcher.BeginInvoke(() =>
+                    else
                     {
-                        Disconnect();
-                        MessageWindow messageWindow = new MessageWindow("請求超時!", false);
-                        messageWindow.ShowDialog();
-                        maskBorder.Visibility = Visibility.Collapsed;
-                    });
+                        Dispatcher.BeginInvoke(() =>
+                        {
+                            Disconnect();
+                            MessageWindow messageWindow = new MessageWindow("請求超時!", false);
+                            messageWindow.ShowDialog();
+                            maskBorder.Visibility = Visibility.Collapsed;
+
+                            udpClient.Close();
+                            deviceFinder.StartSearching();
+                        });
+                        return;
+                    }
                 }
                 udpClient.Close();
+
                 Dispatcher.BeginInvoke(() =>
                 {
                     deviceFinder.StartSearching();

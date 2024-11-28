@@ -177,5 +177,21 @@ namespace WirelessTransfer.Windows
                 myTcpServer.SendCmd(new RequestCmd(RequestType.Disconnect, Environment.MachineName), myTcpServer.ConnectedClients.First());
             myTcpServer.Stop();
         }
+
+        private void Window_Activated(object sender, EventArgs e)
+        {
+            Task.Delay(1000).ContinueWith((t) =>
+            {
+                if (myTcpServer.ConnectedClients.Count == 0)
+                {
+                    Dispatcher.BeginInvoke(() =>
+                    {
+                        MessageWindow messageWindow = new MessageWindow("連線逾時!", false);
+                        messageWindow.ShowDialog();
+                        Close();
+                    });
+                }
+            });
+        }
     }
 }
