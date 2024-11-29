@@ -131,7 +131,11 @@ namespace WirelessTransfer.Pages
                                         fileSendWindow.AddFile(ft.FilePath, ft.FileName, ft.FileSize);
                                     }
                                     fileSendWindow.ShowDialog();
+
                                     maskBorder.Visibility = Visibility.Collapsed;
+                                    udpClient.Close();
+                                    Disconnect();
+                                    deviceFinder.StartSearching();
                                 });
 
                                 DeviceDisconnected?.Invoke(this, EventArgs.Empty);
@@ -159,12 +163,6 @@ namespace WirelessTransfer.Pages
                         return;
                     }
                 }
-                udpClient.Close();
-
-                Dispatcher.BeginInvoke(() =>
-                {
-                    deviceFinder.StartSearching();
-                });
             });
         }
 
@@ -266,15 +264,14 @@ namespace WirelessTransfer.Pages
 
         private void Disconnect()
         {
-            if (myTcpServer != null)
+            if (myTcpServer?.CurState == MyTcpServerState.Listening)
             {
-                lock (myTcpServer.ConnectedClients)
+                try
                 {
-                    if (myTcpServer.ConnectedClients.Count > 0)
-                        myTcpServer.SendCmd(new RequestCmd(RequestType.Disconnect, Environment.MachineName), myTcpServer.ConnectedClients.First());
+                    myTcpServer.SendCmd(new RequestCmd(RequestType.Disconnect, Environment.MachineName), myTcpServer.ConnectedClients.First());
                 }
+                catch { }
                 myTcpServer?.Stop();
-                myTcpServer = null;
             }
 
             DeviceDisconnected?.Invoke(this, EventArgs.Empty);

@@ -13,7 +13,8 @@
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent"
-        Closing="Window_Closing">
+        Closing="Window_Closing"
+        Closed="Window_Closed">
     <Border Background="#FF313131"
             CornerRadius="10"
             Margin="20">
