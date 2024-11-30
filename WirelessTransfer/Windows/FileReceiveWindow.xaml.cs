@@ -1,4 +1,5 @@
 ﻿using Ini;
+using Microsoft.Toolkit.Uwp.Notifications;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,6 +45,16 @@ namespace WirelessTransfer.Windows
             {
                 try
                 {
+                    if (leftCount > 0)
+                    {
+                        MessageWindow messageWindow = new MessageWindow("連線中斷", false);
+                        messageWindow.ShowDialog();
+                    }
+                    else
+                    {
+                        MessageWindow messageWindow = new MessageWindow("全部檔案已下載完成", false);
+                        messageWindow.ShowDialog();
+                    }
                     Close();
                 }
                 catch { }
@@ -76,17 +87,19 @@ namespace WirelessTransfer.Windows
                     break;
                 case CmdType.FileData:
                     FileDataCmd fdc = (FileDataCmd)e;
+                    FileShareProgressTag tmp = null;
                     Dispatcher.Invoke(() =>
                     {
                         foreach (FileShareProgressTag fspt in progressTagSp.Children)
                         {
                             if (fspt.FileName.Equals(fdc.FileName))
                             {
-                                fspt.WriteDataToFile(fdc.FileData);
+                                tmp = fspt;
                                 break;
                             }
                         }
                     });
+                    tmp.WriteDataToFile(fdc.FileData);
                     break;
                 case CmdType.Request:
                     RequestCmd rc = (RequestCmd)e;

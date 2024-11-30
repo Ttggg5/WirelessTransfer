@@ -92,6 +92,7 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
                                     break;
                                 }
                             }
+                            else throw new Exception("no data read");
                         }
                     }
                     catch (Exception ex)

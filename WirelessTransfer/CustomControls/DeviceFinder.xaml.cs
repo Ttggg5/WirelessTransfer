@@ -165,7 +165,6 @@ namespace WirelessTransfer.CustomControls
                     {
                         case CmdType.ClientInfo:
                             ClientInfoCmd cif = ((ClientInfoCmd)cmd);
-                            cif.Decode();
                             bool found = false;
                             foreach (DeviceTag dt in deviceTags)
                             {
