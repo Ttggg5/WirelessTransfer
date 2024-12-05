@@ -13,6 +13,7 @@ using System.Net;
 using ScreenCapturerNS;
 using WirelessTransfer.Tools.InternetSocket;
 using QRCoder;
+using System;
 
 namespace WirelessTransfer.Pages
 {
@@ -28,6 +29,8 @@ namespace WirelessTransfer.Pages
         const int MAX_CLIENT = 1;
 
         int udpPort, tcpPort;
+        Int64 quality;
+
         MyTcpServer myTcpServer;
         InputSimulator inputSimulator;
 
@@ -39,6 +42,7 @@ namespace WirelessTransfer.Pages
 
             udpPort = int.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.UdpPort, IniFile.DEFAULT_PATH));
             tcpPort = int.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.TcpPort, IniFile.DEFAULT_PATH));
+            quality = Int64.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.ScreenQuality, IniFile.DEFAULT_PATH));
 
             inputSimulator = new InputSimulator();
 
@@ -242,7 +246,7 @@ namespace WirelessTransfer.Pages
                     {
                         try
                         {
-                            myTcpServer.SendCmd(new ScreenCmd(bitmap), myTcpServer.ConnectedClients.First());
+                            myTcpServer.SendCmd(new ScreenCmd(bitmap, quality), myTcpServer.ConnectedClients.First());
                         }
                         catch (Exception ex)
                         {

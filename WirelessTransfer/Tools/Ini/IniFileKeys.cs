@@ -11,5 +11,6 @@ namespace Ini
         TcpPort,
         UdpPort,
         ReceivePath,
+        ScreenQuality,
     }
 }

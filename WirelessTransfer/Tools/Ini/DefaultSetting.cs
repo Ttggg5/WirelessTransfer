@@ -17,6 +17,7 @@ namespace Ini
             IniFile.WriteValueToIniFile(IniFileSections.Option, IniFileKeys.TcpPort, GetDefaultValue(IniFileSections.Option, IniFileKeys.TcpPort), path);
             IniFile.WriteValueToIniFile(IniFileSections.Option, IniFileKeys.UdpPort, GetDefaultValue(IniFileSections.Option, IniFileKeys.UdpPort), path);
             IniFile.WriteValueToIniFile(IniFileSections.Option, IniFileKeys.ReceivePath, GetDefaultValue(IniFileSections.Option, IniFileKeys.ReceivePath), path);
+            IniFile.WriteValueToIniFile(IniFileSections.Option, IniFileKeys.ScreenQuality, GetDefaultValue(IniFileSections.Option, IniFileKeys.ScreenQuality), path);
         }
 
         public static string GetDefaultValue(IniFileSections section, IniFileKeys key)
@@ -32,6 +33,8 @@ namespace Ini
                             return "13210";
                         case IniFileKeys.ReceivePath:
                             return GetDownloadFolderPath();
+                        case IniFileKeys.ScreenQuality:
+                            return "85";
                     }
                     break;
             }

@@ -7,7 +7,8 @@
       mc:Ignorable="d" 
       d:DesignHeight="410" d:DesignWidth="540"
       Title="SettingPage">
-    <Grid>
+    <StackPanel Focusable="True"
+                MouseDown="StackPanel_MouseDown">
         <Grid Margin="20">
             <TextBlock Text="檔案接收位置"
                        FontSize="20"
@@ -39,7 +40,7 @@
                             <Setter Property="CornerRadius" Value="10"/>
                         </Style>
                     </Button.Resources>
-                    
+
                     <Grid>
                         <Border Background="{StaticResource MainColor2Brush}"
                                 CornerRadius="50"
@@ -63,7 +64,36 @@
                     </Grid>
                 </Button>
             </WrapPanel>
-
         </Grid>
-    </Grid>
+
+        <Grid Margin="20">
+            <TextBlock Text="螢幕分享品質(0~100)"
+                       FontSize="20"
+                       FontWeight="Bold"
+                       Foreground="White"/>
+
+            <TextBlock Text="網路品質不佳時可適當降低(推薦值:85)"
+                       FontSize="12"
+                       FontWeight="Bold"
+                       Foreground="Yellow"
+                       Margin="0, 25, 0, 0"/>
+
+            <TextBox x:Name="qualityTb"
+                     Width="50" Height="25"
+                     HorizontalAlignment="Left"
+                     MaxLength="3"
+                     Margin="0, 45, 0, 0"
+                     Padding="5, 0, 5, 0"
+                     HorizontalContentAlignment="Center"
+                     VerticalContentAlignment="Center"
+                     Text="0"
+                     PreviewTextInput="qualityTb_PreviewTextInput">
+                <TextBox.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="10"/>
+                    </Style>
+                </TextBox.Resources>
+            </TextBox>
+        </Grid>
+    </StackPanel>
 </Page>

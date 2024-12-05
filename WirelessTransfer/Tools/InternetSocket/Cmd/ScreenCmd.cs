@@ -26,12 +26,12 @@ namespace WirelessTransfer.Tools.InternetSocket.Cmd
         /// <summary>
         /// For sender.
         /// </summary>
-        public ScreenCmd(Bitmap screenBmp)
+        public ScreenCmd(Bitmap screenBmp, Int64 quality)
         {
             ScreenBmp = screenBmp;
             CmdType = CmdType.Screen;
 
-            eps.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 75L);
+            eps.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, quality);
 
             jpegCodec = GetEncoderInfo(ImageFormat.Jpeg);
         }
