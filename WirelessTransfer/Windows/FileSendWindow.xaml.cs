@@ -1,4 +1,5 @@
-﻿using SharpDX.Direct3D11;
+﻿using Microsoft.Toolkit.Uwp.Notifications;
+using SharpDX.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -54,6 +55,14 @@ namespace WirelessTransfer.Windows
         {
             leftCount--;
             fileLeftTb.Text = "剩餘" + leftCount + "個檔案";
+
+            if (leftCount == 0)
+            {
+                new ToastContentBuilder()
+                    .AddArgument("conversationId", 2)
+                    .AddText("全部檔案已下載完成")
+                    .Show();
+            }
         }
 
         private void myTcpServer_ReceivedCmd(object? sender, Cmd e)
@@ -130,8 +139,15 @@ namespace WirelessTransfer.Windows
                 {
                     if (leftCount > 0)
                     {
+                        new ToastContentBuilder()
+                            .AddArgument("conversationId", 2)
+                            .AddText("連線中斷")
+                            .AddText("檔案傳輸已被取消")
+                            .Show();
+                        /*
                         MessageWindow messageWindow = new MessageWindow("連線已斷開!", false);
                         messageWindow.ShowDialog();
+                        */
                         Close();
                     }
                 }

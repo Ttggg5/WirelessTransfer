@@ -6,6 +6,14 @@
              xmlns:local="clr-namespace:WirelessTransfer.CustomControls"
              mc:Ignorable="d" 
              Height="80" Width="500">
+    <UserControl.RenderTransform>
+        <TransformGroup>
+            <ScaleTransform x:Name="tagScaleTransform"
+                            ScaleY="1" ScaleX="1"/>
+            <TranslateTransform x:Name="tagTranslateTransform"/>
+        </TransformGroup>
+    </UserControl.RenderTransform>
+
     <Border CornerRadius="10"
             Background="{StaticResource MainColor2Brush}"
             Margin="5">

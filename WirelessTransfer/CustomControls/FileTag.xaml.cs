@@ -1,5 +1,7 @@
 ﻿using System.IO;
 using System.Windows;
+using System.Windows.Media.Animation;
+using System.Windows.Media;
 using WirelessTransfer.Pages;
 using WirelessTransfer.Tools.Screen;
 
@@ -39,7 +41,13 @@ namespace WirelessTransfer.CustomControls
 
         private void deleteBtn_Click(object sender, RoutedEventArgs e)
         {
-            DeleteBtnClick?.Invoke(this, e);
+            tagTranslateTransform.BeginAnimation(TranslateTransform.XProperty, new DoubleAnimation(0, -300, TimeSpan.FromSeconds(0.3)));
+            Task.Delay(350).ContinueWith((t) =>
+            {
+                Dispatcher.Invoke(() => {
+                    DeleteBtnClick?.Invoke(this, e);
+                });
+            });
         }
     }
 }

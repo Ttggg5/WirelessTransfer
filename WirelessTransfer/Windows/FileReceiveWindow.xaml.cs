@@ -47,15 +47,28 @@ namespace WirelessTransfer.Windows
                 {
                     if (leftCount > 0)
                     {
+                        new ToastContentBuilder()
+                            .AddArgument("conversationId", 1)
+                            .AddText("連線中斷")
+                            .AddText("檔案傳輸已被取消")
+                            .Show();
+                        /*
                         MessageWindow messageWindow = new MessageWindow("連線中斷", false);
                         messageWindow.ShowDialog();
+                        */
+                        Close();
                     }
                     else
                     {
+                        new ToastContentBuilder()
+                            .AddArgument("conversationId", 1)
+                            .AddText("全部檔案已下載完成")
+                            .Show();
+                        /*
                         MessageWindow messageWindow = new MessageWindow("全部檔案已下載完成", false);
                         messageWindow.ShowDialog();
+                        */
                     }
-                    Close();
                 }
                 catch { }
             });
