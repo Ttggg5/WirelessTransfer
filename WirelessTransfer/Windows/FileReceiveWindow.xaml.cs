@@ -171,6 +171,7 @@ namespace WirelessTransfer.Windows
                 if ((bool)messageWindow.ShowDialog())
                 {
                     DeleteUnfinishedFile();
+                    myTcpClient.SendCmd(new RequestCmd(RequestType.Disconnect, Environment.MachineName));
                     Close();
                 }
             }
