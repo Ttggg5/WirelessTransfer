@@ -42,7 +42,6 @@ namespace WirelessTransfer.CustomControls
         public long CurProgress { get; private set; }
         public bool IsReceiver { get; }
         public string MD5 { get; }
-        public bool IsComplete { get; }
         public FileShareTagState CurState { get; private set; }
 
         int maxShowLength = 24;

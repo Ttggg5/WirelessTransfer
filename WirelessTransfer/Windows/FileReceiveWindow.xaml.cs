@@ -2,6 +2,7 @@
 using Microsoft.Toolkit.Uwp.Notifications;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -39,6 +40,18 @@ namespace WirelessTransfer.Windows
             myTcpClient.Connect();
         }
 
+        private void DeleteUnfinishedFile()
+        {
+            foreach (FileShareProgressTag fspt in progressTagSp.Children)
+            {
+                if (fspt.CurState == FileShareTagState.Processing)
+                {
+                    if (File.Exists(fspt.FilePath))
+                        File.Delete(fspt.FilePath);
+                }
+            }
+        }
+
         private void myTcpClient_Disconnected(object? sender, EventArgs e)
         {
             Dispatcher.Invoke(() =>
@@ -47,10 +60,11 @@ namespace WirelessTransfer.Windows
                 {
                     if (leftCount > 0)
                     {
+                        DeleteUnfinishedFile();
                         new ToastContentBuilder()
                             .AddArgument("conversationId", 1)
                             .AddText("連線中斷")
-                            .AddText("檔案傳輸已被取消")
+                            .AddText(leftCount + "個檔案傳輸已被取消")
                             .Show();
                         /*
                         MessageWindow messageWindow = new MessageWindow("連線中斷", false);
@@ -124,8 +138,12 @@ namespace WirelessTransfer.Windows
                         {
                             if (leftCount > 0)
                             {
-                                MessageWindow messageWindow = new MessageWindow("連線已斷開!", false);
-                                messageWindow.ShowDialog();
+                                DeleteUnfinishedFile();
+                                new ToastContentBuilder()
+                                    .AddArgument("conversationId", 1)
+                                    .AddText("連線中斷")
+                                    .AddText(leftCount + "個檔案傳輸已被取消")
+                                    .Show();
                                 Close();
                             }
                         });
@@ -140,7 +158,7 @@ namespace WirelessTransfer.Windows
             fileLeftTb.Text = "剩餘" + leftCount + "個下載";
 
             completeCount++;
-            fileLeftTb.Text = "已完成" + completeCount + "個下載";
+            fileCompleteTb.Text = "已完成" + completeCount + "個下載";
 
             if (leftCount == 0) myTcpClient.Disconnect();
         }
@@ -150,7 +168,11 @@ namespace WirelessTransfer.Windows
             if (leftCount > 0)
             {
                 MessageWindow messageWindow = new MessageWindow("傳輸尚未完成，確定要取消嗎?", true);
-                if ((bool)messageWindow.ShowDialog()) Close();
+                if ((bool)messageWindow.ShowDialog())
+                {
+                    DeleteUnfinishedFile();
+                    Close();
+                }
             }
             else Close();
         }
