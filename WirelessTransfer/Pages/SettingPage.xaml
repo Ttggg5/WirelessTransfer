@@ -72,7 +72,7 @@
                        FontWeight="Bold"
                        Foreground="White"/>
 
-            <TextBlock Text="網路品質不佳時可適當降低(推薦值:85)"
+            <TextBlock Text="網路品質不佳時可適當降低"
                        FontSize="12"
                        FontWeight="Bold"
                        Foreground="Yellow"
