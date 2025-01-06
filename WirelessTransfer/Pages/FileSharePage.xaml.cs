@@ -18,12 +18,15 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Windows.Storage.Pickers.Provider;
 using WirelessTransfer.CustomControls;
 using WirelessTransfer.Tools.InternetSocket;
 using WirelessTransfer.Tools.InternetSocket.Cmd;
 using WirelessTransfer.Tools.InternetSocket.MyTcp;
 using WirelessTransfer.Tools.Screen;
 using WirelessTransfer.Windows;
+using DataFormats = System.Windows.DataFormats;
+using DragDropEffects = System.Windows.DragDropEffects;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using Path = System.IO.Path;
 
@@ -174,31 +177,36 @@ namespace WirelessTransfer.Pages
             {
                 foreach (string filePath in openFileDialog.FileNames)
                 {
-                    bool isAdded = false;
-                    foreach (FileTag ft in fileTagSp.Children)
-                    {
-                        if (ft.FilePath.Equals(filePath))
-                        {
-                            isAdded = true;
-                            break;
-                        }
-                    }
-
-                    if (!isAdded)
-                    {
-                        FileInfo fileInfo = new FileInfo(filePath);
-                        FileTag fileTag = new FileTag(fileInfo.FullName, GetNonDuplicateFileName(fileInfo.Name), fileInfo.Length);
-                        fileTag.DeleteBtnClick += fileTag_DeleteBtnClick;
-                        fileTag.Margin = new Thickness(0, 10, 0, 10);
-                        fileTagSp.Children.Add(fileTag);
-
-                        totalSize += fileInfo.Length;
-
-                        confirmBtn.IsEnabled = true;
-                    }
+                    AddFile(filePath);
                 }
-                RefreshTotalSize();
             }
+        }
+
+        private void AddFile(string filePath)
+        {
+            bool isAdded = false;
+            foreach (FileTag ft in fileTagSp.Children)
+            {
+                if (ft.FilePath.Equals(filePath))
+                {
+                    isAdded = true;
+                    break;
+                }
+            }
+
+            if (!isAdded)
+            {
+                FileInfo fileInfo = new FileInfo(filePath);
+                FileTag fileTag = new FileTag(fileInfo.FullName, GetNonDuplicateFileName(fileInfo.Name), fileInfo.Length);
+                fileTag.DeleteBtnClick += fileTag_DeleteBtnClick;
+                fileTag.Margin = new Thickness(0, 10, 0, 10);
+                fileTagSp.Children.Add(fileTag);
+
+                totalSize += fileInfo.Length;
+
+                confirmBtn.IsEnabled = true;
+            }
+            RefreshTotalSize();
         }
 
         private string GetNonDuplicateFileName(string fileName)

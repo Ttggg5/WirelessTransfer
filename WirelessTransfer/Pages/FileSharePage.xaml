@@ -220,7 +220,7 @@
                                       Margin="0, 5, 0, 5">
                             <StackPanel x:Name="fileTagSp"
                                         HorizontalAlignment="Center">
-
+                                
                             </StackPanel>
                         </ScrollViewer>
                     </Grid>

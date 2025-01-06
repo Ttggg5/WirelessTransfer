@@ -41,7 +41,7 @@ namespace WirelessTransfer.CustomControls
 
         private void deleteBtn_Click(object sender, RoutedEventArgs e)
         {
-            tagTranslateTransform.BeginAnimation(TranslateTransform.XProperty, new DoubleAnimation(0, -300, TimeSpan.FromSeconds(0.3)));
+            tagTranslateTransform.BeginAnimation(TranslateTransform.XProperty, new DoubleAnimation(0, -500, TimeSpan.FromSeconds(0.3)));
             Task.Delay(350).ContinueWith((t) =>
             {
                 Dispatcher.Invoke(() => {
