@@ -14,6 +14,10 @@ using ScreenCapturerNS;
 using WirelessTransfer.Tools.InternetSocket;
 using QRCoder;
 using System;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+using System.Windows.Media;
+using System.Windows.Media.Media3D;
+using System.Drawing.Drawing2D;
 
 namespace WirelessTransfer.Pages
 {
@@ -29,6 +33,7 @@ namespace WirelessTransfer.Pages
         const int MAX_CLIENT = 1;
 
         int udpPort, tcpPort;
+        int screenOutputWidth, screenOutputHeight;
         Int64 quality;
 
         MyTcpServer myTcpServer;
@@ -44,11 +49,16 @@ namespace WirelessTransfer.Pages
             tcpPort = int.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.TcpPort, IniFile.DEFAULT_PATH));
             quality = Int64.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.ScreenQuality, IniFile.DEFAULT_PATH));
 
+            screenOutputWidth = Screen.PrimaryScreen.Bounds.Width;
+            screenOutputHeight = Screen.PrimaryScreen.Bounds.Height;
+
             inputSimulator = new InputSimulator();
 
             maskBorder.Visibility = Visibility.Collapsed;
             waitRespondSp.Visibility = Visibility.Collapsed;
-            disconnectSp.Visibility = Visibility.Collapsed;
+            connectedGrid.Visibility = Visibility.Collapsed;
+
+            defaultResolutionRB.IsChecked = true;
 
             Tag = PageFunction.Mirror;
             deviceFinder.DeviceChoosed += deviceFinder_DeviceChoosed;
@@ -214,7 +224,7 @@ namespace WirelessTransfer.Pages
             Dispatcher.Invoke(() =>
             {
                 waitRespondSp.Visibility = Visibility.Collapsed;
-                disconnectSp.Visibility = Visibility.Visible;
+                connectedGrid.Visibility = Visibility.Visible;
             });
 
             DeviceConnected?.Invoke(this, EventArgs.Empty);
@@ -246,7 +256,11 @@ namespace WirelessTransfer.Pages
                     {
                         try
                         {
-                            myTcpServer.SendCmd(new ScreenCmd(bitmap, quality), myTcpServer.ConnectedClients.First());
+                            using (Bitmap tmp = BitmapConverter.ResizeBitmap(bitmap, screenOutputWidth, screenOutputHeight, InterpolationMode.Bilinear))
+                            {
+                                myTcpServer.SendCmd(new ScreenCmd(tmp, quality), myTcpServer.ConnectedClients.First());
+                            }
+                            //myTcpServer.SendCmd(new ScreenCmd(bitmap, quality), myTcpServer.ConnectedClients.First());
                         }
                         catch (Exception ex)
                         {
@@ -287,9 +301,33 @@ namespace WirelessTransfer.Pages
 
             maskBorder.Visibility = Visibility.Collapsed;
             waitRespondSp.Visibility = Visibility.Collapsed;
-            disconnectSp.Visibility = Visibility.Collapsed;
+            connectedGrid.Visibility = Visibility.Collapsed;
 
             deviceFinder.StartSearching();
+        }
+
+        private void RadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Controls.RadioButton radioButton = sender as System.Windows.Controls.RadioButton;
+            float scale = 1f;
+
+            switch (radioButton.Content.ToString())
+            {
+                case "1080p":
+                    scale = 1080f / (float)Screen.PrimaryScreen.Bounds.Height;
+                    break;
+                case "720p":
+                    scale = 720f / (float)Screen.PrimaryScreen.Bounds.Height;
+                    break;
+                case "480p":
+                    scale = 480f / (float)Screen.PrimaryScreen.Bounds.Height;
+                    break;
+                case "360p":
+                    scale = 360f / (float)Screen.PrimaryScreen.Bounds.Height;
+                    break;
+            }
+            screenOutputWidth = (int)((float)Screen.PrimaryScreen.Bounds.Width * scale);
+            screenOutputHeight = (int)((float)Screen.PrimaryScreen.Bounds.Height * scale);
         }
 
         private void Disconnect()

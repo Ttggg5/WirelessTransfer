@@ -60,7 +60,7 @@ namespace WirelessTransfer.Windows
             {
                 new ToastContentBuilder()
                     .AddArgument("conversationId", 2)
-                    .AddText("全部檔案已下載完成")
+                    .AddText("全部檔案已傳輸完成")
                     .Show();
             }
         }

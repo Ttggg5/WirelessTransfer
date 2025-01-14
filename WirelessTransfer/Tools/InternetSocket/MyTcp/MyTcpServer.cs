@@ -60,7 +60,7 @@ namespace WirelessTransfer.Tools.InternetSocket.MyTcp
             try
             {
                 TcpClient tcpClient = Server.EndAcceptTcpClient(ar);
-                tcpClient.SendTimeout = 1000;
+                tcpClient.SendTimeout = 5000;
                 int actualLength = tcpClient.GetStream().Read(tmpBuf, 0, tmpBuf.Length);
                 if (actualLength > 0)
                 {

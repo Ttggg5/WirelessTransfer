@@ -8,6 +8,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using System.Windows;
+using System.Drawing.Drawing2D;
+using SharpDX.DXGI;
+using Windows.Graphics.Imaging;
+using SharpDX.WIC;
+using SharpDX.Direct2D1;
+using Bitmap = System.Drawing.Bitmap;
 
 namespace WirelessTransfer.Tools.Screen
 {
@@ -58,7 +64,7 @@ namespace WirelessTransfer.Tools.Screen
             // Lock the Bitmap bits to access its pixel data
             BitmapData bitmapData = bitmap.LockBits(
                 new Rectangle(0, 0, bitmap.Width, bitmap.Height),
-                ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+                ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
             try
             {
@@ -89,6 +95,23 @@ namespace WirelessTransfer.Tools.Screen
                 writeableBitmap.Unlock();
                 bitmap.UnlockBits(bitmapData);
             }
+        }
+
+        public static Bitmap ResizeBitmap(System.Drawing.Image source, int width, int height, System.Drawing.Drawing2D.InterpolationMode quality)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            var bmp = new Bitmap(width, height);
+
+            using (var g = Graphics.FromImage(bmp))
+            {
+                g.InterpolationMode = quality;
+                g.DrawImage(source, new Rectangle(0, 0, width, height));
+                g.Save();
+            }
+
+            return bmp;
         }
     }
 }

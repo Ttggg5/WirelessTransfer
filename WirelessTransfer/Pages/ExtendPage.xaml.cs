@@ -6,9 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -41,12 +43,14 @@ namespace WirelessTransfer.Pages
         const int MAX_CLIENT = 1;
 
         int udpPort, tcpPort;
+        int screenOutputWidth, screenOutputHeight;
         Int64 quality;
 
         MyTcpServer myTcpServer;
         ScreenCaptureDX screenCaptureDX;
         InputSimulator inputSimulator;
         Process? virtualDisplayProcess;
+        Screen extendScreen;
 
         public ExtendPage()
         {
@@ -60,7 +64,9 @@ namespace WirelessTransfer.Pages
 
             maskBorder.Visibility = Visibility.Collapsed;
             waitRespondSp.Visibility = Visibility.Collapsed;
-            disconnectSp.Visibility = Visibility.Collapsed;
+            connectedGrid.Visibility = Visibility.Collapsed;
+
+            defaultResolutionRB.IsChecked = true;
 
             Tag = PageFunction.Extend;
             deviceFinder.DeviceChoosed += deviceFinder_DeviceChoosed;
@@ -229,7 +235,7 @@ namespace WirelessTransfer.Pages
             Dispatcher.Invoke(() =>
             {
                 waitRespondSp.Visibility = Visibility.Collapsed;
-                disconnectSp.Visibility = Visibility.Visible;
+                connectedGrid.Visibility = Visibility.Visible;
             });
 
             DeviceConnected?.Invoke(this, EventArgs.Empty);
@@ -242,12 +248,11 @@ namespace WirelessTransfer.Pages
                 {
                     if (myTcpServer.ConnectedClients.Count > 0)
                         myTcpServer.SendCmd(
-                            new ScreenInfoCmd(Screen.AllScreens.Last().Bounds.Width, Screen.AllScreens.Last().Bounds.Height),
+                            new ScreenInfoCmd(extendScreen.Bounds.Width, extendScreen.Bounds.Height),
                             myTcpServer.ConnectedClients.First());
                 }
 
-                int screenIndex = Screen.AllScreens.Length - 1;
-                ScreenCaptureDX.FindScreen(Screen.AllScreens[screenIndex].DeviceName, out int adapterIndex, out int outputIndex);
+                ScreenCaptureDX.FindScreen(extendScreen.DeviceName, out int adapterIndex, out int outputIndex);
                 screenCaptureDX = new ScreenCaptureDX(adapterIndex, outputIndex);
                 screenCaptureDX.Start((Bitmap bitmap) =>
                 {
@@ -255,7 +260,10 @@ namespace WirelessTransfer.Pages
                     {
                         try
                         {
-                            myTcpServer.SendCmd(new ScreenCmd(bitmap, quality), myTcpServer.ConnectedClients.First());
+                            using (Bitmap tmp = BitmapConverter.ResizeBitmap(bitmap, screenOutputWidth, screenOutputHeight, InterpolationMode.Bilinear))
+                            {
+                                myTcpServer.SendCmd(new ScreenCmd(tmp, quality), myTcpServer.ConnectedClients.First());
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -266,8 +274,28 @@ namespace WirelessTransfer.Pages
             }
         }
 
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        public struct DISPLAY_DEVICE
+        {
+            public int cb;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+            public string DeviceName;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+            public string DeviceString;
+            public int StateFlags;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+            public string DeviceID;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+            public string DeviceKey;
+        }
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        public static extern bool EnumDisplayDevices(string lpDevice, uint iDevNum, ref DISPLAY_DEVICE lpDisplayDevice, uint dwFlags);
+
         private void CreateVirtualScreen(int width, int height)
         {
+            int screenCount = Screen.AllScreens.Length;
+
             virtualDisplayProcess = new Process();
             virtualDisplayProcess.StartInfo.UseShellExecute = true;
             virtualDisplayProcess.StartInfo.Arguments = "enableidd 1";
@@ -275,11 +303,39 @@ namespace WirelessTransfer.Pages
             virtualDisplayProcess.StartInfo.Verb = "runas";
             virtualDisplayProcess.Start();
             virtualDisplayProcess.WaitForExit();
-            Task.Delay(5000).Wait();
+
+            while (Screen.AllScreens.Length == screenCount)
+            {
+                Task.Delay(1000).Wait();
+            }
+
+            DISPLAY_DEVICE displayDevice = new DISPLAY_DEVICE();
+            displayDevice.cb = Marshal.SizeOf(displayDevice);
+
+            // find the virtual screen
+            uint deviceIndex = 0;
+            while (EnumDisplayDevices(null, deviceIndex, ref displayDevice, 0))
+            {
+                if (displayDevice.DeviceString.Equals("USB Mobile Monitor Virtual Display"))
+                {
+                    bool isMonitorConnected = false;
+                    foreach (var screen in Screen.AllScreens)
+                    {
+                        if (screen.DeviceName.Equals(displayDevice.DeviceName))
+                        {
+                            extendScreen = screen;
+                            isMonitorConnected = true;
+                            break;
+                        }
+                    }
+                    if (isMonitorConnected) break;
+                }
+                deviceIndex++;
+                displayDevice.cb = Marshal.SizeOf(displayDevice); // Reset the size for the next device
+            }
 
             // change resolution
-            string virtualScreenName = Screen.AllScreens[Screen.AllScreens.Length - 1].DeviceName;
-            DisplaySettingsChanger.ChangeScreenResolution(virtualScreenName, width, height, 60);
+            DisplaySettingsChanger.ChangeScreenResolution(extendScreen.DeviceName, width, height, 60);
         }
 
         private void CloseVirtualScreen()
@@ -289,6 +345,30 @@ namespace WirelessTransfer.Pages
             virtualDisplayProcess.Start();
             virtualDisplayProcess.WaitForExit();
             virtualDisplayProcess = null;
+        }
+
+        private void RadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Controls.RadioButton radioButton = sender as System.Windows.Controls.RadioButton;
+            float scale = 1f;
+
+            switch (radioButton.Content.ToString())
+            {
+                case "1080p":
+                    scale = 1080f / (float)Screen.PrimaryScreen.Bounds.Height;
+                    break;
+                case "720p":
+                    scale = 720f / (float)Screen.PrimaryScreen.Bounds.Height;
+                    break;
+                case "480p":
+                    scale = 480f / (float)Screen.PrimaryScreen.Bounds.Height;
+                    break;
+                case "360p":
+                    scale = 360f / (float)Screen.PrimaryScreen.Bounds.Height;
+                    break;
+            }
+            screenOutputWidth = (int)((float)Screen.PrimaryScreen.Bounds.Width * scale);
+            screenOutputHeight = (int)((float)Screen.PrimaryScreen.Bounds.Height * scale);
         }
 
         public void StopAll()
@@ -303,7 +383,7 @@ namespace WirelessTransfer.Pages
 
             maskBorder.Visibility = Visibility.Collapsed;
             waitRespondSp.Visibility = Visibility.Collapsed;
-            disconnectSp.Visibility = Visibility.Collapsed;
+            connectedGrid.Visibility = Visibility.Collapsed;
 
             deviceFinder.StartSearching();
         }

@@ -74,23 +74,113 @@
                                Foreground="White"/>
                 </StackPanel>
 
-                <StackPanel x:Name="disconnectSp"
-                            VerticalAlignment="Center">
-                    <TextBlock Text="已成功連線"
-                               HorizontalAlignment="Center"
-                               FontSize="20"
-                               FontWeight="Bold"
-                               Foreground="White"/>
-                    <TextBlock Text="分享中..."
-                               HorizontalAlignment="Center"
-                               FontSize="20"
-                               FontWeight="Bold"
-                               Foreground="White"/>
-                    <Button x:Name="disconnectBtn"
-                            Width="100" Height="30"
-                            Content="Disconnect"
-                            Click="disconnectBtn_Click"/>
-                </StackPanel>
+                <Grid x:Name="connectedGrid">
+                    <Border Background="{StaticResource MainColor2Brush}"
+                            CornerRadius="10">
+                        <Grid>
+                            <TextBlock Text="螢幕分享中..."
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Top"
+                                       Margin="10"
+                                       FontSize="20"
+                                       FontWeight="Bold"
+                                       Foreground="White"/>
+
+                            <Grid Width="288" Height="162"
+                                  HorizontalAlignment="Left"
+                                  Margin="50, 0, 0, 0">
+                                <Image Source="/Assets/screen_icon.png" />
+                            </Grid>
+
+                            <StackPanel HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Margin="0, 0, 100, 0">
+                                <TextBlock Text="螢幕解析度:"
+                                           Foreground="White"
+                                           FontSize="14"
+                                           FontWeight="Bold"
+                                           Margin="0, 5"/>
+
+                                <RadioButton GroupName="screenResolution"
+                                             x:Name="defaultResolutionRB"
+                                             Content="1080p"
+                                             Foreground="White"
+                                             FontSize="14"
+                                             Margin="0, 5"
+                                             Checked="RadioButton_Checked"/>
+                                
+                                <RadioButton GroupName="screenResolution"
+                                             Content="720p"
+                                             Foreground="White"
+                                             FontSize="14"
+                                             Margin="0, 5"
+                                             Checked="RadioButton_Checked"/>
+                                
+                                <RadioButton GroupName="screenResolution"
+                                             Content="480p"
+                                             Foreground="White"
+                                             FontSize="14"
+                                             Margin="0, 5"
+                                             Checked="RadioButton_Checked"/>
+                                
+                                <RadioButton GroupName="screenResolution"
+                                             Content="360p"
+                                             Foreground="White"
+                                             FontSize="14"
+                                             Margin="0, 5"
+                                             Checked="RadioButton_Checked"/>
+                            </StackPanel>
+
+                            <Button x:Name="disconnectBtn"
+                                    Height="30"
+                                    Margin="10"
+                                    VerticalAlignment="Bottom"
+                                    Click="disconnectBtn_Click">
+                                <Button.Resources>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type Button}">
+                                                    <Border Name="border"
+                                                            Background="IndianRed"
+                                                            CornerRadius="8">
+                                                        <Border.Effect>
+                                                            <DropShadowEffect Opacity="0.5"
+                                                                                BlurRadius="20"
+                                                                                ShadowDepth="3"/>
+                                                        </Border.Effect>
+
+                                                        <Grid VerticalAlignment="Center"
+                                                                Margin="5">
+                                                            <TextBlock Text="中斷"
+                                                                        FontSize="16"
+                                                                        Foreground="White"
+                                                                        VerticalAlignment="Center"
+                                                                        HorizontalAlignment="Center"
+                                                                        Margin="0, 0, 0, 0"/>
+                                                        </Grid>
+                                                    </Border>
+
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Background" TargetName="border" Value="#FFE88A8A"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsPressed" Value="True">
+                                                            <Setter Property="Background" TargetName="border" Value="#FFA94646"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsEnabled" Value="False">
+                                                            <Setter Property="Background" TargetName="border" Value="gray"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </Button.Resources>
+                            </Button>
+                        </Grid>
+                    </Border>
+                </Grid>
             </Grid>
         </Border>
     </Grid>
