@@ -102,7 +102,7 @@ namespace WirelessTransfer.Windows
 
                                 if (isAllComplete) break;
 
-                                using (FileStream fs = new FileStream(filePath, FileMode.Open))
+                                using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                                 {
                                     byte[] buffer = new byte[4194304]; // 4MB
                                     int actualLength = 0;
