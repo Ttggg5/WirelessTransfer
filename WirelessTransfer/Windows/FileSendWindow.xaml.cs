@@ -27,7 +27,7 @@ namespace WirelessTransfer.Windows
     public partial class FileSendWindow : Window
     {
         int leftCount = 0;
-        int completeCount = 0;
+        bool nextSeg = true;
         MyTcpServer myTcpServer;
 
         public FileSendWindow(MyTcpServer myTcpServer)
@@ -110,8 +110,10 @@ namespace WirelessTransfer.Windows
                                     {
                                         try
                                         {
-                                            myTcpServer.SendCmd(new FileDataCmd(fileName, buffer.Take(actualLength).ToArray()), 
+                                            nextSeg = false;
+                                            myTcpServer.SendCmd(new FileDataCmd(fileName, buffer.Take(actualLength).ToArray()),
                                                 myTcpServer.ConnectedClients.First());
+                                            while (!nextSeg) { } // wait for receiver to request next segment
                                         }
                                         catch
                                         {
@@ -127,7 +129,22 @@ namespace WirelessTransfer.Windows
                             }
                         }, TaskCreationOptions.LongRunning);
                     }
-                    break;
+                break;
+
+                case CmdType.Request:
+                    RequestCmd reqc = (RequestCmd)e;
+                    if (reqc.RequestType == RequestType.FileShare)
+                        nextSeg = true;
+                    else if (reqc.RequestType == RequestType.Disconnect)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            MessageWindow messageWindow = new MessageWindow("對方已中斷連線!", false);
+                            messageWindow.ShowDialog();
+                            Close();
+                        });
+                    }
+                break;
             }
         }
 
