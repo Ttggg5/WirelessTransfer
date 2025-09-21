@@ -93,8 +93,8 @@
                             </Grid>
 
                             <StackPanel HorizontalAlignment="Right"
-                                        VerticalAlignment="Center"
-                                        Margin="0, 0, 100, 0">
+                                        VerticalAlignment="Top"
+                                        Margin="0, 140, 140, 0">
                                 <TextBlock Text="螢幕解析度:"
                                            Foreground="White"
                                            FontSize="14"
@@ -125,6 +125,31 @@
                                 
                                 <RadioButton GroupName="screenResolution"
                                              Content="360p"
+                                             Foreground="White"
+                                             FontSize="14"
+                                             Margin="0, 5"
+                                             Checked="RadioButton_Checked"/>
+                            </StackPanel>
+
+                            <StackPanel HorizontalAlignment="Right"
+                                        VerticalAlignment="Top"
+                                        Margin="0, 140, 60, 0">
+                                <TextBlock Text="禎數:"
+                                           Foreground="White"
+                                           FontSize="14"
+                                           FontWeight="Bold"
+                                           Margin="0, 5"/> 
+
+                                <RadioButton GroupName="fps"
+                                             x:Name="defaultFpsRB"
+                                             Content="60fps"
+                                             Foreground="White"
+                                             FontSize="14"
+                                             Margin="0, 5"
+                                             Checked="RadioButton_Checked"/>
+
+                                <RadioButton GroupName="fps"
+                                             Content="30fps"
                                              Foreground="White"
                                              FontSize="14"
                                              Margin="0, 5"

@@ -21,6 +21,35 @@ namespace WirelessTransfer.Tools.Screen
         public int AdapterIndex { get; }
         public int OutputIndex { get; }
 
+        private readonly object fpsLock = new object();
+        private int fps = 60;
+        /// <summary>
+        /// only allow 1-60.
+        /// </summary>
+        public int FPS
+        {
+            get => fps;
+            set
+            {
+                lock (fpsLock)
+                {
+                    if (value < 1)
+                        fps = 1;
+                    else if (value > 60)
+                        fps = 60;
+                    else
+                        fps = value;
+                }
+            }
+        }
+        private int Interval
+        {
+            get => 1000 / fps;
+        }
+
+        private int lastInterval = 0;
+        Stopwatch sw = new Stopwatch();
+
         public ScreenCaptureDX(int adapterIndex, int outputIndex)
         {
             Init();
@@ -103,7 +132,6 @@ namespace WirelessTransfer.Tools.Screen
                 Usage = ResourceUsage.Staging
             };
             var screenTexture = new Texture2D(device, textureDesc);
-
             Task.Factory.StartNew(() =>
             {
                 // Duplicate the output
@@ -111,6 +139,7 @@ namespace WirelessTransfer.Tools.Screen
                 {
                     while (isRunning)
                     {
+                        sw.Restart();
                         try
                         {
                             SharpDX.DXGI.Resource screenResource;
@@ -155,6 +184,14 @@ namespace WirelessTransfer.Tools.Screen
 
                             onScreenRefreshed.Invoke(bitmap);
 
+                            // Throttle to the given FPS
+                            lock (fpsLock)
+                            {
+                                lastInterval = (int)sw.ElapsedMilliseconds;
+                                if (lastInterval < Interval)
+                                    Thread.Sleep(Interval - lastInterval);
+                            }
+
                             screenResource.Dispose();
                             duplicatedOutput.ReleaseFrame();
                             GC.Collect();
@@ -171,8 +208,9 @@ namespace WirelessTransfer.Tools.Screen
                         }
                         catch { }
                     }
+                    sw.Stop();
                 }
-            });
+            }, TaskCreationOptions.LongRunning);
         }
 
         // WinAPI interop for cursor info

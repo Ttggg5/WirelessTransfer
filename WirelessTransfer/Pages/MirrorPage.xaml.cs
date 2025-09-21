@@ -59,6 +59,7 @@ namespace WirelessTransfer.Pages
             connectedGrid.Visibility = Visibility.Collapsed;
 
             defaultResolutionRB.IsChecked = true;
+            defaultFpsRB.IsChecked = true;
 
             Tag = PageFunction.Mirror;
             deviceFinder.DeviceChoosed += deviceFinder_DeviceChoosed;
@@ -309,25 +310,42 @@ namespace WirelessTransfer.Pages
         private void RadioButton_Checked(object sender, RoutedEventArgs e)
         {
             System.Windows.Controls.RadioButton radioButton = sender as System.Windows.Controls.RadioButton;
-            float scale = 1f;
-
-            switch (radioButton.Content.ToString())
+            if (radioButton.GroupName.Equals("screenResolution"))
             {
-                case "1080p":
-                    scale = 1080f / (float)Screen.PrimaryScreen.Bounds.Height;
-                    break;
-                case "720p":
-                    scale = 720f / (float)Screen.PrimaryScreen.Bounds.Height;
-                    break;
-                case "480p":
-                    scale = 480f / (float)Screen.PrimaryScreen.Bounds.Height;
-                    break;
-                case "360p":
-                    scale = 360f / (float)Screen.PrimaryScreen.Bounds.Height;
-                    break;
+                float scale = 1f;
+
+                switch (radioButton.Content.ToString())
+                {
+                    case "1080p":
+                        scale = 1080f / (float)Screen.PrimaryScreen.Bounds.Height;
+                        break;
+                    case "720p":
+                        scale = 720f / (float)Screen.PrimaryScreen.Bounds.Height;
+                        break;
+                    case "480p":
+                        scale = 480f / (float)Screen.PrimaryScreen.Bounds.Height;
+                        break;
+                    case "360p":
+                        scale = 360f / (float)Screen.PrimaryScreen.Bounds.Height;
+                        break;
+                }
+                screenOutputWidth = (int)((float)Screen.PrimaryScreen.Bounds.Width * scale);
+                screenOutputHeight = (int)((float)Screen.PrimaryScreen.Bounds.Height * scale);
             }
-            screenOutputWidth = (int)((float)Screen.PrimaryScreen.Bounds.Width * scale);
-            screenOutputHeight = (int)((float)Screen.PrimaryScreen.Bounds.Height * scale);
+            else if (radioButton.GroupName.Equals("fps"))
+            {
+                switch (radioButton.Content.ToString())
+                {
+                    case "60fps":
+                        if (screenCaptureDX != null)
+                            screenCaptureDX.FPS = 60;
+                        break;
+                    case "30fps":
+                        if (screenCaptureDX != null)
+                            screenCaptureDX.FPS = 30;
+                        break;
+                }
+            }
         }
 
         private void Disconnect()
