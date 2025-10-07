@@ -37,7 +37,7 @@ namespace WirelessTransfer
             Process process = new Process();
             process.StartInfo.UseShellExecute = true;
             process.StartInfo.Arguments = "enableidd 0";
-            process.StartInfo.FileName = ".\\usbmmidd_v2\\deviceinstaller64.exe";
+            process.StartInfo.FileName = ".\\deviceinstaller64.exe";
             process.StartInfo.Verb = "runas";
             process.Start();
             process.WaitForExit();
