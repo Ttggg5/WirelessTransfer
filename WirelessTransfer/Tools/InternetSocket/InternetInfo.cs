@@ -26,6 +26,7 @@ namespace WirelessTransfer.Tools.InternetSocket
 
         public static string GetSSID()
         {
+            byte[] buf = new byte[4096];
             string notFoundMessage = "No wifi connected!";
             try
             {
@@ -40,7 +41,12 @@ namespace WirelessTransfer.Tools.InternetSocket
                 };
 
                 Process process = Process.Start(psi);
-                string output = process.StandardOutput.ReadToEnd();
+                for (int i = 0; i < buf.Length; i++)
+                {
+                    if (process.StandardOutput.BaseStream.Read(buf, i, 1) < 0)
+                        break;
+                }
+                string output = Encoding.UTF8.GetString(buf);
                 process.WaitForExit();
 
                 // Extract the SSID from the output
