@@ -31,11 +31,9 @@ namespace WirelessTransfer.Pages
             udpPort = int.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.UdpPort, IniFile.DEFAULT_PATH));
             tcpPort = int.Parse(IniFile.ReadValueFromIniFile(IniFileSections.Option, IniFileKeys.TcpPort, IniFile.DEFAULT_PATH));
 
-            deviceNameTB.Text = Environment.MachineName;
-            deviceIpTB.Text = InternetInfo.GetLocalIPAddress();
-            wifiNameTB.Text = InternetInfo.GetSSID();
-
             ListenForConnections();
+
+            deviceNameTB.Text = Environment.MachineName;
         }
 
         private void ListenForConnections()
@@ -45,6 +43,19 @@ namespace WirelessTransfer.Pages
                 udpListen = new UdpClient(new IPEndPoint(IPAddress.Any, udpPort));
                 udpListen.BeginReceive(new AsyncCallback(ReceiveCallBack), null);
             }
+
+            Task.Run(() =>
+            {
+                while (udpListen != null)
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        deviceIpTB.Text = InternetInfo.GetLocalIPAddress();
+                        wifiNameTB.Text = InternetInfo.GetSSID();
+                    });
+                    Task.Delay(1000).Wait();
+                }
+            });
         }
 
         private void ReceiveCallBack(IAsyncResult ar)

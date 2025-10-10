@@ -45,12 +45,14 @@ namespace WirelessTransfer
 
         private void Application_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
+            /*
             if (InternetInfo.GetSSID().Equals("No wifi connected!"))
             {
-                MessageWindow messageWindow = new MessageWindow("請連接至WIFI", false);
+                MessageWindow messageWindow = new MessageWindow("請連接至網路", false);
                 messageWindow.ShowDialog();
                 System.Windows.Application.Current.Shutdown();
             }
+            */
         }
     }
 }

@@ -18,7 +18,9 @@ namespace WirelessTransfer.Tools.InternetSocket
             {
                 if (ip.AddressFamily == AddressFamily.InterNetwork)
                 {
-                    return ip.ToString();
+                    string tmp = ip.ToString();
+                    if (tmp == "127.0.0.1") break;
+                    return tmp;
                 }
             }
             return "Unknown";
