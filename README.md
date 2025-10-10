@@ -7,6 +7,11 @@
 This is an app with **share screen**, **extend screen** and **file share** functions.<br>
 This app also has an android version https://github.com/Ttggg5/WirelessTransferAndroid.
 
+### Home Page
+<div align="center">
+  <img src="https://raw.githubusercontent.com/Ttggg5/WirelessTransfer/refs/heads/master/Screenshots/HomePage.png" height="300"/>
+</div>
+
 ## Install Usbmmidd_v2
 > [!WARNING]
 Remenber to install **Usbmmidd_v2** before using
