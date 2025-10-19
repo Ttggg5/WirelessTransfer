@@ -5,16 +5,29 @@ VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WirelessTransfer", "WirelessTransfer\WirelessTransfer.csproj", "{7A161135-2AF3-463A-B28C-EBE61BC040F2}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "WirelessTransferSetup", "WirelessTransferSetup\WirelessTransferSetup.vdproj", "{406BE1B0-4699-D7D9-4ECF-6F0105F810C4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
 		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{7A161135-2AF3-463A-B28C-EBE61BC040F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7A161135-2AF3-463A-B28C-EBE61BC040F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A161135-2AF3-463A-B28C-EBE61BC040F2}.Debug|x64.ActiveCfg = Debug|x64
+		{7A161135-2AF3-463A-B28C-EBE61BC040F2}.Debug|x64.Build.0 = Debug|x64
 		{7A161135-2AF3-463A-B28C-EBE61BC040F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A161135-2AF3-463A-B28C-EBE61BC040F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A161135-2AF3-463A-B28C-EBE61BC040F2}.Release|x64.ActiveCfg = Release|x64
+		{7A161135-2AF3-463A-B28C-EBE61BC040F2}.Release|x64.Build.0 = Release|x64
+		{406BE1B0-4699-D7D9-4ECF-6F0105F810C4}.Debug|Any CPU.ActiveCfg = Debug
+		{406BE1B0-4699-D7D9-4ECF-6F0105F810C4}.Debug|x64.ActiveCfg = Debug
+		{406BE1B0-4699-D7D9-4ECF-6F0105F810C4}.Release|Any CPU.ActiveCfg = Release
+		{406BE1B0-4699-D7D9-4ECF-6F0105F810C4}.Release|Any CPU.Build.0 = Release
+		{406BE1B0-4699-D7D9-4ECF-6F0105F810C4}.Release|x64.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
