@@ -23,10 +23,16 @@ This project has include the **Usbmmidd_v2** installer you can just download the
 or download here https://www.amyuni.com/downloads/usbmmidd_v2.zip.
 
 ### Install Usbmmidd_v2
-Open cmd as administrator in **Usbmmidd_v2** folder and enter the command
+Open cmd as administrator in **Usbmmidd_v2** folder and enter the command<br>
+64 bit
 ```
 deviceinstaller64 install usbmmidd.inf usbmmidd
 ```
+32 bit
+```
+deviceinstaller install usbmmidd.inf usbmmidd
+```
+or just execute **usbmmidd.bat** in the **Usbmmidd_v2** folder
 
 ### Uninstall Usbmmidd_v2
 To completely remove the drivers from your system, you can either go through the Device Manager and uninstall “USB Mobile Monitor Virtual Display”, or run the commands:
