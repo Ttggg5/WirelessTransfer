@@ -32,5 +32,5 @@ deviceinstaller64 install usbmmidd.inf usbmmidd
 To completely remove the drivers from your system, you can either go through the Device Manager and uninstall “USB Mobile Monitor Virtual Display”, or run the commands:
 ```
 deviceinstaller64 stop usbmmidd
-deviceinstaller64 remove usbmmid
+deviceinstaller64 remove usbmmidd
 ```
