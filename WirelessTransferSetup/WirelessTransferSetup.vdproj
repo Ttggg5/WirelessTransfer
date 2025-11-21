@@ -4,9 +4,9 @@
 "ProjectType" = "8:{978C614F-708E-4E1A-B201-565925725DBA}"
 "IsWebType" = "8:FALSE"
 "ProjectName" = "8:WirelessTransferSetup"
-"LanguageId" = "3:1028"
-"CodePage" = "3:950"
-"UILanguageId" = "3:1028"
+"LanguageId" = "3:0"
+"CodePage" = "3:1252"
+"UILanguageId" = "3:0"
 "SccProjectName" = "8:"
 "SccLocalPath" = "8:"
 "SccAuxPath" = "8:"
@@ -510,7 +510,7 @@
         }
         "MsiBootstrapper"
         {
-        "LangId" = "3:1028"
+        "LangId" = "3:0"
         "RequiresElevation" = "11:FALSE"
         }
         "Product"
@@ -518,7 +518,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:WirelessTransfer"
         "ProductCode" = "8:{DF16C309-1859-4B0F-B6A3-4AC1F202DAAF}"
-        "PackageCode" = "8:{E93899B9-925D-4B85-BC67-4A6068DBFE40}"
+        "PackageCode" = "8:{321FFD3D-0254-44DC-B3CE-22765B9DEB55}"
         "UpgradeCode" = "8:{51D80B3B-72C0-4781-83DF-2A5183EC1E7A}"
         "AspNetVersion" = "8:"
         "RestartWWWService" = "11:FALSE"

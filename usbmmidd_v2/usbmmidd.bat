@@ -11,4 +11,3 @@
 @cmd /c deviceinstaller.exe install usbmmidd.inf usbmmidd
 
 :end
-@pause
