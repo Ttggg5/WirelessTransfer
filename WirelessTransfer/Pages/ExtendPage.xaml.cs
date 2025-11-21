@@ -300,7 +300,7 @@ namespace WirelessTransfer.Pages
             virtualDisplayProcess = new Process();
             virtualDisplayProcess.StartInfo.UseShellExecute = true;
             virtualDisplayProcess.StartInfo.Arguments = "enableidd 1";
-            virtualDisplayProcess.StartInfo.FileName = ".\\deviceinstaller64.exe";
+            virtualDisplayProcess.StartInfo.FileName = ".\\usbmmidd_v2\\deviceinstaller64.exe";
             virtualDisplayProcess.StartInfo.Verb = "runas";
             virtualDisplayProcess.Start();
             virtualDisplayProcess.WaitForExit();

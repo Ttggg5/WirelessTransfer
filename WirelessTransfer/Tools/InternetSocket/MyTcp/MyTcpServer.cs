@@ -8,6 +8,7 @@ using WirelessTransfer.Tools.InternetSocket.Cmd;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Windows;
 
 namespace WirelessTransfer.Tools.InternetSocket.MyTcp
 {
