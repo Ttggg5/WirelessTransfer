@@ -57,13 +57,13 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_5244FA63D9214D91BD805F38DF0A2B7B"
+        "MsmKey" = "8:_53B50DD3E3AC46638967E1163E57827F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_53B50DD3E3AC46638967E1163E57827F"
+        "MsmKey" = "8:_6710B488BBE84E5DBDA8171CB8C0EFC0"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -518,7 +518,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:WirelessTransfer"
         "ProductCode" = "8:{C5030FA5-3394-4CC4-A4FC-1F3D724C129D}"
-        "PackageCode" = "8:{50F80037-F77A-42C9-A3D9-145F7FED8244}"
+        "PackageCode" = "8:{76D29371-FF02-43E6-9144-817F5FFCFB9B}"
         "UpgradeCode" = "8:{51D80B3B-72C0-4781-83DF-2A5183EC1E7A}"
         "AspNetVersion" = "8:"
         "RestartWWWService" = "11:FALSE"
@@ -638,7 +638,7 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_2403D621B0714CE19BF1666CF9D8B89C"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_368497384CE84FDBB9464AC4C8694126"
             {
             "Name" = "8:WirelessTransfer"
             "Arguments" = "8:"
@@ -646,13 +646,13 @@
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_5244FA63D9214D91BD805F38DF0A2B7B"
+            "Target" = "8:_6710B488BBE84E5DBDA8171CB8C0EFC0"
             "Folder" = "8:_164533B2E24E481581931676701E65EC"
             "WorkingFolder" = "8:_B59BA8AFC5D54561A91C81C2820CFAD4"
             "Icon" = "8:_1089457A4D76460E9D40E3866D80395B"
             "Feature" = "8:"
             }
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_CD8AAB2F8114489C891168CBE0246ECE"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_F7EE02410A064F2D9B70805912ED3C9B"
             {
             "Name" = "8:WirelessTransfer"
             "Arguments" = "8:"
@@ -660,7 +660,7 @@
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_5244FA63D9214D91BD805F38DF0A2B7B"
+            "Target" = "8:_6710B488BBE84E5DBDA8171CB8C0EFC0"
             "Folder" = "8:_6190F414CFA043AE8361176101473F4D"
             "WorkingFolder" = "8:_B59BA8AFC5D54561A91C81C2820CFAD4"
             "Icon" = "8:_1089457A4D76460E9D40E3866D80395B"
@@ -1065,7 +1065,7 @@
         }
         "ProjectOutput"
         {
-            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_5244FA63D9214D91BD805F38DF0A2B7B"
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_6710B488BBE84E5DBDA8171CB8C0EFC0"
             {
             "SourcePath" = "8:..\\WirelessTransfer\\obj\\Release\\net8.0-windows10.0.17763.0\\apphost.exe"
             "TargetName" = "8:"
