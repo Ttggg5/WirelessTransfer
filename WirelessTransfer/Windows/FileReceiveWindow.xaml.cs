@@ -126,8 +126,8 @@ namespace WirelessTransfer.Windows
                             }
                         }
                     });
-                    tmp.WriteDataToFile(fdc.FileData);
                     myTcpClient.SendCmd(new RequestCmd(RequestType.FileShare, Environment.MachineName));
+                    tmp.WriteDataToFile(fdc.FileData);
                     break;
                 case CmdType.Request:
                     RequestCmd rc = (RequestCmd)e;
