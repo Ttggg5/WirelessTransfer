@@ -104,7 +104,7 @@ namespace WirelessTransfer.Windows
 
                                 using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                                 {
-                                    byte[] buffer = new byte[4194304]; // 4MB
+                                    byte[] buffer = new byte[1048576]; // 1MB
                                     int actualLength = 0;
                                     while ((actualLength = fs.Read(buffer, 0, buffer.Length)) > 0)
                                     {
